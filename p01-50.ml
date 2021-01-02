@@ -564,3 +564,17 @@ let huffman fs =
 
 
 
+(* Algorithme d'Euclide étendu *)
+let euclide_etendu x y =
+    let rec aux x y a b c d =
+        if y = 0 
+        then x
+        else let q = x / y in
+                let r = x mod y in
+                    let c = a - q * c in
+                        let d = b - q * d in
+                            let a = c in
+                                let b = d in 
+                                    aux y r a b c d 
+    in aux x y 1 0 0 1;;
+
