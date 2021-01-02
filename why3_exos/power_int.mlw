@@ -1,0 +1,54 @@
+(** {1 MPRI lecture 2-36-1 "Proof of Programs"} *)
+
+(** {2 Fast exponentiation} *)
+
+predicate _TO_BE_COMPLETED
+(* replace all occurrences of _TO_BE_COMPLETED below *)
+
+use int.Int
+use int.ComputerDivision
+use int.Power
+
+val ref x : int
+val ref n : int
+val ref r : int
+val ref p : int
+val ref e : int
+
+(** a few helper lemmas *)
+lemma power_mult :
+  forall x y n:int.
+      n >= 0 -> power (x*y) n = power x n * power y n
+
+lemma power_even:
+  forall x:int, n:int. n >= 0 /\ mod n 2 = 0 ->
+       power x n = (power (x * x) (div n 2))
+
+lemma power_odd:
+  forall x:int, n:int. n >= 0 /\ mod n 2 = 1 ->
+      power x n = x * (power (x * x) (div n 2))
+
+
+
+
+
+
+(** the power function *)
+let power_x_n ()
+  requires { n >= 0 }
+  ensures { r = power x n }
+  diverges
+        =
+	   r <- 1; p <- x; e <- n;
+	      while e > 0 do
+             invariant { e >= 0 }
+             invariant { r * power p e = power x n }
+		         if mod e 2 = 1 then r <- r * p;
+		         p <- p * p;
+	           e <- div e 2
+				 done
+				 
+let test () diverges =
+   x <- 2; n <- 11; power_x_n(); 
+     (* run test using "why3 execute power_int.mlw Top.test" *)
+     

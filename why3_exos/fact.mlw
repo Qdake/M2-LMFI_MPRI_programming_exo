@@ -1,0 +1,40 @@
+(** {1 MPRI lecture 2-36-1 "Proof of Programs"} *)
+
+(** {2 Factorial: recursive specification, iterative implementation} *)
+
+use int.Int
+
+predicate _TO_BE_COMPLETED
+constant _VARIANT_TO_BE_COMPLETED:int
+constant _VALUE_TO_BE_COMPLETED:int
+(* replace all occurrences of _TO_BE_COMPLETED below *)
+
+let rec function fact (n:int) : int
+  requires { n >= 0 }
+  variant { n }
+= if n=0 then 1 else n * fact (n-1)
+
+
+let fact_imp (x:int) : int
+    requires { x >= 0 }
+    ensures { result = fact x }
+  = let ref y = 0 in
+    let ref res = 1 in
+    while y < x do
+      (* qq: termination *)
+      invariant { y >= 0 }
+      variant { x - y }   (* qq: si y < 0 alors x-y > x, il est donc impossible pour 
+                                 un ATP de montrer que cette boucle se termine *)
+      (* qq: propriete cherchee garantie *)
+      invariant { y <= x /\ res = fact y }
+      y <- y + 1;
+      res <- res * y
+    done;
+    res
+
+
+(*
+Local Variables:
+compile-command: "why3 ide fact.mlw"
+End:
+*)

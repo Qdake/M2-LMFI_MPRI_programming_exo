@@ -1,0 +1,37 @@
+(** {1 MPRI lecture 2-36-1 "Proof of Programs"} *)
+
+(** {2 Euclidean division} *)
+
+predicate _TO_BE_COMPLETED
+(* replace all occurrences of _TO_BE_COMPLETED below *)
+
+use int.Int
+
+val ref x : int
+val ref y : int
+val ref q : int
+val ref r : int
+
+let euclide ()
+  requires { x >= 0 /\ y > 0 }
+(*    ensures  { q * y + r = x }*)
+      diverges (** we are not yet attempting to prove termination *)
+        =
+	   q <- 0; r <- x;
+	      while r >= y do
+	           invariant { q * y + r = x }
+		        r <- r - y; q <- q + 1
+			   done
+
+let test ()
+  diverges (** we are not yet attempting to prove termination *)
+    =
+      x <- 42; y <- 17; euclide(); (q,r)
+        (* run test using "why3 execute imp_euclide.mlw Top.test" *)
+
+
+(*
+Local Variables:
+compile-command: "why3 ide imp_euclide.mlw"
+End:
+*)
