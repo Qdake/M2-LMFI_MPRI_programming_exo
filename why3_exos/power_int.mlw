@@ -24,6 +24,18 @@ lemma power_even:
   forall x:int, n:int. n >= 0 /\ mod n 2 = 0 ->
        power x n = (power (x * x) (div n 2))
 
+(* lemma function for power_odd*)
+axiom power_odd_numbers_1 : forall x:int. power x 1 = x
+
+axiom power_odd_numbers_rec : forall x:int, n:int. (n >= 3) -> 
+            (mod n 2 = 1 -> power x n = x * x * (power x (n-2)) )
+
+let rec lemma power_odd_aux (x:int) (n:int)
+  requires { n >= 1 /\ mod n 2 = 1 }
+  variant { n }
+  ensures { power x n = x * (power (x*x) (div n 2)) }
+= if n > 1 then power_odd_aux x (n-2)
+
 lemma power_odd:
   forall x:int, n:int. n >= 0 /\ mod n 2 = 1 ->
       power x n = x * (power (x * x) (div n 2))
