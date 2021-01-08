@@ -1,0 +1,52 @@
+(** {1 MPRI lecture 2-36-1 "Proof of Programs"} *)
+
+(** {2 Linear Search in an Array, with an exception *)
+
+use int.Int
+use array.Array
+
+predicate _TO_BE_COMPLETED
+constant _VARIANT_TO_BE_COMPLETED:int
+(* replace all occurrences of _TO_BE_COMPLETED below *)
+
+exception Exit
+
+let linear_search (a:array int) (v:int)
+  ensures  { -1 <= result < a.length }
+  ensures  { result >= 0 -> a[result] = v }
+  ensures  { result = -1 -> forall j:int. 0 <= j < a.length -> a[j] <> v }
+= let ref i = 0 in
+  try
+    while i < a.length do
+      invariant { 0 <= i <= a.length}
+      invariant { forall k. 0 <= k < i-> a[k] <> v }
+      variant { a.length - i }
+      if a[i] = v then raise Exit; 
+      i <- i + 1
+    done;
+    -1
+  with Exit -> i
+  end
+
+
+exception ExitWith int
+
+let linear_search_with_for (a:array int) (v:int)
+  ensures  { -1 <= result < a.length }
+  ensures  { result >= 0 -> a[result] = v }
+  ensures  { result = -1 -> forall j:int. 0 <= j < a.length -> a[j] <> v }
+= try
+    for i = 0 to a.length - 1 do
+      invariant { forall k. 0 <= k < i -> a[k] <> v }
+      if a[i] = v then raise (ExitWith i)
+    done;
+    -1
+  with ExitWith i -> i
+  end
+
+
+(*
+Local Variables:
+compile-command: "why3 ide lin_search_exc.mlw"
+End:
+*)

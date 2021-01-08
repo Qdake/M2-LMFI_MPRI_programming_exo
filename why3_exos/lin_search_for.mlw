@@ -1,0 +1,31 @@
+(** {1 MPRI lecture 2-36-1 "Proof of Programs"} *)
+
+(** {2 Linear search, using a for loop} *)
+
+use int.Int
+use array.Array
+
+predicate _TO_BE_COMPLETED
+constant _VARIANT_TO_BE_COMPLETED:int
+(* replace all occurrences of _TO_BE_COMPLETED below *)
+
+let linear_search (a: array int) (v:int)
+  requires { true }
+  ensures { -1 <= result < a.length }
+  ensures { result = -1 -> forall k. 0 <= k < a.length -> a[k] <> v }
+  ensures { result > 0 -> a[result] = v } 
+= let ref res = (-1) in
+  for i = 0 to a.length - 1 do
+    invariant { -1 <= res <= a.length - 1 }
+    invariant { res = -1 -> forall k. 0 <= k < i -> a[k] <> v }
+    invariant { res > 0 -> a[res] = v }
+    let t = a[i] in
+    if t = v then res <- i
+  done;
+  res
+
+(*
+Local Variables:
+compile-command: "why3 ide lin_search_for.mlw"
+End:
+*)
