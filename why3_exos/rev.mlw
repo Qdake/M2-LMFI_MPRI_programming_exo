@@ -1,0 +1,96 @@
+
+use int.Int
+
+type list 'a = Nil | Cons 'a (list 'a)
+
+function append (l1:list 'a) (l2:list 'a) : list 'a =
+  match l1 with
+  | Nil -> l2
+  | Cons x l -> Cons x (append l l2)
+  end
+
+(*
+lemma append_nil: forall l:list 'a. append l Nil = l   (*on a pose un lemma sans le prouver *)
+*)
+
+let rec lemma append_nil (l:list 'a)
+  ensures { append l Nil = l }
+= match l with
+  | Nil -> ()
+  | Cons _ r -> append_nil r
+  end
+
+
+(*
+ lemma append_assoc: (* to prove *)
+  forall l1 l2 l3:list 'a.
+    append (append l1 l2) l3 = append l1 (append l2 l3)
+*)
+
+
+let rec lemma append_assoc (l1 :list 'a) (l2 :list 'a) (l3 :list 'a) 
+  ensures { append (append l1 l2) l3 = append l1 (append l2 l3) } 
+= match l1 with 
+  | Nil -> true
+  | Cons x l1' -> append_assoc l1' l2 l3
+  end 
+(* si l1 = Nil alors lemma est vrai,  
+    sinon  l1 = Cons x l1' dans ce cas si append_assoc l1' l2 l3 est vrai 
+      alors lemma est vrai  *)
+  
+function length (l:list 'a) : int =
+  match l with
+  | Nil -> 0
+  | Cons _ r -> 1 + length r
+  end
+
+let rec lemma length_nonneg (l :list 'a) 
+  requires { true }
+  ensures { result >= 0 }
+= match l with
+  | Nil -> 0
+  | Cons x l' -> 1 + (length_nonneg l')
+  end
+
+(*lemma length_nonneg: forall l:list 'a. length l >= 0*)
+
+
+function rev (l:list 'a) : list 'a =
+  match l with
+  | Nil -> Nil
+  | Cons x r -> append (rev r) (Cons x Nil)
+  end
+
+val ref l : list int
+
+let rec rev_append (r:list int) : unit
+  variant { r } 
+  writes  { l }
+  ensures { l = append (rev r) (old l) }       (* cette post condition est necessaire pour prouver reverse*)
+  =
+  match r with
+  | Nil -> ()
+  | Cons x r' ->
+     l <- Cons x l;
+     label L in
+     rev_append r'
+     (* l = append (rev r) (l at L)
+          = append (rev r') (cons x (old l))
+        append (rev r) (old L) = 
+        append (rev (Cons x r')) (old L))
+        append (append (rev e') (Cons x Nil)) (old L))
+        append (rev e') (append   
+        il fault donc prouver l'associativite *)
+  end
+
+let reverse (r:list int) : unit
+  writes  { l }
+  ensures { l = rev r }
+  =
+    l <- Nil; rev_append r
+
+(*
+Local Variables:
+compile-command: "why3 ide rev.mlw"
+End:
+*)
