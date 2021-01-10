@@ -13,12 +13,70 @@ function append (l1:list 'a) (l2:list 'a) : list 'a =
 lemma append_nil: forall l:list 'a. append l Nil = l   (*on a pose un lemma sans le prouver *)
 *)
 
+(*
 let rec lemma append_nil (l:list 'a)
   ensures { append l Nil = l }
 = match l with
   | Nil -> ()
   | Cons _ r -> append_nil r
   end
+  (* qq : je ne comprend pas a quoi sert le "body" ici  10/01/2021*)
+*)
+
+(* qq 10/01/2021   dans cette version, la fonction calcul quelque chose et le result permet de 
+  etablir l'egalite *)
+
+
+let rec lemma append_nil (l:list 'a)
+  ensures { result = append l Nil /\ result = l }
+= match l with
+  | Nil -> Nil
+  | Cons x r -> Cons x (append_nil r)
+  end
+
+(* lemme genere
+goal append_nil'vc :
+  forall l:list 'a.
+   forall result:list 'a.
+    match l with
+    | Nil -> result = (Nil: list 'a)
+    | Cons x r ->
+        let o = append r (Nil: list 'a) in o = r /\ result = Cons x o
+    end -> result = append l (Nil: list 'a) /\ result = l
+
+forall l. forall result. 
+  ( (l = [] -> result = []) /\ 
+    (l = Cons x r -> r = append r [] /\ result = Cons x r) ) ->
+  result = append l [] /\ result = l
+  
+  ??? qq  induction sur la structuer ???qq
+
+*)
+
+(*
+let rec lemma append_nil_qq (l:list 'a)
+  ensures { append l Nil = l }
+= match l with 
+  | Nil -> ()
+  | Cons x l' -> append_nil_qq l'
+  end
+*)
+
+(*
+goal append_nil_qq'vc :
+  forall l:list 'a.
+   match l with
+   | Nil -> true
+   | Cons x l' -> append l' (Nil: list 'a) = l'
+   end -> append l (Nil: list 'a) = l
+forall l. (l = Nil -> true) /\ (l = Cons x l' -> append l' [] = l') -> append l [] = l      
+== forall l. (l = Cons x l' -> append l' [] = l') -> append l [] = l
+
+??? qq :  recurence sur la structure???qq
+
+*)
+
+
 
 
 (*
@@ -28,15 +86,23 @@ let rec lemma append_nil (l:list 'a)
 *)
 
 
-let rec lemma append_assoc (l1 :list 'a) (l2 :list 'a) (l3 :list 'a) 
-  ensures { append (append l1 l2) l3 = append l1 (append l2 l3) } 
-= match l1 with 
-  | Nil -> true
-  | Cons x l1' -> append_assoc l1' l2 l3
-  end 
 (* si l1 = Nil alors lemma est vrai,  
     sinon  l1 = Cons x l1' dans ce cas si append_assoc l1' l2 l3 est vrai 
       alors lemma est vrai  *)
+let rec lemma append_assoc_rec (l1 :list 'a) (l2 :list 'a) (l3 :list 'a) 
+  ensures { append (append l1 l2) l3 = append l1 (append l2 l3) } 
+= match l1 with 
+  | Nil -> ()
+  | Cons x l1' -> append_assoc_rec l1' l2 l3
+  end 
+
+let rec lemma append_assoc_ind (l1 :list 'a) (l2 :list 'a) (l3 :list 'a) 
+  ensures { append result l3 = append l1 (append l2 l3) } 
+= match l1 with 
+  | Nil -> l2
+  | Cons x l1' -> Cons x (append_assoc_ind l1' l2 l3) 
+  end 
+
   
 function length (l:list 'a) : int =
   match l with
@@ -45,13 +111,8 @@ function length (l:list 'a) : int =
   end
 
 let rec lemma length_nonneg (l :list 'a) 
-  requires { true }
   ensures { result >= 0 }
-= match l with
-  | Nil -> 0
-  | Cons x l' -> 1 + (length_nonneg l')
-  end
-
+= 1
 (*lemma length_nonneg: forall l:list 'a. length l >= 0*)
 
 
