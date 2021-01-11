@@ -22,22 +22,78 @@ lemma power_mult :
 lemma power_even:
   forall x:int, n:int. n >= 0 /\ mod n 2 = 0 ->
      power x n = (power (x * x) (div n 2))    *)
-let rec function power_even (x:int) (n:int)
+
+let rec function power_even_rec (x:int) (n:int)
   requires { n >= 0 /\ mod n 2 = 0 }
   variant { n }
-  ensures { result = power x n }
-= if n = 0 then 1 else (x * x) * (power_even x (n-2))
+  ensures { power x n = (power (x * x) (div n 2)) }
+= if n = 0 then true
+  else power_even_rec x (n - 2)
+(* lemme genere 
+ goal power_even_rec'vc :
+  forall x:int, n:int.
+   n >= 0 /\ mod n 2 = 0 ->
+   (not n = 0 ->
+    (let o = n - 2 in (0 <= n /\ o < n) /\ o >= 0 /\ mod o 2 = 0)) /\
+   (n = 0 \/ (let o = n - 2 in power x o = power (x * x) (div o 2)) ->
+    power x n = power (x * x) (div n 2))
+==>
+ forall x. forall n. n >= 0 /\ mod n 2 = 0 ->
+     (n = 0 \/ (power x (n - 2) = power (x * x) (div (n - 2) 2)) ->
+      power x n = power (x * x) (div n 2))     
+*)
+
+let rec function power_even_ind (x:int) (n:int)
+  requires { n >= 0 /\ mod n 2 = 0 }
+  variant { n }
+  ensures { power x n = result /\ result = (power (x * x) (div n 2)) }
+  = if n = 0 then 1
+    else (x * x) * (power_even_ind x (n - 2))
+(* terme genere 
+  goal power_even_ind'vc :
+    forall x:int, n:int.
+     n >= 0 /\ mod n 2 = 0 ->
+     (not n = 0 ->
+      (let o = n - 2 in (0 <= n /\ o < n) /\ o >= 0 /\ mod o 2 = 0)) /\
+     (forall result:int.
+       (if n = 0 then result = 1
+        else let o = n - 2 in
+             exists o1:int.
+              (power x o = o1 /\ o1 = power (x * x) (div o 2)) /\
+              result = ((x * x) * o1)) ->
+       power x n = result /\ result = power (x * x) (div n 2))
+==>
+  forall x:int, n:int. n >= 0 /\ mod n 2 = 0 ->
+     (not n = 0 ->
+      (let o = n - 2 in (0 <= n /\ o < n) /\ o >= 0 /\ mod o 2 = 0))  si n <> 0 alors 0<=n-2<n et mod (n-2) 2 = 0
+      /\
+     (forall result:int.
+       (if n = 0 then result = 1
+        else  exists o1:int.
+              (power x (n - 2) = o1 /\ o1 = power (x * x) (div (n - 2) 2) ) /\
+              result = ((x * x) * o1)) ->
+       power x n = result /\ result = power (x * x) (div n 2))
+*)
+
+
+
 
 (*
 lemma power_odd:
   forall x:int, n:int. n >= 0 /\ mod n 2 = 1 ->
     power x n = x * (power (x * x) (div n 2))
 *)
-let rec function power_odd (x:int) (n:int)
+let rec function power_odd_ind (x:int) (n:int)
   requires { n >= 0 /\ mod n 2 = 1 }
   variant { n }
-  ensures { result = power x n }
-= if n = 1 then x else (x * x) * (power_odd x (n-2))
+  ensures { power x n = result /\ result = x * (power (x * x) (div n 2)) }
+= if n = 1 then x else (x * x) * (power_odd_ind x (n-2))
+
+let rec function power_odd_rec (x:int) (n:int)
+  requires { n >= 0 /\ mod n 2 = 1 }
+  variant { n }
+  ensures { power x n = x * (power (x * x) (div n 2)) }
+= if n = 1 then () else power_odd_rec x (n-2)
 
 (** the power function *)
 let power_x_n ()
