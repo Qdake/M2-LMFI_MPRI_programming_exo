@@ -146,6 +146,23 @@ Proof.
   - rewrite length_rev_append_split. rewrite length_rev_append_split. simpl. rewrite <- Nat.add_assoc. reflexivity.
 Qed.
 
+Theorem length_invariant_rev : forall A : Type, forall l : list A,length (rev l) = length l.
+Proof.
+  intros A l.
+  case l. 
+  - simpl. reflexivity.
+  - unfold rev in *.
+    case rev_append.
+  (*  1 :  length (rev []) = length []
+      2 :  forall (a : A) (l0 : list A),
+            length (rev (a :: l0)) = length (a :: l0) *)
+  induction l;intros.
+  - simpl. reflexivity.
+  - unfold rev in *. rewrite rev_append_x_l. 
+    rewrite length_rev_append_x_l. rewrite IHl. rewrite length_app_x.
+    rewrite Nat.add_comm. reflexivity.
+Qed.
+
 
 Theorem length_invariant_rev : forall A : Type, forall l : list A,length (rev l) = length l.
 Proof.
@@ -159,4 +176,3 @@ Qed.
 
 
 
-M
