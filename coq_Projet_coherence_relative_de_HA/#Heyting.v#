@@ -529,7 +529,7 @@ Inductive PeanoAx : formula -> Prop :=
 Definition Thm T :=
   exists axioms, (forall A, In A axioms -> PeanoAx A) /\ (axioms:-T). 
 
-Lemma PeanoAx_forall_n_not_eq_n_sn : PeanoAx (nFforall (S 0) (
+Lemma HA_n_Sn_auxilaire_PeanoAx_forall_n_not_eq_n_sn : PeanoAx (nFforall (S 0) (
       fsubst 0 Tzero (~ #0 = Tsucc # 0) /\
       Fforall ((~ #0 = Tsucc # 0) ==> fsubst 0 (Tsucc #0) (flift 1 (~ #0 = Tsucc # 0) 1)) ==> Fforall (~ #0 = Tsucc # 0)
     )).
@@ -542,6 +542,7 @@ Proof.
   - constructor.
 Qed. 
 
+
 (* Example of theorem *)
 Lemma HA_n_Sn :  Thm (Fforall (Fnot (Fequal #0 (Tsucc #0)) )).
 Proof.
@@ -550,69 +551,50 @@ Proof.
   pose (axiome_1_n := Fforall ((~ #0 = Tsucc # 0) ==> fsubst 0 (Tsucc #0) (flift 1 (~ #0 = Tsucc # 0) 1))).    
   pose (axiome_1 := (nFforall (S 0) ( axiome_1_0 /\ axiome_1_n ==> Fforall (~ #0 = Tsucc # 0)))).
   pose (axiome_2_inj := (nFforall 2 (Tsucc #1 = Tsucc #0 ==> #1 = #0))).  
+  pose (axiome_3_discr := nFforall 1 (~ Tzero = Tsucc #0)).
   pose (axiomes :=   [
-                axiome_1; axiome_2_inj
+                axiome_1; axiome_2_inj; axiome_3_discr
                      ]).
   exists axiomes. 
-  split.
-  - admit.
-  - simpl in *. apply (Rimpl_e axiomes (axiome_1_0 /\ axiome_1_n) (Fforall (~ #0 = Tsucc # 0))).
-    + admit.
-    + apply Rand_i.
-      ++ admit.
+  split. 
+  - intros A H_AInAxiomes. unfold In in H_AInAxiomes; simpl. destruct H_AInAxiomes. 
+    + (* PeanoAx axiome_1*) 
+      assert (PeanoAx (nFforall (S 0) (
+      fsubst 0 Tzero (~ #0 = Tsucc # 0) /\
+      Fforall ((~ #0 = Tsucc # 0) ==> fsubst 0 (Tsucc #0) (flift 1 (~ #0 = Tsucc # 0) 1)) ==> Fforall (~ #0 = Tsucc # 0)
+    ))) as H1. 
+      exact HA_n_Sn_auxilaire_PeanoAx_forall_n_not_eq_n_sn. 
+      rewrite <-H. unfold axiome_1. simpl in *. exact H1.
+    + (* disjunction intro *)
+      destruct H. 
+      ++ (* PeanoAx axiome_2_inj*) 
+         rewrite <- H. unfold axiome_2_inj. 
+         constructor.
+      ++ (* disjunction intro *) 
+         destruct H.
+         +++ (* PeanoAx axiome_3_discr*) 
+             rewrite <- H.
+             unfold axiome_3_discr.
+             constructor.
+         +++ (* False -> forall A:formula,PeanoAx A *)
+             auto.
+  - simpl in *. apply (Rimpl_e axiomes (axiome_1_0 /\ axiome_1_n) (Fforall (~ #0 = Tsucc # 0))). 
+    + apply (Rforall_e _ (axiome_1_0 /\ axiome_1_n ==> Fforall (~ # 0 = Tsucc # 0)) #0). 
+      apply Rax. unfold In;simpl;auto.
+    + apply Rand_i.  
+      ++ apply (Rforall_e _ (Tzero = Tsucc #0 ==> Ffalse) Tzero). apply Rax. 
+         unfold In; simpl;auto.
       ++ apply (Rforall_i). simpl.
          apply (Rimpl_i).
          apply (Rimpl_i).
          apply (Rimpl_e _ (# 0 = Tsucc # 0) Ffalse).
          +++ apply Rax. simpl. right. left. reflexivity.
          +++ apply (Rimpl_e _ (Tsucc # 0 = Tsucc (Tsucc # 0)) _).
-             ++++ admit.
+             ++++ apply (Rforall_e _ ((Tsucc # 1 = Tsucc #0) ==> # 1 = # 0) (Tsucc #0)).  (* forall elim *)
+                  apply (Rforall_e _ (Fforall (Tsucc # 1 = Tsucc # 0 ==> # 1 = # 0)) #0).  (* forall elim *)
+                  apply Rax. simpl. auto.
              ++++ apply Rax. simpl. auto.
 Qed.
-             
-
-Reserved Notation "Γ :- A" (at level 87, no associativity).
-Inductive rule : context -> formula -> Prop :=
-  | Rax Γ A :  In A Γ   ->  Γ:-A   (* QQ:  In A Γ -> rule Γ A *)
-  (* QQ :     In : forall A : Type, A -> list A -> Prop *)
-  (* QQ :                                    In A Γ -> Γ :- A est une Prop *)
-  | Rfalse_e Γ :   Γ:-Ffalse -> forall A, Γ:-A (*QQ:  rule Γ Ffalse -> forall A, rule Γ A*)
-  | Rand_i Γ B C :   Γ:-B -> Γ:-C -> Γ:-B/\C   (*QQ:   rule Γ B -> rule Γ C -> rule Γ (Fand B C) *)
-  | Rand_e1 Γ B C :   Γ:-B/\C -> Γ:-B          (*QQ:   rule Γ (Fand B C) -> rule Γ B  *)
-  | Rand_e2 Γ B C :   Γ:-B/\C -> Γ:-C          (*QQ:   rule Γ (Fand B C) -> rule Γ C *)
-  | Ror_i1 Γ B C :   Γ:-B -> Γ:-B\/C           (*QQ:   rule Γ B -> rule Γ (For B C) *)
-  | Ror_i2 Γ B C :   Γ:-C -> Γ:-B\/C           (*QQ:   rule Γ C -> rule Γ (For B C) *)  
-  | Ror_e Γ A B C :   Γ:-B\/C -> (B::Γ):-A -> (C::Γ):-A -> Γ:-A 
-                           (*QQ:   rule Γ (For B C) -> rule (B::Γ) A -> rule (C::Γ) A -> rule Γ A *)
-  | Rimpl_i Γ B C :   (B::Γ):-C -> Γ:-B==>C    (*QQ:   rule (B::Γ) C -> rule Γ (Fimplies B C) *) 
-  | Rimpl_e Γ B C :   Γ:-B==>C -> Γ:-B -> Γ:-C (*QQ:   rule Γ (Fimplies B C) -> rule Γ B -> rule Γ C *)
-  | Rforall_i Γ B :   (clift 1 Γ 0):-B -> Γ:-(Fforall B)
-                           (*QQ:   rule (clift 1 Γ 0) B -> rule Γ (Fforall B) *) 
-                           (*QQ:   rule (map (fun A => flift 1 A k) Γ) B -> rule Γ (Fforall B) *)
-  | Rforall_e Γ B t :   Γ:-(Fforall B) -> Γ:-(fsubst 0 t B)
-                           (*QQ:   rule Γ (Fforall B) -> rule Γ (fsubst 0 t B) *)
-  | Rexists_i Γ B t :   Γ:-(fsubst 0 t B) -> Γ:-(Fexists B) (*QQ:   rule Γ (fsubst 0 t B) -> rule Γ (fexists B) *)
-  | Rexists_e Γ A B :
-    Γ:-(Fexists B) -> (B::clift 1 Γ 0):-(flift 1 A 0) -> Γ:-A
-                 (*QQ:   rule Γ (Fexists B) -> rule (B::clift 1 Γ 0) (flift 1 A 0) -> rule Γ A  *)
-where "Γ :- A" := (rule Γ A).
-
-
-
-
-  unfold Thm.
-  exists [nFforall 1 (~ Tzero = Tsucc #0)].
-  split.
-  - intro A. unfold In. intro H.
-    destruct H.
-    + rewrite <- H. exact pa_discr.
-    + apply False_ind. assumption.
-  - apply Rax. unfold In. left. simpl. rewrite "# 0 := Tzero"
-    
-  
-   
-
-   Admitted. (* TO DO TO DO TO DO *)
 
 Definition valuation := list nat.
 
