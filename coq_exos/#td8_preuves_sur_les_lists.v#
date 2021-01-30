@@ -120,7 +120,8 @@ Definition rev {A:Type} (l:list A):=
 
 
 
-Lemma rev_append_x_l: forall A:Type, forall l1 l2:list A, forall x:A, rev_append (x::l1) l2 = rev_append l1 (x::l2).
+Lemma rev_append_x_l: forall A:Type, forall l1 l2:list A, forall x:A, 
+          rev_append (x::l1) l2 = rev_append l1 (x::l2).
 Proof.
   induction l1;simpl;intros.
   - reflexivity.
@@ -132,14 +133,16 @@ Proof.
   reflexivity.
 Qed.
 
-Lemma length_rev_append_split : forall {A:Type}, forall l1 l2:list A, length(rev_append l1 l2) = length l1 + length l2.
+Lemma length_rev_append_split : forall {A:Type}, forall l1 l2:list A, 
+            length(rev_append l1 l2) = length l1 + length l2.
 Proof.
   induction l1;simpl;intros.
   - reflexivity.
   - rewrite IHl1. rewrite length_app_x. rewrite Nat.add_succ_r. reflexivity.
 Qed.
 
-Lemma length_rev_append_x_l : forall {A:Type}, forall l:list A, forall x:A, length (rev_append l [x]) = length (rev_append l []) + 1.
+Lemma length_rev_append_x_l : forall {A:Type}, forall l:list A, forall x:A,
+       length (rev_append l [x]) = length (rev_append l []) + 1.
 Proof.
   induction l;simpl;intros.
   - reflexivity.
@@ -149,13 +152,6 @@ Qed.
 Theorem length_invariant_rev : forall A : Type, forall l : list A,length (rev l) = length l.
 Proof.
   intros A l.
-  case l. 
-  - simpl. reflexivity.
-  - unfold rev in *. 
-    case rev_append.
-  (*  1 :  length (rev []) = length []
-      2 :  forall (a : A) (l0 : list A),
-            length (rev (a :: l0)) = length (a :: l0) *)
   induction l;intros.
   - simpl. reflexivity.
   - unfold rev in *. rewrite rev_append_x_l. 
@@ -223,7 +219,46 @@ Proof.
   change (exhibit_succ (S n) = exhibit_succ (S m)).
   rewrite H.
   reflexivity.
+  Show Proof.
 Qed.
+
+Definition proj1_cons {A:Type} l (default:A):= 
+  match l with
+  | cons x l => x
+  | nil => default  (* pour toujours avoir un resultat *)
+  end.
+
+Definition proj2_cons {A:Type} (l : list A) : list A:= 
+  match l with
+  | cons x l => l
+  | nil => nil 
+  end.
+
+Lemma inject_cons {A:Type}: forall (x x':A) l l',
+      x::l = x'::l' -> x=x'.
+Proof.
+  intros.
+  change (proj1_cons (x::l) x = proj1_cons (x'::l') x).
+  rewrite H.
+  reflexivity.
+  Undo 2.
+  f_equal.
+  assumption.
+  Undo.
+  intros.
+  injection H. intros. assumption.
+Qed.
+
+Lemma inject_cons' {A:Type}: forall (x x':A) l l',
+      x::l = x'::l' -> l=l'.
+Proof.
+  intros.
+  change (proj2_cons (x::l) = proj2_cons (x'::l')).
+  rewrite H.
+  reflexivity.
+Qed.
+
+
 
 End cours.
 

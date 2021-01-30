@@ -292,13 +292,34 @@ Proof.
 Admitted.
 (* pattern tactic *)
 Print Nmult_plus_distr_l.
+Search "add_succ".
 (*
 fun n m p : N => N.mul_add_distr_l p n m
      : forall n m p : N, (p * (n + m))%N = (p * n + p * m)%N
 *)
-Lemma test_pattern : forall x:nat, x + x + x + x = 5 * x.
-Proof.
-  intro x. rewrite <- Nmult_plus_distr_l.
 
+Search "distr".
+Lemma test_pattern_aux : forall x:nat, x = 1*x.
+Proof.
+  induction x;simpl;intros;auto.
+Qed.
+(* rewrite right part*)
+Lemma test_pattern : forall x:nat, x + x + x + x + x= 5 * x.
+Proof.
+  intros x. simpl. repeat (rewrite Nat.add_assoc). rewrite (Nat.add_comm (x+x+x+x+x) 0). reflexivity.
+Qed.
+
+Lemma mult_add_distr_l : forall n x :nat, n*x+x = (n+1)*x.
+Proof.
+  induction n;simpl;intros.
+  - rewrite Nat.add_comm. reflexivity.
+  - rewrite <- Nat.add_assoc. rewrite IHn. reflexivity.
+Qed.
+(* rewrite left part*)
+Lemma test_pattern_2 : forall x:nat, x + x + x + x + x= 5 * x.
+Proof.
+  intro x. pattern x at 1. rewrite test_pattern_aux.
+  repeat rewrite mult_add_distr_l. simpl. reflexivity.
+Qed.
 End cours. 
 
