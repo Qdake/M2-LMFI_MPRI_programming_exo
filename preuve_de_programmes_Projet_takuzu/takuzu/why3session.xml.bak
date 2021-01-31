@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE why3session PUBLIC "-//Why3//proof session v5//EN"
+"http://why3.lri.fr/why3session.dtd">
+<why3session shape_version="6">
+<file format="whyml">
+<path name=".."/><path name="takuzu.mlw"/>
+<theory name="Appetizers">
+ <goal name="no_3_consecutive_zeros_version_1&#39;vc" expl="VC for no_3_consecutive_zeros_version_1">
+ </goal>
+ <goal name="no_3_consecutive_zeros_version_2&#39;vc" expl="VC for no_3_consecutive_zeros_version_2">
+ </goal>
+ <goal name="no_3_consecutive_zeros_version_3&#39;vc" expl="VC for no_3_consecutive_zeros_version_3">
+ </goal>
+ <goal name="num_occ&#39;vc" expl="VC for num_occ">
+ </goal>
+ <goal name="count_number_of&#39;vc" expl="VC for count_number_of">
+ </goal>
+ <goal name="same_number_of_zeros_and_ones&#39;vc" expl="VC for same_number_of_zeros_and_ones">
+ </goal>
+ <goal name="check_identical_sub_arrays&#39;vc" expl="VC for check_identical_sub_arrays">
+ </goal>
+</theory>
+<theory name="Takuzu">
+ <goal name="eq&#39;vc" expl="VC for eq">
+ </goal>
+ <goal name="column_start_index&#39;vc" expl="VC for column_start_index">
+ </goal>
+ <goal name="row_start_index&#39;vc" expl="VC for row_start_index">
+ </goal>
+ <goal name="valid_chunk">
+ </goal>
+ <goal name="acc&#39;vc" expl="VC for acc">
+ </goal>
+ <goal name="check_rule_1_for_chunk&#39;vc" expl="VC for check_rule_1_for_chunk">
+ </goal>
+ <goal name="count_number_of&#39;vc" expl="VC for count_number_of">
+ </goal>
+ <goal name="check_rule_2_for_chunk&#39;vc" expl="VC for check_rule_2_for_chunk">
+ </goal>
+ <goal name="check_identical_chunks&#39;vc" expl="VC for check_identical_chunks">
+ </goal>
+ <goal name="check_rule_3_for_column&#39;vc" expl="VC for check_rule_3_for_column">
+ </goal>
+ <goal name="check_rule_3_for_row&#39;vc" expl="VC for check_rule_3_for_row">
+ </goal>
+ <goal name="check_at_cell&#39;vc" expl="VC for check_at_cell">
+ </goal>
+ <goal name="check_cell_change&#39;vc" expl="VC for check_cell_change">
+ </goal>
+ <goal name="solve_aux&#39;vc" expl="VC for solve_aux">
+ </goal>
+ <goal name="solve&#39;vc" expl="VC for solve">
+ </goal>
+</theory>
+<theory name="Test">
+ <goal name="empty&#39;vc" expl="VC for empty">
+ </goal>
+ <goal name="example1&#39;vc" expl="VC for example1">
+ </goal>
+ <goal name="example2&#39;vc" expl="VC for example2">
+ </goal>
+ <goal name="example3&#39;vc" expl="VC for example3">
+ </goal>
+ <goal name="example4&#39;vc" expl="VC for example4">
+ </goal>
+ <goal name="example5&#39;vc" expl="VC for example5">
+ </goal>
+ <goal name="example6&#39;vc" expl="VC for example6">
+ </goal>
+</theory>
+</file>
+</why3session>

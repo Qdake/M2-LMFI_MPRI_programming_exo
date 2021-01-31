@@ -43,14 +43,11 @@ Specification of the first check
 (** [no_3_consecutive_zeros_sub a l] is true whenever in the sub-array
     [a[0..l-1]], there are no 3 consecutives occurrences of [0]
 *)
-
 predicate no_3_consecutive_zeros_sub (a:array int) (l:int) =
-  forall i. 0 <= i < l-3 -> not (a[i] = a[i+1] = a[i+2] = 0)
-(* forall i. 0 <= i < __TERM_TO_BE_COMPLETED__ -> not (a[i] = a[i+1] = a[i+2] = 0)*)
+  forall i. 0 <= i < __TERM_TO_BE_COMPLETED__ -> not (a[i] = a[i+1] = a[i+2] = 0)
 
 predicate no_3_consecutive_zeros (a:array int) =
-  no_3_consecutive_zeros_sub a a.length
-(* no_3_consecutive_zeros_sub a __TERM_TO_BE_COMPLETED *)
+  no_3_consecutive_zeros_sub a __TERM_TO_BE_COMPLETED__
 
 (**
 
@@ -63,11 +60,11 @@ implementation 1
 exception TripleFound
 
 let no_3_consecutive_zeros_version_1 (a : array int) : bool
-  ensures { result = True -> no_3_consecutive_zeros a }
+  ensures { result = True <-> no_3_consecutive_zeros a }
   =
   try
-    for i= 0 to a.length - 3  do  
-      invariant { no_3_consecutive_zeros_sub a (i+3) }     
+    for i= __EXPRESSION_TO_BE_COMPLETED__ to __EXPRESSION_TO_BE_COMPLETED__ do
+      invariant { __FORMULA_TO_BE_COMPLETED__ }
       if a[i] = 0 && a[i+1] = 0 && a[i+2] = 0 then raise TripleFound;
     done;
     True
