@@ -642,7 +642,6 @@ Proof.
   - repeat rewrite app_nth1;auto.
 Qed.
 
-Print Nat.pred.
 
 Lemma tinterp_2_aux_nth {A:Type}: forall n:nat, forall l:list A, forall d k:A, n >= 1 -> nth (Nat.pred n) l d = nth n (k::l) d.
 Proof.
@@ -818,7 +817,25 @@ Inductive rule : context -> formula -> Prop :=
 where "Γ :- A" := (rule Γ A).
 Definition cinterp v Γ := forall A, In A Γ -> finterp v A.
 *)
+(*
+Inductive term :=
+  | Tvar : nat -> term
+  | Tzero : term
+  | Tsucc : term -> term
+  | Tplus : term -> term -> term
+  | Tmult : term -> term -> term.
+Inductive formula :=
+  | Fequal : term -> term -> formula
+  | Ffalse : formula
+  | Fand : formula -> formula -> formula
+  | For : formula -> formula -> formula
+  | Fimplies : formula -> formula -> formula
+  | Fexists : formula -> formula
+  | Fforall : formula -> formula.
+Hint Extern 10 (Tvar _ = Tvar _) => f_equal.
 
+Definition cinterp v Γ := forall A, In A Γ -> finterp v A.
+*)
 Lemma soundness_rules : forall Γ A, Γ:-A -> (forall v, cinterp v Γ -> finterp v A).
 (*
    QQ: Soient Γ un ens de Fformules et A une Fformule,
@@ -826,9 +843,9 @@ Lemma soundness_rules : forall Γ A, Γ:-A -> (forall v, cinterp v Γ -> finterp
        alors pour toute valuation de variables si 
 *) 
 Proof.
-  induction Γ.
-  - intros A H1 val.  auto. 
-  Admitted.
+  induction A; simpl.
+  -  
+
 
 Lemma soundness_axioms : forall A, PeanoAx A -> forall v, finterp v A.
 Proof.
