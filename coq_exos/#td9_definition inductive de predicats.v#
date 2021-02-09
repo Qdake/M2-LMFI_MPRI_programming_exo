@@ -9,35 +9,26 @@ Inductive clos1 (R : T -> T -> Prop) : T -> T -> Prop :=
 | cl1_trans : forall x y z, clos1 R x y -> clos1 R y z -> clos1 R x z.
 
 (*
-Print clos1_ind.
 
-(*clos1_ind = 
-fun (R P : T -> T -> Prop)
-  (f : forall x y : T, R x y -> P x y)   (inclusion)
-  (f0 : forall x : T, P x x)             (reflexivite)
-  (f1 : forall x y z : T,                 
-        clos1 R x y ->
-        P x y -> clos1 R y z -> P y z -> P x z) =>
-fix F (t t0 : T) (c : clos1 R t t0) {struct c} :
-    P t t0 :=
-  match c in (clos1 _ t1 t2) return (P t1 t2) with
-  | cl1_base _ x y y0 => f x y y0
-  | cl1_refl _ x => f0 x
-  | cl1_trans _ x y z c0 c1 =>
-      f1 x y z c0 (F x y c0) c1 (F y z c1)
-  end
-     : forall R P : T -> T -> Prop,
+ clos_1_ind:
+forall R P : T -> T -> Prop,
        (forall x y : T, R x y -> P x y) ->
        (forall x : T, P x x) ->
        (forall x y z : T,
         clos1 R x y ->
         P x y -> clos1 R y z -> P y z -> P x z) ->
        forall t t0 : T, clos1 R t t0 -> P t t0
-
-Arguments clos1_ind (_ _ _ _ _)%function_scope *)
+(* One may rather expect the following form (note the transitivity) :*)
+forall R P : T -> T -> Prop,
+       (forall x y : T, R x y -> P x y) ->
+       (forall x : T, P x x) ->
+       (forall x y z : T,
+        P x y -> P y z -> P x z) ->
+       forall t t0 : T, clos1 R t t0 -> P t t0
 *)
 
 Definition symm (R : T -> T -> Prop) := forall x y : T, R x y -> R y x.
+
 
 Theorem if_R_sym_then_closR : forall R : T -> T -> Prop, 
   symm R -> symm (clos1 R).
@@ -51,6 +42,16 @@ Proof.
     apply (cl1_trans R z0 y0 x0); assumption.
 Qed.
 
+(* Prof *)
+Lemma clos_sym R: symm R -> symm (clos1 R).
+Proof.
+  intros symR x y Hxy.
+  induction Hxy.
+  - apply cl1_base. apply symR. assumption.
+  - apply cl1_refl.
+  - apply cl1_trans with y;assumption.   (* apply...with...*)
+Qed.
+ 
 Theorem closR_idempotente : forall R:T->T->Prop, forall x y:T,clos1 (clos1 R) x y -> clos1 R x y.
 Proof.
   intros R x y H.
@@ -68,7 +69,13 @@ Qed.
 Inductive clos2 (R:T->T->Prop):T->T->Prop :=
 | cl2_refl : forall x, clos2 R x x
 | cl2_next : forall x y z, clos2 R x y -> R y z -> clos2 R x z.
-Print clos2_ind.
+
+(*
+Inductive clos2 (R:T->T->Prop):T->T->Prop :=
+| cl2_refl x: clos2 R x x
+| cl2_next x y z: clos2 R x y -> R y z -> clos2 R x z.
+*)
+
 (* forall R P : T -> T -> Prop,
        (forall x : T, P x x) ->
        (forall x y z : T, clos2 R x y -> P x y -> R y z -> P x z) ->
@@ -115,23 +122,44 @@ clos2 R x0 y0 -> clos1 R x0 y0 -> R y0 z -> clos1 R x0 z
     + apply (cl1_base R y0 z). assumption.
 Qed.
 
-Print clos2.
+
 (*
 Inductive clos2 (R : T -> T -> Prop) : T -> T -> Prop :=
     cl2_refl : forall x : T, clos2 R x x
   | cl2_next : forall x y z : T,
                clos2 R x y -> R y z -> clos2 R x z
 *)
+
 (* clos2 R est une relation transitive *)
-Theorem clos2_trans : forall R:T->T->Prop, 
-        forall x y z, clos2 R x y -> clos2 R y z -> clos2 R x z.
+Definition Trans (R : T->T->Prop) := forall x y z, R x y -> R y z -> R x z.
+
+
+(* prof*)
+Theorem clos2_trans R : Trans (clos2 R).
 Proof.
-  intros R x y z xRy yRz.
-  case yRz.
-  
-  
-Admitted.
- 
+  intros x y z Hxy Hyz.
+  (* better induction on the second hyp*)
+  induction Hxy.
+ (* you're out of luck .... 
+    
+    x -----> y -------> z
+    |        |          |
+    x ---->t-y -------> z
+       *    1     *
+  *: many steps      
+  we still haven't enough info
+but if 
+
+    x -----> y -------> z
+    |        |          |
+    x -----> y -----t-> z
+       *         *   1
+*)
+    Undo 1.
+    induction Hyz.
+    - assumption.
+    - apply cl2_next with y;auto.
+Qed.
     
 (* clos1 R -> clos2 R *)
 Theorem clos1_imp_clos2 : forall R:T->T->Prop, forall x y:T,
@@ -146,15 +174,135 @@ Proof.
   - intros. apply (clos2_trans R x0 y0 z);assumption.
 Qed.
 
+Lemma clos1_clos2_equiv R: forall x y, clos1 R x y <-> clos2 R x y.
+Proof.
+  split.
+  - apply clos1_imp_clos2.
+  - apply clos2_imp_clos1.
+Qed.
 
 (* cloture reflexive-transitive version 3*)
+Definition id : T -> T -> Prop := fun x y: T => x = y.
+(*
+Definition identity : T -> T -> Prop := eq.
+Print eq.  
+*)
+Definition comp (R1 R2:T->T->Prop) : T->T->Prop :=
+  fun x z => exists y, R1 x y /\ R2 y z.
 
+Fixpoint pow (R:T->T->Prop) (n:nat) : T->T->Prop :=
+match n with
+| 0 => id
+| S n => comp (pow R n) R    (* simpler this way to proof 
+                      equivalence with clos2.  
+                        of course (comp R (pow R n )) is also possible *)
+end.
+
+Fixpoint pow' (R:T->T->Prop) (n:nat) : T->T->Prop :=
+match n with
+| 0 => id
+| S n => comp R (pow' R n) 
+end. 
+
+Definition relequiv (R1 R2 : T->T->Prop) :=
+  forall x y, R1 x y <-> R2 x y.
+
+Infix "==" := relequiv (at level 70).
+
+Lemma compose_assoc R1 R2 R3 : comp (comp R1 R2) R3 == comp R1 (comp R2 R3).
+Admitted.
+
+Lemma compose_id_r R :
+  comp id R == R.
+Admitted.
+
+Lemma compose_id_l R :
+  comp R id == R.
+Admitted.
+
+(*
+Lemma pow'_R R n : pow' R (S n) == comp (pow' R n) R.
+Proof.
+  induction n.
+  - simpl. intros x y.
+(*   rewrite (compose_id_r R x y), (compose_id_l R x y). reflexivity.*)
+    admit.  
+  - simpl. intros x y.
+    rewrite (compoe_assoc R (pow' R n) R x y).
+    apply compose
+    apoly IHn.
+
+
+Lemma pow_equiv : forall R n x y, pow R n x y -> pow' R n x y.
+Proof. 
+  induction n.
+  - simpl. intros x y. unfold id. intros ->. reflexivity.
+  - simpl. intros x y. transitivity (comp (pow' R n) R x y).
+    + apply (comp_morphism (pow' 
+*)
+
+(* extra question show that forall R n x y <-> pow' R n x y *)
+Definition clos3 (R:T->T->Prop) : T->T->Prop :=
+  fun x y => exists n, pow R n x y.
+(*
+
+Inductive clos2 (R:T->T->Prop):T->T->Prop :=
+| cl2_refl : forall x, clos2 R x x
+| cl2_next : forall x y z, clos2 R x y -> R y z -> clos2 R x z.
+*)
+Lemma clos3_clos2 (R:T->T->Prop) : forall x y, clos3 R x y -> clos2 R x y.
+Proof.
+  unfold clos3.
+  intros x y H.
+  destruct H.
+  induction x0; simpl.
+  - unfold pow in *. unfold id in *. rewrite H . constructor.
+  - destruct H. destruct H. Abort.  
+
+
+Lemma clos3_clos2 (R:T->T->Prop) : forall x y, clos3 R x y -> clos2 R x y.
+Proof.
+  intros x y (n,H).   (* !!!!  intros exist*)
+  revert H.
+  revert x y. (* revert x y H.*)
+  induction n; simpl; intros x y.
+  - unfold id.
+    intros ->.     (*just the same as intro H;rewrite H.*)
+    apply cl2_refl.
+  - intros (u,(Hxu,Huy)).  (* clever intros for an exists and a /\ *)
+    apply cl2_next with u; auto.
+Qed.    
+Lemma clos2_clos3 R : forall x y, clos2 R x y -> clos3 R x y.
+Proof.
+  intros x y H.
+  induction H.
+  - exists 0. simpl. reflexivity.
+  - (*!!!!!!*)
+    destruct IHclos2 as (n,IH). 
+    exists (S n). simpl.
+    exists y. split;assumption.
+Qed.
+
+Lemma clos3_clos2_equiv R : clos3 R == clos2 R.
+ (* NB *)
+Definition Succ : nat->nat->Prop
+such that pow R n computes the n-th power of the relation
+(with respect to composition).
+
+A third possible definition of the reflexive-transitive closure of a
+relation R is then given by the union of all powers of R:
+Definition clos3 (R : T -> T -> Prop) (x y : T) := exists n, pow R n x y.
+
+Show that this definition is equivalent to the two previous ones
+clos1 and clos2.
 
 
 End cloture_reflexive_transitive.
 
 
 Module cours.
+
+(* "now". apply ; easy.*)
 
 Lemma not_true_eq_false : ~ (true = false).
 Proof.
@@ -292,34 +440,13 @@ Proof.
 Admitted.
 (* pattern tactic *)
 Print Nmult_plus_distr_l.
-Search "add_succ".
 (*
 fun n m p : N => N.mul_add_distr_l p n m
      : forall n m p : N, (p * (n + m))%N = (p * n + p * m)%N
 *)
+Lemma test_pattern : forall x:nat, x + x + x + x = 5 * x.
+Proof.
+  intro x. rewrite <- Nmult_plus_distr_l.
 
-Search "distr".
-Lemma test_pattern_aux : forall x:nat, x = 1*x.
-Proof.
-  induction x;simpl;intros;auto.
-Qed.
-(* rewrite right part*)
-Lemma test_pattern : forall x:nat, x + x + x + x + x= 5 * x.
-Proof.
-  intros x. simpl. repeat (rewrite Nat.add_assoc). rewrite (Nat.add_comm (x+x+x+x+x) 0). reflexivity.
-Qed.
-
-Lemma mult_add_distr_l : forall n x :nat, n*x+x = (n+1)*x.
-Proof.
-  induction n;simpl;intros.
-  - rewrite Nat.add_comm. reflexivity.
-  - rewrite <- Nat.add_assoc. rewrite IHn. reflexivity.
-Qed.
-(* rewrite left part*)
-Lemma test_pattern_2 : forall x:nat, x + x + x + x + x= 5 * x.
-Proof.
-  intro x. pattern x at 1. rewrite test_pattern_aux.
-  repeat rewrite mult_add_distr_l. simpl. reflexivity.
-Qed.
 End cours. 
 

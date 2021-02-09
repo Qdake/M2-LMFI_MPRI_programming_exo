@@ -333,56 +333,47 @@ Proof.
   - repeat (try (reflexivity || assumption || rewrite H1|| rewrite H3)). apply le_n_S. assumption.
 Qed.
 
+
+
 Lemma cformula_4 : forall n A, cformula (S n) A ->
   forall t', cterm 0 t' -> cformula n (fsubst n t' A).
 Proof.
-  intros n A.
-  induction t'.
-  - intro. Abort.
-(*
-Lemma cformula_4 : forall n A, cformula (S n) A ->
-  forall t', cterm 0 t' -> cformula n (fsubst n t' A).
-Proof.
-  induction A.
-  - intros. simpl. apply cformula_equal. 
-    + apply (cterm_4 n t). 2:assumption. case H.
-  Abort.
-*)
-(*forall P : nat -> formula -> Prop,
-       (forall (n : nat) (u v : term),
-        cterm n u ->
-        cterm n v -> P n (Fequal u v))
- ->
-       (forall n : nat, P n Ffalse)
- ->
-       (forall (n : nat) (B C : formula),
-        cformula n B ->
-        P n B ->
-        cformula n C ->
-        P n C -> P n (Fand B C))
- ->
-       (forall (n : nat) (B C : formula),
-        cformula n B ->
-        P n B ->
-        cformula n C -> P n C -> P n (For B C))
- ->
-       (forall (n : nat) (B C : formula),
-        cformula n B ->
-        P n B ->
-        cformula n C ->
-        P n C -> P n (Fimplies B C))
- ->
-       (forall (n : nat) (B : formula),
-        cformula (S n) B ->
-        P (S n) B -> P n (Fexists B)) 
-->
-       (forall (n : nat) (B : formula),
-        cformula (S n) B ->
-        P (S n) B -> P n (Fforall B))
- ->
-       forall (n : nat) (f6 : formula),
-       cformula n f6 -> P n f6
-*)
+  intros n A; 
+  revert n.
+  - (* induction sur la structure de A *)
+    induction A; 
+    simpl;
+    intros n H t' H1.
+    + (* A = Fequal t t0 *)
+      apply cformula_equal; apply cterm_4; try inversion H;assumption.
+    + (* A = Ffalse *)
+      constructor.
+    + (* A = Fand A1 A2 *)
+      inversion H; 
+      apply cformula_and;
+      try (apply IHA1||apply IHA2);
+      assumption.
+    + (* A = For A1 A2 *)
+      inversion H; 
+      apply cformula_or; 
+      try (apply IHA1 || apply IHA2); 
+      assumption.
+    + (* A = Fimplies A1 A2 *)
+      apply cformula_implies; 
+      try (apply IHA1 || apply IHA2); 
+      inversion H; 
+      assumption.
+    + (* A = Fexists A1 *)
+      apply cformula_exists.
+      inversion H;
+      apply IHA;
+      assumption.
+    + (* forall *)
+      apply cformula_forall;
+      inversion H;
+      apply IHA;
+      assumption.
+Qed.
 
 Reserved Notation "A ==> B" (at level 86, right associativity).
 Reserved Notation "# n" (at level 2).
@@ -495,8 +486,6 @@ Proof.
     exact (IHn (S x) t A).
 Qed.
 
-Print nat.
-
 (* Peano axioms *)
 (*QQ: Notation "# n" := (Tvar n) (at level 2) : pa_scope.*)
 Inductive PeanoAx : formula -> Prop :=
@@ -597,7 +586,7 @@ Proof.
 Qed.
 
 Definition valuation := list nat.
-
+ 
 Fixpoint tinterp (v:valuation) t :=
   match t with
     | Tvar j => nth j v O
@@ -641,7 +630,6 @@ Proof.
     f_equal; auto.
   - repeat rewrite app_nth1;auto.
 Qed.
-
 
 Lemma tinterp_2_aux_nth {A:Type}: forall n:nat, forall l:list A, forall d k:A, n >= 1 -> nth (Nat.pred n) l d = nth n (k::l) d.
 Proof.
@@ -772,92 +760,41 @@ Definition cinterp v Γ := forall A, In A Γ -> finterp v A.
 
 (* Soundess of deduction rules *)
 
-
-(*
-Inductive PeanoAx : formula -> Prop :=
-  | pa_refl : PeanoAx (nFforall 1 (#0 = #0))
-  | pa_sym : PeanoAx (nFforall 2 (#1 = #0 ==> #0 = #1))
-  | pa_trans : PeanoAx (nFforall 3 (#2 = #1 /\ #1 = #0 ==> #2 = #0))
-  | pa_compat_s : PeanoAx (nFforall 2 (#1 = #0 ==> Tsucc #1 = Tsucc #0))
-  | pa_compat_plus_l : PeanoAx (nFforall 3 (#2 = #1 ==> #2 + #0 = #1 + #0))
-  | pa_compat_plus_r : PeanoAx (nFforall 3 (#1 = #0 ==> #2 + #1 = #2 + #0))
-  | pa_compat_mult_l : PeanoAx (nFforall 3 (#2 = #1 ==> #2 * #0 = #1 * #0))
-  | pa_compat_mult_r : PeanoAx (nFforall 3 (#1 = #0 ==> #2 * #1 = #2 * #0))
-  | pa_plus_O : PeanoAx (nFforall 1 (Tzero + #0 = #0))
-  | pa_plus_S : PeanoAx (nFforall 2 (Tsucc #1 + #0 = Tsucc (#1 + #0)))
-  | pa_mult_O : PeanoAx (nFforall 1 (Tzero * #0 = Tzero))
-  | pa_mult_S : PeanoAx (nFforall 2 (Tsucc #1 * #0 = (#1 * #0) + #0))
-  | pa_inj : PeanoAx (nFforall 2 (Tsucc #1 = Tsucc #0 ==> #1 = #0))
-  | pa_discr : PeanoAx (nFforall 1 (~ Tzero = Tsucc #0))
-  | pa_ind : forall A n, cformula (S n) A ->
-    PeanoAx (nFforall n (
-      fsubst 0 Tzero A /\
-      Fforall (A ==> fsubst 0 (Tsucc #0) (flift 1 A 1)) ==> Fforall A
-    )).
-*)
-(*
-Inductive rule : context -> formula -> Prop :=
-  | Rax Γ A :                                In A Γ   ->  Γ:-A
-  (* QQ :     In : forall A : Type, A -> list A -> Prop *)
-  | Rfalse_e Γ :                            Γ:-Ffalse -> forall A, Γ:-A
-  | Rand_i Γ B C :                       Γ:-B -> Γ:-C -> Γ:-B/\C
-  | Rand_e1 Γ B C :                           Γ:-B/\C -> Γ:-B
-  | Rand_e2 Γ B C :                           Γ:-B/\C -> Γ:-C
-  | Ror_i1 Γ B C :                               Γ:-B -> Γ:-B\/C
-  | Ror_i2 Γ B C :                               Γ:-C -> Γ:-B\/C
-  | Ror_e Γ A B C : Γ:-B\/C -> (B::Γ):-A -> (C::Γ):-A -> Γ:-A
-  | Rimpl_i Γ B C :                         (B::Γ):-C -> Γ:-B==>C
-  | Rimpl_e Γ B C :                  Γ:-B==>C -> Γ:-B -> Γ:-C
-  | Rforall_i Γ B :                  (clift 1 Γ 0):-B -> Γ:-(Fforall B)
-  | Rforall_e Γ B t :                  Γ:-(Fforall B) -> Γ:-(fsubst 0 t B)
-  | Rexists_i Γ B t :               Γ:-(fsubst 0 t B) -> Γ:-(Fexists B)
-  | Rexists_e Γ A B :
-    Γ:-(Fexists B) -> (B::clift 1 Γ 0):-(flift 1 A 0) -> Γ:-A
-
-where "Γ :- A" := (rule Γ A).
-Definition cinterp v Γ := forall A, In A Γ -> finterp v A.
-*)
-(*
-Inductive term :=
-  | Tvar : nat -> term
-  | Tzero : term
-  | Tsucc : term -> term
-  | Tplus : term -> term -> term
-  | Tmult : term -> term -> term.
-Inductive formula :=
-  | Fequal : term -> term -> formula
-  | Ffalse : formula
-  | Fand : formula -> formula -> formula
-  | For : formula -> formula -> formula
-  | Fimplies : formula -> formula -> formula
-  | Fexists : formula -> formula
-  | Fforall : formula -> formula.
-Hint Extern 10 (Tvar _ = Tvar _) => f_equal.
-
-Definition cinterp v Γ := forall A, In A Γ -> finterp v A.
-*)
-Lemma soundness_rules : forall Γ A, Γ:-A -> (forall v, cinterp v Γ -> finterp v A).
-(*
-   QQ: Soient Γ un ens de Fformules et A une Fformule,
-       supposons que F formule est demontrable au sens de :-
-       alors pour toute valuation de variables si 
-*) 
+Lemma soundness_rules : forall Γ A, 
+      Γ:-A -> (forall v, cinterp v Γ -> finterp v A).
 Proof.
-  induction A; simpl.
-  -  
-
+  intros context. elim context; simpl.
+  - intros. revert H0. revert v.  elim H. 
+    + intros.
 
 Lemma soundness_axioms : forall A, PeanoAx A -> forall v, finterp v A.
 Proof.
-  (* TODO *)
+  induction A. 
+  - intros. elim H.
 Admitted.
 
 Theorem soundness : forall A, Thm A -> forall v, finterp v A.
 Proof.
-  (* TODO *)
-Admitted.
+  intros A Hyp v. unfold Thm in Hyp. destruct Hyp as (axiomes,Hyp).
+  destruct Hyp. 
+  apply (soundness_rules axiomes).
+  - assumption.
+  - unfold cinterp.
+    intros A0 H1.
+    apply soundness_axioms.
+    apply H. 
+    assumption.
+Qed.    
 
 Theorem coherence : ~Thm Ffalse.
 Proof.
-  (* TODO *)
-Admitted.
+  intro H.     (*supposons (Thm Ffalse), on a alors une preuve de False dans LI*)
+  change (finterp [] Ffalse).  (* parce que, par exemple, on peut demontrer (finterp [] Ffalse) *)
+  apply soundness.
+  assumption.
+Qed.
+
+  
+
+
+

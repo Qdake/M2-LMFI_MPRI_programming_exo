@@ -763,47 +763,9 @@ Definition cinterp v Γ := forall A, In A Γ -> finterp v A.
 Lemma soundness_rules : forall Γ A, 
       Γ:-A -> (forall v, cinterp v Γ -> finterp v A).
 Proof.
-  intros Γ0 A0 H. 
-  induction H.
-  - auto.
-  - intros. 
-    assert ( finterp v Ffalse ). exact (IHrule v H0).
-    destruct H1.
-  - intros. split; try (apply IHrule1 || apply IHrule2);auto.
-  - intros. 
-    assert ( finterp v (B /\ C)). exact (IHrule v H0).
-    destruct H1; assumption.
-  - intros. 
-    assert ( finterp v (B /\ C)). exact (IHrule v H0).
-    destruct H1; assumption.
-  - intros. simpl. left.
-    apply IHrule; assumption.
-  - intros. simpl. right.
-    apply IHrule; assumption.
-  - intros. 
-    assert ( finterp v (B \/ C)). exact (IHrule1 v H2).
-    destruct H3.
-    + apply IHrule2; unfold cinterp; intros A0 H4;
-      destruct H4.
-      ++ rewrite <- H4; assumption.
-      ++ auto.
-    + apply IHrule3; unfold cinterp; intros A0 H4;
-      destruct H4.
-      ++ rewrite <- H4; assumption.
-      ++ auto.
-  - intros.
-    simpl. intros H_B. apply IHrule.
-    unfold cinterp.
-    intros A0 H_A0.
-    destruct H_A0.
-    + rewrite <- H1; assumption.
-    + auto.
-  - intros. 
-    assert ( finterp v (B ==> C))  as H_B_implies_C . exact (IHrule1 v H1).
-    assert ( finterp v B ) as H_B. exact (IHrule2 v H1).
-    auto.
-  - intros.
-
+  intros context. elim context; simpl.
+  - intros. revert H0. revert v.  elim H. 
+    + intros.
 
 Lemma soundness_axioms : forall A, PeanoAx A -> forall v, finterp v A.
 Proof.
@@ -834,5 +796,5 @@ Qed.
 
   
 
-
+u
 

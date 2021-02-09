@@ -1,0 +1,118 @@
+    \documentclass{article}
+    
+    \setcounter{secnumdepth}{4}
+    \titleformat{\paragraph}
+    {\normalfont\normalsize\bfseries}{\theparagraph}{1em}{}
+    \titlespacing*{\paragraph}{0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
+    \usepackage{titlesec}
+    \usepackage{amsmath}
+    \usepackage{caption}
+    \usepackage{subcaption}
+    \usepackage{setspace}
+    \usepackage{graphicx}
+    %\usepackage{subfigure}
+    \usepackage[english]{babel}
+    \usepackage[utf8]{inputenc}
+    \usepackage[T1]{fontenc}
+    \usepackage[left=2cm,right=2cm,top=2cm,bottom=2cm]{geometry}
+    \usepackage[linesnumbered, lined, boxed, commentsnumbered]{algorithm2e}
+    \usepackage{xcolor}
+    \usepackage{verbatim}
+    \usepackage{float}
+    \usepackage{xcolor}
+    \usepackage{tcolorbox}
+    %hyperlinks
+    
+   \usepackage{color}   %May be necessary if you want to color links
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true, %set true if you want colored links
+    linktoc=all,     %set to all if you want both sections and subsections linked
+    linkcolor=blue,  %choose some color if you want links to stand out
+} 
+    
+    
+    %Includes "References" in the table of contents
+    \usepackage[nottoc]{tocbibind}
+    
+    %
+\begin{document}
+
+	% title
+	\title{L'étude de l'impact de partage des clauses dans un solver SAT parallèle}
+	% authors
+	\author{Qi QIU}
+	
+	
+	%\maketitle
+	
+    \begin{center}
+        \begin{LARGE}
+            \vspace{5\baselineskip}
+            \textsc{Rapport du stage:}\\
+            \textsc{L'étude de l'impact de partage des clauses dans un solveur SAT parallèle}\\
+        \end{LARGE}
+        
+        \vspace{7\baselineskip}
+        
+        \begin{large}
+            \vspace{1\baselineskip}
+            \vspace{1\baselineskip}
+            M2 Informatique - Spécialité ANDROIDE\\
+                        \vspace{1.25\baselineskip}
+                        Ann\'ee universitaire 2019-2020\\
+            \vspace{\baselineskip}
+            \includegraphics[scale=0.2]{logoSorbonne.png} 
+            \vspace{\baselineskip}
+%                        \vspace{1.25\baselineskip}
+            \\Sorbonne Universit\'e\\
+        \end{large}
+        
+        	\begin{center}
+		\vspace{5\baselineskip}
+		\textsc{Stagiaire : Qi QIU \ \ \  $N\textsuperscript{o}$ étudiant : 3503860}\\
+		\textsc{Encadrant : Jean-marie LANGIEZ}\\
+		\textsc{Encadrant technique: Antoine PETITET}
+		\vspace{5\baselineskip}\\
+		\textsc{Du 24 février au 28 Août 2020 chez}\\
+		\includegraphics[scale=0.5]{logoHuawei.jpg}
+	\end{center}
+        
+    \end{center}
+	
+
+	
+	\begin{comment}
+	\begin{flushleft}
+	\hfill Qi QIU\\
+	\end{flushleft}
+    	
+    	
+    \renewcommand{\contentsname}{\begin{LARGE}
+	\end{LARGE}}
+	\end{comment}
+    \thispagestyle{empty}
+        
+    \newpage
+    \thispagestyle{empty}
+
+    \newpage
+    \thispagestyle{empty}
+    Je tiens à remercier mes parents qui soutiennent mon aventure, les professeurs qui m'ont guidé et notamment monsieur Jean-Marie LAGNIEZ pour ses conseils face à la vie et à la recherche et monsieur Antoine PETITET pour son soutien technique pendant ce stage. 
+
+    \newpage
+    \tableofcontents
+    \thispagestyle{empty}
+    
+    \newpage
+\setcounter{page}{1}
+
+    
+
+    %section:introduction
+\section{Introduction}
+
+
+
+
+\end{document}
