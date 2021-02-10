@@ -226,14 +226,15 @@ Qed.
 Search "+" "succ".
 SearchPattern (_ * _ = _ * _).  (*!!!!!*)
 
-Lemma assert_exo : forall P, P.
+Lemma assert_exo : forall P:Prop, P -> P.
 Proof.
   assert (un_theorem := and_equiv).
   (* un_theorem est le proof-term. *)
-  assert (un_lemme_a_prouver : forall p, p). 
+  assert (un_lemme_a_prouver : forall P, P -> P). 
   (* il faut le prouver *)
-
-
+  intros p H. assumption.
+  intros p H. assumption.
+Qed.
 
 
 

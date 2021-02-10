@@ -436,6 +436,7 @@ Inductive rule : context -> formula -> Prop :=
                  (*QQ:   rule Γ (Fexists B) -> rule (B::clift 1 Γ 0) (flift 1 A 0) -> rule Γ A  *)
 where "Γ :- A" := (rule Γ A).
 
+Print rule_ind.
 (* Auxiliary connectives and admissible rules *)
 Definition Ftrue : formula := Ffalse ==> Ffalse.
 Definition Fnot : formula -> formula := fun x:formula => x ==> Ffalse.
@@ -759,12 +760,58 @@ Qed.
 Definition cinterp v Γ := forall A, In A Γ -> finterp v A.
 
 (* Soundess of deduction rules *)
+(*Lemma finterp_0 : forall A v0 v1,
+  finterp (v0 ++ v1 ++ v2) (flift (length v1) A (length v0)) <->
+  finterp (v0 ++ v2) A.
+
+
+Lemma finterp_0 : forall A v0 v1,
+  finterp (v0 ++ v1 ++ v2) (flift (length v1) A (length v0)) <->
+  finterp (v0 ++ v2) A.
+*)
+
+Lemma soundness_rules_aux_1emma_1 :
+  forall A Γ, In A (clift 1 Γ 0) -> exists B, In B Γ /\ flift 1 B 0 = A.
+Proof.
+  induction Γ.
+  - intros H. destruct H.
+  - intros H_A. 
+    destruct H_A.
+    + exists a. split;auto.
+    unfold In. auto.
+    + simpl. assert (H_exists := IHΓ H).
+      destruct H_exists as (x, Hyp).
+      exists x. split.
+      ++ right. apply Hyp.
+      ++ apply Hyp.
+Qed.
+
+
+(*Lemma soundness_rules_aux_1emma_2 :
+  forall v v1 Γ, cinterp v Γ -> cinterp (v++v1) Γ.
+Proof.
+    intros v v1 Γ H. revert v Γ H. induction v1; unfold cinterp;simpl;intros.
+  - rewrite app_nil_r. auto.
+  - assert (H1 : forall {A} (x:A) (l:list A), x::l = [x] ++ l);auto.
+    rewrite H1.
+    assert (H2 := finterp_1 A v [a] v1).
+    destruct H2.
+    apply (IHv1 (v++[a]) Γ).
+
+
+Lemma finterp_1 : forall A v0 v1 v2,
+  finterp (v0 ++ v1 ++ v2) (flift (length v1) A (length v0)) <->
+  finterp (v0 ++ v2) A.
+
+  *)
+
+
 
 Lemma soundness_rules : forall Γ A, 
       Γ:-A -> (forall v, cinterp v Γ -> finterp v A).
 Proof.
   intros Γ0 A0 H. 
-  induction H.
+  induction H. 
   - auto.
   - intros. 
     assert ( finterp v Ffalse ). exact (IHrule v H0).
@@ -802,7 +849,36 @@ Proof.
     assert ( finterp v (B ==> C))  as H_B_implies_C . exact (IHrule1 v H1).
     assert ( finterp v B ) as H_B. exact (IHrule2 v H1).
     auto.
-  - intros.
+  - intros. simpl. intros n. apply IHrule.
+    unfold cinterp in *.
+    intros A H_A.
+    assert (lemma_aux_1 := soundness_rules_aux_1emma_1 A Γ H_A).
+    destruct lemma_aux_1 as (A0,(H_B_in, H_B_A)).
+    assert (H_finterp_A0 := H0 A0 H_B_in).
+    rewrite <- H_B_A.
+    apply (finterp_1 A0 [] [n] v).
+    simpl. assumption.
+  - intros. simpl in IHrule.
+    assert (Lemma_2 := IHrule v H0).
+    assert (Lemma_1 := finterp_2 t B [] v).
+    simpl in Lemma_1.
+    rewrite Lemma_1.
+    apply Lemma_2.
+  - intros v H_cinterp.
+    assert (H_finterp_nv := IHrule v H_cinterp).
+    simpl.
+    assert (Lemma_1 := finterp_2 t B [] v).
+    simpl in Lemma_1.   
+    destruct Lemma_1.
+    assert (H2 := H0 H_finterp_nv).
+    exists (tinterp v t). assumption.
+  - 
+    
+
+
+
+
+
 
 
 Lemma soundness_axioms : forall A, PeanoAx A -> forall v, finterp v A.
