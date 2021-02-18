@@ -1115,7 +1115,15 @@ Proof.
       assert (H3 := tinterp_2 Tzero t0 [] v).
       simpl in H2, H3.
       rewrite <- H2, <- H3. assumption.
-    + assert (H2 := tinterp_2 (Tsucc # 0) [] v).
+    + assert (H4 := tinterp_1 t [S n] [0] v). simpl in H4.
+      assert (H2 := tinterp_2 (Tsucc # 0) t [] v).
+      assert (H3 := tinterp_2 (Tsucc # 0) t0 [] v).
+      simpl in H2, H3.
+      (*
+Lemma tinterp_1 : forall t v0 v1 v2,
+  tinterp (v0++v1++v2) (tlift (length v1) t (length v0)) =
+  tinterp (v0++v2) t.
+*)
 (*
 Lemma tinterp_2 : forall t' t v1 v2,
   tinterp (v1 ++ v2) (tsubst (length v1) t' t) =

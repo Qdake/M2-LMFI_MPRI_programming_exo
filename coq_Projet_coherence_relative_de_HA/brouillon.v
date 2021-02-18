@@ -98,37 +98,19 @@ Fixpoint tsubst x t' t :=
         var x by t'    =    *)
 Lemma tsubst_1 : forall t x t' n k, k <= x -> x <= k + n ->
   tsubst x t' (tlift (S n) t k) = tlift n t k.
-Proof.
-  induction t; intros; simpl; f_equal; auto.
-  repeat (break; simpl; auto).
-Qed.
 
 Lemma tsubst_2 : forall t x t' n k, k <= x ->
   tlift n (tsubst x t' t) k = tsubst (n + x) t' (tlift n t k).
-Proof.
-  induction t; intros; simpl; f_equal; auto.
-  repeat (break; simpl; auto).
-Qed.
 
 Hint Resolve tsubst_1 tsubst_2.
 
 Lemma tsubst_3 : forall t x t' n k,
   tlift n (tsubst x t' t) (x + k) =
   tsubst x (tlift n t' k) (tlift n t (x + S k)).
-Proof.
-  induction t; intros; simpl; f_equal; auto.
-  repeat (break; simpl; auto).
-  symmetry. auto.
-Qed.
 
 Lemma tsubst_4 : forall t x t' y u',
   tsubst (x + y) u' (tsubst x t' t) =
   tsubst x (tsubst y u' t') (tsubst (x + S y) u' t).
-Proof.
-  induction t; intros; simpl; try (f_equal; auto; fail).
-  repeat (break; simpl; auto);
-   symmetry; rewrite <- ?plus_n_Sm; auto.
-Qed.
 
 (* Terms where all variables are < n *)
 
@@ -225,15 +207,11 @@ Fixpoint flift n A k :=
 
 Lemma flift_1 : forall A n n' k k', k <= k' -> k' <= k + n ->
   flift n' (flift n A k) k' = flift (n' + n) A k.
-Proof.
-  induction A; intros; simpl; f_equal; auto.
-Qed.
+
 
 Lemma flift_2 : forall A n n' k k', k' <= k ->
   flift n' (flift n A k) k' = flift n (flift n' A k') (n' + k).
-Proof.
-  induction A; intros; simpl; f_equal; rewrite ?plus_n_Sm; auto.
-Qed.
+
 
 (* Formula substitution: replace variable x by (tlift x t' 0) in A *)
 
