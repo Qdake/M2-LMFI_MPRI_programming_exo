@@ -1101,21 +1101,114 @@ Proof.
                                           finterp ((n+1) :: v) A)).
 Admitted.
 
-Lemma soundness_pa_ind_new : forall v A,
+(*
+Lemma soundness_aux_interp_1 : forall t n v, tinterp (S (nth 0 v 0) :: v) t = tinterp (S n :: v) t.
+Proof.
+  induction t; simpl; auto.
+  induction n; simpl; auto. 
+  Print nth.
+
+
+*)
+
+Lemma aux_interp_1 : forall t n v, tinterp (n :: v) (tsubst 0 (Tsucc # 0) (tlift 1 t 1)) = tinterp (S n :: v) t.
+Proof. 
+  induction t; simpl; auto.
+  induction n; simpl;auto.
+Qed.
+
+Lemma aux_finterp_1 : forall A n v, finterp (n :: v) (fsubst 0 (Tsucc # 0) (flift 1 A 1)) <-> finterp (S n :: v) A.
+Proof.
+  induction A; induction n; simpl; auto.
+  - intros. split.
+    + intros. assert (H1 := aux_interp_1).
+      rewrite <- H1. rewrite <- H1. assumption.
+    + intros. assert (H1 := aux_interp_1).
+      rewrite H1. rewrite H1. assumption.
+  - intros. assert (H1 := aux_interp_1). 
+    split.
+    + intros. rewrite <- (H1 t (S n)). rewrite <- (H1 t0 (S n)). assumption.
+    + intros. rewrite (H1 t (S n)). rewrite (H1 t0 (S n)). assumption.
+  - intros. split;auto.
+  - split;intros.
+    + rewrite <- (IHA1 0). rewrite <- (IHA2 0). assumption.
+    + rewrite (IHA1 0). rewrite (IHA2 0). assumption.
+  - split; intros.
+    + rewrite <- (IHA1 (S n)). rewrite <- (IHA2 (S n)). assumption.
+    + rewrite (IHA1 (S n)). rewrite (IHA2 (S n)). assumption.
+  - split; intros.
+    + destruct H.
+      ++  left. rewrite <- IHA1. assumption.
+      ++  right. rewrite <- IHA2. assumption.
+    + destruct H.
+      ++  left. rewrite IHA1. assumption.
+      ++  right. rewrite IHA2. assumption.
+  - split; intros; destruct H.
+    +  left. rewrite <- IHA1. assumption.
+    +  right. rewrite <- IHA2. assumption.
+    +  left. rewrite IHA1. assumption.
+    +  right. rewrite IHA2. assumption.
+  - split; intros.
+    + rewrite <- IHA2. apply H. rewrite IHA1. assumption.
+    + apply IHA2. apply H. rewrite <- IHA1. assumption.
+  - split;intros. 
+    + rewrite <- IHA2. apply H. rewrite IHA1. assumption.
+    + apply IHA2. apply H. rewrite <- IHA1. assumption.
+  - split;intros.
+    + destruct H. exists x. admit.
+    + destruct H. exists x. admit.
+  - split;intros.
+    + destruct H. exists x. admit.
+    + destruct H. exists x. admit.
+  - split; intros.
+    + admit.
+    + admit.
+  - split;intros.
+    + admit.
+    + admit.
+Admitted.
+
+Lemma soundness_pa_ind_new : forall A v,
 finterp v
   (fsubst 0 Tzero A /\
    Fforall
      (A ==> fsubst 0 (Tsucc # 0) (flift 1 A 1)) ==>
    Fforall A).
-Proof.
-  induction A. (* induction sur A *)
-  - simpl. intros (H0,H1) n. 
+Proof. 
+  intros A. induction A. (* induction sur A *)
+  - intros v (H0,H1) n. simpl in *.
     induction n.  (* induction sur n *)
     + assert (H2 := tinterp_2 Tzero t [] v).
       assert (H3 := tinterp_2 Tzero t0 [] v).
       simpl in H2, H3.
       rewrite <- H2, <- H3. assumption.
-    + assert (H2 := tinterp_2 (Tsucc # 0) [] v).
+    + assert (H6 := (H1 n) IHn).
+      assert (H7 := aux_interp_1).
+      repeat rewrite <- H7.
+      assumption.
+  - intros v (H0,H1) n. simpl in *.
+    auto.
+  -   simpl in *. intros v (H0,H1) n. 
+    induction n.
+    + assert (H2 := finterp_2 Tzero A1 [] v). simpl in H2.
+      assert (H3 := finterp_2 Tzero A2 [] v). simpl in H3.
+      rewrite <- H2,<-H3. assumption.
+    + assert (H2 := aux_finterp_1).
+      rewrite <- H2. rewrite <- H2. apply H1. assumption.
+
+  - simpl in *. 
+    admit.
+  - simpl in *. intros H2. admit.
+  - admit.
+  - admit.
+
+Admitted.
+
+      (*
+Lemma tinterp_1 : forall t v0 v1 v2,
+  tinterp (v0++v1++v2) (tlift (length v1) t (length v0)) =
+  tinterp (v0++v2) t.
+*)
 (*
 Lemma tinterp_2 : forall t' t v1 v2,
   tinterp (v1 ++ v2) (tsubst (length v1) t' t) =
