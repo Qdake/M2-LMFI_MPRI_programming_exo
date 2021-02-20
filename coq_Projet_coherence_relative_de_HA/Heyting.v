@@ -1168,6 +1168,7 @@ Proof.
     + admit.
 Admitted.
 
+
 Lemma soundness_pa_ind_new : forall A v,
 finterp v
   (fsubst 0 Tzero A /\
@@ -1196,14 +1197,27 @@ Proof.
     + assert (H2 := aux_finterp_1).
       rewrite <- H2. rewrite <- H2. apply H1. assumption.
 
-  - simpl in *. 
+  - simpl in *; intros; destruct H. induction n.
+    +  
+      rewrite <- (finterp_2 Tzero A1 [] v).  rewrite <- (finterp_2 Tzero A2 [] v).
+      simpl. auto.
+    + rewrite <- aux_finterp_1. rewrite <- aux_finterp_1. 
+      apply H0. assumption.
+  - simpl in *; intros; destruct H. admit.
+  -  
+    simpl in *; intros; destruct H. induction n. 
+    + destruct H. exists x. 
+      assert (H1 := finterp_2 Tzero A [x] v). simpl in H1. rewrite <- H1. assumption.
+    + assert (H1 := H0 n IHn). destruct IHn. admit.
+  - simpl in *. intros. destruct H. 
     admit.
-  - simpl in *. intros H2. admit.
-  - admit.
-  - admit.
-
+finterp (x :: 0 :: v) A <-> finterp (x :: v) (fsubst 1 Tzero A)
 Admitted.
-
+(*
+Lemma finterp_1 : forall A v0 v1 v2,
+  finterp (v0 ++ v1 ++ v2) (flift (length v1) A (length v0)) <->
+  finterp (v0 ++ v2) A.
+*)
       (*
 Lemma tinterp_1 : forall t v0 v1 v2,
   tinterp (v0++v1++v2) (tlift (length v1) t (length v0)) =
