@@ -116,7 +116,9 @@ implementation 3
 *)
 
 
-
+(* !!!!! comme ici la variable "count_zeros" est un reference, 
+  il faut ajouter beaucoup de invariants dont le invariant qui precise la valeur initial 
+  de cette variable *)
 let no_3_consecutive_zeros_version_3 (a : array int) : bool
   ensures { result = True <-> no_3_consecutive_zeros a }
   =
@@ -124,19 +126,19 @@ let no_3_consecutive_zeros_version_3 (a : array int) : bool
   try
     for i= 0 to a.length - 1 do
       invariant { no_3_consecutive_zeros_sub a i }
-      invariant { 0 <= i <= a.length }
       invariant { 0 <= count_zeros <= 2 }
+      invariant { i = 0 -> count_zeros = 0 }  
+      invariant { i = 1 -> count_zeros <= 1 }
+      invariant { (i = 1 /\ count_zeros = 1) -> a[0] = 0 }
       invariant { (i >= 1 /\ count_zeros = 0) -> (a[i-1] <> 0) }
       invariant { (i >= 2 /\ count_zeros = 1) -> (a[i-1] = 0 /\ a[i-2] <> 0) }
-      invariant { (i >= 2 /\ count_zeros = 2) -> (a[i-2] = 0 /\ a[i-1] = 0) }
-(*      invariant { count_zeros = 0 -> i = 0 \/ a[i-1] <> 0 }
-      invariant { count_zeros = 1 -> i = 1 \/ (a[i-1] = 0 /\ a[i-2] <> 0 ) }
-      invariant { count_zeros = 2 -> i = 2 \/ (a[i-1] = 0 /\ a[i-2] = 0 /\ a[i-3] <> 0 ) } *)
+      invariant { i <= 1 \/ (count_zeros = 2 -> (a[i-2] = a[i-1] = 0)) }
       if a[i] = 0 then
-        if count_zeros = 2 then raise TripleFound 
+        if count_zeros = 2 then ( assert { i <= 1 \/ (a[i]=a[i-1]=a[i-2]=0) }; raise TripleFound )
         else count_zeros <- count_zeros + 1
       else count_zeros <- 0;
-(*      assert { not (a[i] = a[i-1] = a[i-2] = 0) }*)
+      assert { i <= 1 \/ (a[i] <> 0 \/ a[i-1] <> 0 \/ a[i-2] <> 0) };
+      assert { i <= 1 \/ not (a[i] = a[i-1] = a[i-2] = 0) }
     done;
     True
   with TripleFound -> False
@@ -247,7 +249,7 @@ let same_number_of_zeros_and_ones (a:array int) : bool
 predicate identical_sub_arrays (a:array int) (o1 o2 l:int)
 (** [identical_sub_arrays a o1 o2 l] is true whenever the sub-arrays
     [a[o1..o1+l-1]] and [a[o2..o2+l-1]] are point-wise identical *)
-= forall k:int. 0 <= k < l -> a[o1+l] = a[o2+l]
+= forall k:int. 0 <= k <= (l-1) -> a[o1+k] = a[o2+k]
 (*
 = forall k:int. __FORMULA_TO_BE_COMPLETED__
 *)
@@ -259,6 +261,7 @@ predicate identical_sub_arrays (a:array int) (o1 o2 l:int)
 
 exception DiffFound
 
+(*qq utiliser alt ergo avec un peu plus de temps *)
 let check_identical_sub_arrays (a:array int) (o1 o2 l:int) : bool
   requires { 0 <= o1 < a.length }
   requires { 0 <= o2 < a.length }
@@ -267,9 +270,10 @@ let check_identical_sub_arrays (a:array int) (o1 o2 l:int) : bool
   requires { 0 <= o2 + (l - 1) < a.length } 
   ensures { result = True <-> identical_sub_arrays a o1 o2 l }
 = try
-    for k=0 to l-1 do
+    for k= 0 to l-1 do
       invariant { identical_sub_arrays a o1 o2 k }
-      if a[o1+k] <> a[o2+k] then raise DiffFound
+      if a[o1+k] <> a[o2+k] then raise DiffFound;
+      assert { a[o1+k] = a[o2+k] }
     done;
     True
   with DiffFound -> false
