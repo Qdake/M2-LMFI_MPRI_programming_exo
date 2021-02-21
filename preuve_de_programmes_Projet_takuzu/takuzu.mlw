@@ -577,10 +577,37 @@ predicate identical_chunks (g:takuzu_grid) (s1 s2:int) (incr:int) (l:int)
 (** `identical_chunks g s1 s2 i` is true whenever the chunks `(s1,i)`
     and `(s2,i)`, in their first `l` elements, have no empty cells and
     are pointwise identical *)
+= forall k. 0 <= k < l -> (
+                           (acc g s1 incr k) = (acc g s2 incr k) /\
+                           (acc g s1 incr k) <> Empty
+                           )
+  
+     
+(*
 = forall k. 0 <= k < l ->
     __FORMULA_TO_BE_COMPLETED__
+*)
 
 exception DiffFound
+
+let check_identical_chunks g start1 start2 incr : bool
+  requires { g.length = 64 }
+  requires { valid_chunk start1 incr /\ valid_chunk start2 incr }
+  ensures { result = True <-> identical_chunks g start1 start2 incr 8 }
+= try
+    for i=0 to 7 do
+      invariant { identical_chunks g start1 start2 incr i }
+      match acc g start1 incr i, acc g start2 incr i with
+      | Zero,Zero -> ()
+      | One,One -> ()
+      | _ -> raise DiffFound
+      end
+    done;
+    True
+  with DiffFound -> False
+  end
+  
+(*
 
 let check_identical_chunks g start1 start2 incr : bool
   requires { __FORMULA_TO_BE_COMPLETED__ }
@@ -597,6 +624,7 @@ let check_identical_chunks g start1 start2 incr : bool
     True
   with DiffFound -> False
   end
+*)
 
 
 (** {QUESTION 15} *)
@@ -604,6 +632,25 @@ let check_identical_chunks g start1 start2 incr : bool
 predicate identical_columns (g:takuzu_grid) (s1 s2:int) =
   identical_chunks g s1 s2 8 8
 
+let check_rule_3_for_column (g:takuzu_grid) (start:int) : unit
+  requires { g.length = 64 }  (* qq : it's a grid *)
+  requires { forall k:int. 0 <= k < 64 -> g[k] <> Empty } (* qq : all cells non-empty *)
+  requires { 0 <= start <= 7 }    
+  ensures { forall k. 0 <= k < 8 /\ k <> start -> 
+                                                  not (identical_columns g start k) }
+  raises { Invalid -> true }
+=
+  for i=0 to 7 do
+    invariant { forall k. 0 <= k < i /\ k <> start -> 
+                                                      not (identical_columns g start k) }
+      if i <> start then
+        match check_identical_chunks g start i 8 with 
+        |True -> raise Invalid;
+        |False -> ()
+        end
+  done
+  
+(*
 let check_rule_3_for_column (g:takuzu_grid) (start:int) : unit
   requires { __FORMULA_TO_BE_COMPLETED__ }
   ensures { forall k. 0 <= k < 8 /\ k <> start ->
@@ -614,16 +661,38 @@ let check_rule_3_for_column (g:takuzu_grid) (start:int) : unit
     invariant { __FORMULA_TO_BE_COMPLETED__ }
       (* CODE TO BE COMPLETED *)raise Invalid
   done
+*)  
 
 predicate identical_rows (g:takuzu_grid) (s1 s2:int) =
   identical_chunks g s1 s2 1 8
 
+let check_rule_3_for_row (g:takuzu_grid) (start:int) : unit
+  requires { g.length = 64 }  (* qq : it's a grid *)
+  requires { forall k:int. 0 <= k < 64 -> g[k] <> Empty } (* qq : all cells non-empty *)
+  requires { 0 <= start < 64 /\ mod start 8 = 0 }    
+  ensures { forall k. 0 <= k < 8 /\ 8*k <> start ->
+               not (identical_rows g start (8*k)) }
+  raises { Invalid -> true }
+= 
+  for i=0 to 63 do
+      invariant { forall k. 0 <= k < i /\ (mod k 8 = 0) /\ k <> start -> 
+                                                        not (identical_rows g start k) }
+      if mod i 8 = 0 then
+        if (i <> start) then
+          match check_identical_chunks g start i 1 with 
+          |True -> raise Invalid;
+          |False -> ()
+          end
+  done
+
+(*
 let check_rule_3_for_row (g:takuzu_grid) (start:int) : unit
   requires { __FORMULA_TO_BE_COMPLETED__ }
   ensures { forall k. 0 <= k < 8 /\ 8*k <> start ->
                not (identical_rows g start (8*k)) }
   raises { Invalid -> true }
 = (* CODE TO BE COMPLETED *)raise Invalid
+*)
 
 
 
