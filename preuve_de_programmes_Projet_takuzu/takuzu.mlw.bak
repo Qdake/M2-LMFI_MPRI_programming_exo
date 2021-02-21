@@ -678,11 +678,11 @@ let check_rule_3_for_row (g:takuzu_grid) (start:int) : unit
       invariant { forall k. 0 <= k < i /\ (mod k 8 = 0) /\ k <> start -> 
                                                         not (identical_rows g start k) }
       if mod i 8 = 0 then
-      if (i <> start) then
-        match check_identical_chunks g start i 1 with 
-        |True -> raise Invalid;
-        |False -> ()
-        end
+        if (i <> start) then
+          match check_identical_chunks g start i 1 with 
+          |True -> raise Invalid;
+          |False -> ()
+          end
   done
 
 (*
@@ -706,21 +706,31 @@ predicate rule_1_for_cell (g:takuzu_grid) (n:int) =
     satisfied for the row and the column of the cell number `n` *)
   let cs = column_start_index n in
   let rs = row_start_index n in
-  __FORMULA_TO_BE_COMPLETED__
+  rule_1_for_chunk g cs 8 /\ rule_1_for_chunk g rs 1 
 
 predicate rule_2_for_cell (g:takuzu_grid) (n:int) =
 (** `rule_2_for_cell g n` is true whenever the second Takuzu rule is
     satisfied for the row and the column of the cell number `n` *)
   let cs = column_start_index n in
   let rs = row_start_index n in
-  __FORMULA_TO_BE_COMPLETED__
+  rule_2_for_chunk g cs 8 /\ rule_2_for_chunk g rs 1 
 
+(*
 predicate rule_3_for_cell (g:takuzu_grid) (n:int) =
 (** `rule_3_for_cell g n` is true whenever the third Takuzu rule is
     satisfied for the row and the column of the cell number `n` *)
   let cs = column_start_index n in
   let rs = row_start_index n in
   forall i. 0 <= i < 8 -> __FORMULA_TO_BE_COMPLETED__
+*)
+predicate rule_3_for_cell (g:takuzu_grid) (n:int) =
+(** `rule_3_for_cell g n` is true whenever the third Takuzu rule is
+    satisfied for the row and the column of the cell number `n` *)
+  let cs = column_start_index n in
+  let rs = row_start_index n in
+  forall i. 0 <= i < 8 -> 
+        ((i <> cs -> not identical_columns g cs i) /\
+         (8*i <> rs -> not (identical_rows g start (8*i))))
 
 predicate valid_for_cell (g:takuzu_grid) (i:int) =
 (** `valid_for_cell g n` is true whenever cell number `n` satisfy the
@@ -735,11 +745,29 @@ predicate valid_up_to (g:takuzu_grid) (n:int)
 
 (** {4 QUESTION 17} *)
 
-
+(*
 let check_at_cell (g:takuzu_grid) (n:int) : unit
 (** `check_at_cell g n` returns normally if the grid `g` satisfy the
     rules for cell `n`. *)
   requires { __FORMULA_TO_BE_COMPLETED__ }
+  ensures { valid_for_cell g n }
+  raises { Invalid -> true }
+=
+  let col_start = column_start_index n in
+  let row_start = row_start_index n in
+  check_rule_1_for_chunk g col_start 8;
+  check_rule_1_for_chunk g row_start 1;
+  check_rule_2_for_chunk g col_start 8;
+  check_rule_2_for_chunk g row_start 1;
+  check_rule_3_for_column g col_start;
+  check_rule_3_for_row g row_start
+*)
+let check_at_cell (g:takuzu_grid) (n:int) : unit
+(** `check_at_cell g n` returns normally if the grid `g` satisfy the
+    rules for cell `n`. *)
+  requires { g.length = 64 }
+  requires { forall k:int. 0 <= k < 64 -> g[k] <> Empty }
+  requires { 0 <= n < 64 }
   ensures { valid_for_cell g n }
   raises { Invalid -> true }
 =

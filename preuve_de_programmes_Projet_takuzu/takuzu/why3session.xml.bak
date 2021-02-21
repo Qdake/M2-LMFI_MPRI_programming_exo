@@ -588,42 +588,77 @@
  </goal>
  <goal name="check_rule_3_for_row&#39;vc" expl="VC for check_rule_3_for_row" proved="true">
  <proof prover="0"><result status="valid" time="0.12"/></proof>
+ </goal>
+ <goal name="check_at_cell&#39;vc" expl="VC for check_at_cell" proved="true">
+ <proof prover="0"><result status="timeout" time="1.00"/></proof>
+ <proof prover="1"><result status="valid" time="0.04"/></proof>
  <transf name="split_vc" >
-  <goal name="check_rule_3_for_row&#39;vc.0" expl="loop invariant init">
-  <proof prover="0" obsolete="true"><result status="valid" time="0.04"/></proof>
+  <goal name="check_at_cell&#39;vc.0" expl="precondition">
+  <proof prover="0" obsolete="true"><result status="valid" time="0.03"/></proof>
   </goal>
-  <goal name="check_rule_3_for_row&#39;vc.1" expl="precondition">
-  </goal>
-  <goal name="check_rule_3_for_row&#39;vc.2" expl="precondition">
-  <proof prover="0" obsolete="true"><result status="valid" time="0.04"/></proof>
-  </goal>
-  <goal name="check_rule_3_for_row&#39;vc.3" expl="precondition">
+  <goal name="check_at_cell&#39;vc.1" expl="precondition">
   <proof prover="0" obsolete="true"><result status="valid" time="0.09"/></proof>
-  <proof prover="1" obsolete="true"><result status="timeout" time="1.00"/></proof>
   </goal>
-  <goal name="check_rule_3_for_row&#39;vc.4" expl="loop invariant preservation">
-  <proof prover="0" obsolete="true"><result status="timeout" time="1.00"/></proof>
-  <proof prover="1" obsolete="true"><result status="timeout" time="1.00"/></proof>
-  <proof prover="3" obsolete="true"><result status="timeout" time="60.00"/></proof>
+  <goal name="check_at_cell&#39;vc.2" expl="precondition">
+  <proof prover="0" obsolete="true"><result status="valid" time="0.05"/></proof>
   </goal>
-  <goal name="check_rule_3_for_row&#39;vc.5" expl="loop invariant preservation">
-  <proof prover="0" obsolete="true"><result status="timeout" time="1.00"/></proof>
-  <proof prover="1" obsolete="true"><result status="timeout" time="1.00"/></proof>
-  <proof prover="3" obsolete="true"><result status="timeout" time="60.00"/></proof>
+  <goal name="check_at_cell&#39;vc.3" expl="precondition">
+  <proof prover="0" obsolete="true"><result status="valid" time="0.13"/></proof>
   </goal>
-  <goal name="check_rule_3_for_row&#39;vc.6" expl="loop invariant preservation">
-  </goal>
-  <goal name="check_rule_3_for_row&#39;vc.7" expl="postcondition">
+  <goal name="check_at_cell&#39;vc.4" expl="precondition">
   <proof prover="0" obsolete="true"><result status="valid" time="0.04"/></proof>
   </goal>
-  <goal name="check_rule_3_for_row&#39;vc.8" expl="postcondition">
+  <goal name="check_at_cell&#39;vc.5" expl="precondition">
+  <proof prover="0" obsolete="true"><result status="valid" time="0.09"/></proof>
+  </goal>
+  <goal name="check_at_cell&#39;vc.6" expl="precondition">
+  <proof prover="0" obsolete="true"><result status="valid" time="0.05"/></proof>
+  </goal>
+  <goal name="check_at_cell&#39;vc.7" expl="precondition">
+  <proof prover="0" obsolete="true"><result status="valid" time="0.13"/></proof>
+  </goal>
+  <goal name="check_at_cell&#39;vc.8" expl="precondition">
+  <proof prover="0" obsolete="true"><result status="valid" time="0.05"/></proof>
+  </goal>
+  <goal name="check_at_cell&#39;vc.9" expl="precondition">
+  <proof prover="0" obsolete="true"><result status="valid" time="0.10"/></proof>
+  </goal>
+  <goal name="check_at_cell&#39;vc.10" expl="precondition">
+  <proof prover="0" obsolete="true"><result status="valid" time="0.09"/></proof>
+  </goal>
+  <goal name="check_at_cell&#39;vc.11" expl="precondition">
+  <proof prover="0" obsolete="true"><result status="valid" time="0.05"/></proof>
+  </goal>
+  <goal name="check_at_cell&#39;vc.12" expl="precondition">
+  <proof prover="0" obsolete="true"><result status="valid" time="0.10"/></proof>
+  </goal>
+  <goal name="check_at_cell&#39;vc.13" expl="precondition">
+  <proof prover="0" obsolete="true"><result status="valid" time="0.11"/></proof>
+  </goal>
+  <goal name="check_at_cell&#39;vc.14" expl="postcondition">
   <proof prover="0" obsolete="true"><result status="timeout" time="1.00"/></proof>
   <proof prover="1" obsolete="true"><result status="timeout" time="1.00"/></proof>
   <proof prover="3" obsolete="true"><result status="timeout" time="60.00"/></proof>
+  </goal>
+  <goal name="check_at_cell&#39;vc.15" expl="exceptional postcondition">
+  <proof prover="0" obsolete="true"><result status="valid" time="0.05"/></proof>
+  </goal>
+  <goal name="check_at_cell&#39;vc.16" expl="exceptional postcondition">
+  <proof prover="0" obsolete="true"><result status="valid" time="0.05"/></proof>
+  </goal>
+  <goal name="check_at_cell&#39;vc.17" expl="exceptional postcondition">
+  <proof prover="0" obsolete="true"><result status="valid" time="0.04"/></proof>
+  </goal>
+  <goal name="check_at_cell&#39;vc.18" expl="exceptional postcondition">
+  <proof prover="0" obsolete="true"><result status="valid" time="0.04"/></proof>
+  </goal>
+  <goal name="check_at_cell&#39;vc.19" expl="exceptional postcondition">
+  <proof prover="0" obsolete="true"><result status="valid" time="0.03"/></proof>
+  </goal>
+  <goal name="check_at_cell&#39;vc.20" expl="exceptional postcondition">
+  <proof prover="0" obsolete="true"><result status="valid" time="0.05"/></proof>
   </goal>
  </transf>
- </goal>
- <goal name="check_at_cell&#39;vc" expl="VC for check_at_cell">
  </goal>
  <goal name="check_cell_change&#39;vc" expl="VC for check_cell_change">
  </goal>
