@@ -458,9 +458,82 @@
   </goal>
  </transf>
  </goal>
- <goal name="count_number_of&#39;vc" expl="VC for count_number_of">
+ <goal name="num_occ&#39;vc" expl="VC for num_occ" proved="true">
+ <proof prover="0"><result status="valid" time="0.05"/></proof>
+ <proof prover="1" obsolete="true"><result status="unknown" time="0.22"/></proof>
+ <transf name="split_vc" proved="true" >
+  <goal name="num_occ&#39;vc.0" expl="precondition" proved="true">
+  <proof prover="0"><result status="valid" time="0.02"/></proof>
+  </goal>
+  <goal name="num_occ&#39;vc.1" expl="precondition" proved="true">
+  <proof prover="0"><result status="valid" time="0.03"/></proof>
+  </goal>
+  <goal name="num_occ&#39;vc.2" expl="precondition" proved="true">
+  <proof prover="0"><result status="valid" time="0.03"/></proof>
+  <proof prover="1" obsolete="true"><result status="timeout" time="1.00"/></proof>
+  </goal>
+  <goal name="num_occ&#39;vc.3" expl="variant decrease" proved="true">
+  <proof prover="0"><result status="valid" time="0.03"/></proof>
+  </goal>
+  <goal name="num_occ&#39;vc.4" expl="precondition" proved="true">
+  <proof prover="0"><result status="valid" time="0.04"/></proof>
+  </goal>
+  <goal name="num_occ&#39;vc.5" expl="precondition" proved="true">
+  <proof prover="0"><result status="valid" time="0.03"/></proof>
+  </goal>
+  <goal name="num_occ&#39;vc.6" expl="precondition" proved="true">
+  <proof prover="0"><result status="valid" time="0.03"/></proof>
+  </goal>
+ </transf>
  </goal>
- <goal name="check_rule_2_for_chunk&#39;vc" expl="VC for check_rule_2_for_chunk">
+ <goal name="count_number_of&#39;vc" expl="VC for count_number_of" proved="true">
+ <proof prover="0"><result status="valid" time="0.05"/></proof>
+ </goal>
+ <goal name="check_rule_2_for_chunk&#39;vc" expl="VC for check_rule_2_for_chunk" proved="true">
+ <proof prover="1" obsolete="true"><result status="timeout" time="1.00"/></proof>
+ <transf name="split_vc" proved="true" >
+  <goal name="check_rule_2_for_chunk&#39;vc.0" expl="precondition" proved="true">
+  <proof prover="0"><result status="valid" time="0.03"/></proof>
+  </goal>
+  <goal name="check_rule_2_for_chunk&#39;vc.1" expl="precondition" proved="true">
+  <proof prover="0"><result status="valid" time="0.03"/></proof>
+  </goal>
+  <goal name="check_rule_2_for_chunk&#39;vc.2" expl="precondition" proved="true">
+  <proof prover="0"><result status="valid" time="0.03"/></proof>
+  </goal>
+  <goal name="check_rule_2_for_chunk&#39;vc.3" expl="precondition" proved="true">
+  <proof prover="0"><result status="valid" time="0.03"/></proof>
+  </goal>
+  <goal name="check_rule_2_for_chunk&#39;vc.4" expl="exceptional postcondition" proved="true">
+  <proof prover="0"><result status="valid" time="0.02"/></proof>
+  </goal>
+  <goal name="check_rule_2_for_chunk&#39;vc.5" expl="precondition" proved="true">
+  <proof prover="0"><result status="valid" time="0.03"/></proof>
+  </goal>
+  <goal name="check_rule_2_for_chunk&#39;vc.6" expl="precondition" proved="true">
+  <proof prover="0"><result status="valid" time="0.03"/></proof>
+  </goal>
+  <goal name="check_rule_2_for_chunk&#39;vc.7" expl="precondition" proved="true">
+  <proof prover="0"><result status="valid" time="0.03"/></proof>
+  </goal>
+  <goal name="check_rule_2_for_chunk&#39;vc.8" expl="precondition" proved="true">
+  <proof prover="0"><result status="valid" time="0.03"/></proof>
+  </goal>
+  <goal name="check_rule_2_for_chunk&#39;vc.9" expl="exceptional postcondition" proved="true">
+  <proof prover="0"><result status="valid" time="0.03"/></proof>
+  </goal>
+  <goal name="check_rule_2_for_chunk&#39;vc.10" expl="assertion" proved="true">
+  <proof prover="0"><result status="valid" time="0.02"/></proof>
+  <proof prover="1" obsolete="true"><result status="timeout" time="1.00"/></proof>
+  </goal>
+  <goal name="check_rule_2_for_chunk&#39;vc.11" expl="assertion" proved="true">
+  <proof prover="0"><result status="valid" time="0.04"/></proof>
+  </goal>
+  <goal name="check_rule_2_for_chunk&#39;vc.12" expl="postcondition" proved="true">
+  <proof prover="0"><result status="valid" time="0.41"/></proof>
+  <proof prover="1" obsolete="true"><result status="timeout" time="1.00"/></proof>
+  </goal>
+ </transf>
  </goal>
  <goal name="check_identical_chunks&#39;vc" expl="VC for check_identical_chunks">
  </goal>

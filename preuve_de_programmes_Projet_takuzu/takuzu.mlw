@@ -483,9 +483,31 @@ let check_rule_1_for_chunk (g:takuzu_grid) start incr
 let rec function num_occ (e:elem) (g:takuzu_grid) (start incr:int) (l:int)
   (** `num_occ e g start incr l` denotes the number of occurrences of `e` in the
       `l` first elements of the chunk `(start,incr)` of the grid `g` *)
-  requires { __FORMULA_TO_BE_COMPLETED__ }
-  variant { __VARIANT_TO_BE_COMPLETED__ }
-= (* CODE TO BE COMPLETED *) 0 
+  requires { g.length = 64}
+  requires { valid_chunk start incr }
+  requires { 0 <= l <= 8 }
+  variant { l }
+= if l = 0 then 0
+           else match eq (acc g start incr (l-1)) e with
+                |True -> 1 + (num_occ e g start incr (l-1))
+                |False -> num_occ e g start incr (l-1)
+                end                  
+
+let count_number_of (e:elem) (g:takuzu_grid) start incr : int
+  (** `count_number_of e g start incr` returns the number of occurrences of `e` in the
+      chunk `(start,incr)` of the grid `g` *)
+  requires { g.length = 64}
+  requires { valid_chunk start incr }
+  ensures { result = num_occ e g start incr 8 }
+  =
+  let ref n = 0 in
+  for i=0 to 7 do
+    invariant { n = num_occ e g start incr i }
+    if eq (acc g start incr i) e then n <- n+1
+  done;
+  n
+  
+(*
 
 let count_number_of (e:elem) (g:takuzu_grid) start incr : int
   (** `count_number_of e g start incr` returns the number of occurrences of `e` in the
@@ -499,15 +521,37 @@ let count_number_of (e:elem) (g:takuzu_grid) start incr : int
     if eq (acc g start incr i) e then n <- n+1
   done;
   n
+*)
 
 (** {QUESTION 13} *)
 
 predicate rule_2_for_chunk (g:takuzu_grid) (start incr:int) =
   (** `rule_2_for_chunk g s i` is true when rule 2 is not violated in chunk
       `(s,i)` of grid `g` *)
+  num_occ Zero g start incr 8 <= 4 /\
+  num_occ Zero g start incr 8 = num_occ One g start incr 8
+
+(*
+predicate rule_2_for_chunk (g:takuzu_grid) (start incr:int) =
+  (** `rule_2_for_chunk g s i` is true when rule 2 is not violated in chunk
+      `(s,i)` of grid `g` *)
   num_occ Zero g start incr 8 <= __TERM_TO_BE_COMPLETED__ /\
   __FORMULA_TO_BE_COMPLETED__
+*)
 
+let check_rule_2_for_chunk (g:takuzu_grid) start incr : unit
+  requires { g.length = 64 }
+  requires { valid_chunk start incr }
+  ensures { rule_2_for_chunk g start incr }
+  raises { Invalid -> true }
+  =
+  if count_number_of Zero g start incr > count_number_of One g start incr
+  then raise Invalid;
+  if count_number_of Zero g start incr < count_number_of One g start incr
+  then raise Invalid;
+  assert {num_occ Zero g start incr 8 <= num_occ One g start incr 8};
+  assert {num_occ Zero g start incr 8 >= num_occ One g start incr 8};  
+(*
 let check_rule_2_for_chunk (g:takuzu_grid) start incr : unit
   requires { g.length = 64 }
   requires { valid_chunk start incr }
@@ -516,6 +560,7 @@ let check_rule_2_for_chunk (g:takuzu_grid) start incr : unit
   =
   if count_number_of Zero g start incr > __EXPRESSION_TO_BE_COMPLETED__ then raise Invalid;
   __CODE_TO_BE_COMPLETED__
+*)
 
 
 
