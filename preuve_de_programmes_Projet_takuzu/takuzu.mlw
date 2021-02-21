@@ -783,7 +783,7 @@ let check_at_cell (g:takuzu_grid) (n:int) : unit
 
 (** {4 QUESTIONS 18, 19 AND 20} *)
 
-
+(*  Question 18  Question 18  Question 18  Question 18  Question 18  Question 18  
 
 let check_cell_change (g:takuzu_grid) (n:int) (e:elem) : unit
 (** `check_cell_change g n e` takes a grid `g` that satisfies the
@@ -793,19 +793,61 @@ let check_cell_change (g:takuzu_grid) (n:int) (e:elem) : unit
     any check fails. It should be used incrementally, as it assumes
     that the rules are already satisfied for cell whose number is
     strictly smaller than `n`. *)
-  requires { __FORMULA_TO_BE_COMPLETED__ }
+  requires { g.length = 64 }
+  requires { forall k:int. 0 <= k < g.length -> g[k] <> Empty }
+  requires { e <> Empty }
+  requires { 0 <= n < 64 }
+  requires { forall k:int. 0 <= k < 64 /\ k <> n -> g[n<-Empty][k] = g[k] }
   requires { valid_up_to (g[n<-Empty]) n }
   writes { g }
   ensures { valid_up_to g (n+1) }
   raises { Invalid -> true }
 =
   g[n] <- e;
+
+ (* (* qq *) assert { not g[n] = Empty }; *)
   assert { valid_up_to g[n<-Empty] n };
   check_at_cell g n
+*) 
 
+lemma check_cell_change_aux_1 : forall g:takuzu_grid,k n:int, e:elem. 
+      g[n<-e][n<-Empty] = g[n<-Empty] 
+(*qq lemma check_cell_change_aux_1 permet de verifier l'assertion en question. il dit 
+    tout simplement que g[n<-e][n<-Empty] = g[n<-Empty]. Il est evident que ce lemme est vrai *)
+    
 
+let check_cell_change (g:takuzu_grid) (n:int) (e:elem) : unit
+(** `check_cell_change g n e` takes a grid `g` that satisfies the
+    rules up to cell `n` (not included).  it sets cell `n` to the
+    given value `e` and checks if the rules are still satisfied for
+    cell `n` and returns normally. It raises exception `Invalid` if
+    any check fails. It should be used incrementally, as it assumes
+    that the rules are already satisfied for cell whose number is
+    strictly smaller than `n`. *)
+  requires { g.length = 64 }
+  requires { forall k:int. 0 <= k < g.length -> g[k] <> Empty }
+  requires { e <> Empty }
+  requires { 0 <= n < 64 }
+  requires { forall k:int. 0 <= k < 64 /\ k <> n -> g[n<-Empty][k] = g[k] }
+  requires { valid_up_to (g[n<-Empty]) n }
+  writes { g }
+  ensures { valid_up_to g (n+1) }
+  raises { Invalid -> true }
+=
+  g[n] <- e;
 
+ (* (* qq *) assert { not g[n] = Empty }; *)
+  assert { valid_up_to g[n<-Empty] n };
+  check_at_cell g n;
+  (*qq   ensures { valid_for_cell g n }*) assert { valid_for_cell g n };
+   (*qq*) assert { forall i. 0 <= i < n -> valid_for_cell g i };
 
+(*qq 
+predicate valid_up_to (g:takuzu_grid) (n:int)
+(** `valid_up_to g n` is true whenever all cells with number smaller
+    than `n` satisfy the Takuzu rules *)
+= forall i. 0 <= i < n -> valid_for_cell g i
+*)
 
 
 (** {3 The main algorithm} *)
@@ -830,6 +872,38 @@ predicate extends (g1:takuzu_grid) (g2:takuzu_grid)
 exception SolutionFound
 
 
+let rec solve_aux (g:takuzu_grid) (n:int) : unit
+  requires { g.length = 64 }
+  requires { 0 <= n <= 64 }
+  requires { full_up_to g n }
+  requires { valid_up_to g n }
+  writes { g }
+  variant { 64 - n }
+  ensures { __FORMULA_TO_BE_COMPLETED__ }
+  raises { SolutionFound -> extends (old g) g /\ full_up_to g 64 /\ valid_up_to g 64 }
+=
+  if n=64 then raise SolutionFound;
+  match g[n] with
+  | Zero | One ->
+    try
+      check_at_cell g n; solve_aux g (n+1)
+    with Invalid -> ()
+    end
+  | Empty ->
+    try
+      check_cell_change g n Zero;
+      solve_aux g (n+1)
+    with Invalid -> ()
+    end;
+    try
+      check_cell_change g n One;
+      solve_aux g (n+1)
+    with Invalid -> ()
+    end;
+    g[n] <- Empty
+  end
+  
+(*
 let rec solve_aux (g:takuzu_grid) (n:int) : unit
   requires { __FORMULA_TO_BE_COMPLETED__ }
   requires { full_up_to g n }
@@ -859,6 +933,7 @@ let rec solve_aux (g:takuzu_grid) (n:int) : unit
     end;
     g[n] <- Empty
   end
+*)
 
 
 exception NoSolution
