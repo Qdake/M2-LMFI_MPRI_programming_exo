@@ -4,7 +4,7 @@
 <why3session shape_version="6">
 <prover id="0" name="CVC4" version="1.6" timelimit="1" steplimit="0" memlimit="1000"/>
 <prover id="1" name="Z3" version="4.8.6" timelimit="1" steplimit="0" memlimit="1000"/>
-<prover id="3" name="Alt-Ergo" version="2.0.0" timelimit="20" steplimit="0" memlimit="1000"/>
+<prover id="3" name="Alt-Ergo" version="2.0.0" timelimit="60" steplimit="0" memlimit="1000"/>
 <prover id="4" name="Spass" version="3.7" timelimit="60" steplimit="0" memlimit="1000"/>
 <file format="whyml">
 <path name=".."/><path name="takuzu.mlw"/>
@@ -86,6 +86,8 @@
  </transf>
  </goal>
  <goal name="no_3_consecutive_zeros_version_3&#39;vc" expl="VC for no_3_consecutive_zeros_version_3" proved="true">
+ <proof prover="0"><result status="timeout" time="1.00"/></proof>
+ <proof prover="1"><result status="valid" time="0.05"/></proof>
  <transf name="split_vc" proved="true" >
   <goal name="no_3_consecutive_zeros_version_3&#39;vc.0" expl="loop invariant init" proved="true">
   <proof prover="0"><result status="valid" time="0.03"/></proof>
@@ -97,7 +99,7 @@
   <proof prover="0"><result status="valid" time="0.02"/></proof>
   </goal>
   <goal name="no_3_consecutive_zeros_version_3&#39;vc.3" expl="loop invariant init" proved="true">
-  <proof prover="0"><result status="valid" time="0.00"/></proof>
+  <proof prover="0"><result status="valid" time="0.02"/></proof>
   </goal>
   <goal name="no_3_consecutive_zeros_version_3&#39;vc.4" expl="loop invariant init" proved="true">
   <proof prover="0"><result status="valid" time="0.02"/></proof>
@@ -121,11 +123,12 @@
   <goal name="no_3_consecutive_zeros_version_3&#39;vc.10" expl="postcondition" proved="true">
   <proof prover="0"><result status="valid" time="0.05"/></proof>
   <proof prover="1" obsolete="true"><result status="timeout" time="1.00"/></proof>
-  <proof prover="3" timelimit="60" obsolete="true"><undone/></proof>
-  <proof prover="4" obsolete="true"><undone/></proof>
+  <proof prover="3" obsolete="true"><result status="failure" time="0.00"/></proof>
+  <proof prover="4" obsolete="true"><result status="failure" time="0.00"/></proof>
   </goal>
   <goal name="no_3_consecutive_zeros_version_3&#39;vc.11" expl="assertion" proved="true">
   <proof prover="0"><result status="valid" time="0.04"/></proof>
+  <proof prover="1" obsolete="true"><result status="timeout" time="1.00"/></proof>
   </goal>
   <goal name="no_3_consecutive_zeros_version_3&#39;vc.12" expl="assertion" proved="true">
   <proof prover="0"><result status="valid" time="0.03"/></proof>
@@ -135,27 +138,27 @@
   <proof prover="1"><result status="valid" time="0.03"/></proof>
   </goal>
   <goal name="no_3_consecutive_zeros_version_3&#39;vc.14" expl="loop invariant preservation" proved="true">
-  <proof prover="0"><result status="valid" time="0.03"/></proof>
+  <proof prover="0"><result status="valid" time="0.04"/></proof>
   </goal>
   <goal name="no_3_consecutive_zeros_version_3&#39;vc.15" expl="loop invariant preservation" proved="true">
   <proof prover="0"><result status="valid" time="0.03"/></proof>
   </goal>
   <goal name="no_3_consecutive_zeros_version_3&#39;vc.16" expl="loop invariant preservation" proved="true">
   <proof prover="0"><result status="valid" time="0.03"/></proof>
-  <proof prover="1" obsolete="true"><result status="timeout" time="1.00"/></proof>
   </goal>
   <goal name="no_3_consecutive_zeros_version_3&#39;vc.17" expl="loop invariant preservation" proved="true">
   <proof prover="0"><result status="valid" time="0.02"/></proof>
   </goal>
   <goal name="no_3_consecutive_zeros_version_3&#39;vc.18" expl="loop invariant preservation" proved="true">
-  <proof prover="0"><result status="valid" time="0.03"/></proof>
+  <proof prover="0"><result status="valid" time="0.04"/></proof>
   <proof prover="1" obsolete="true"><result status="timeout" time="1.00"/></proof>
   </goal>
   <goal name="no_3_consecutive_zeros_version_3&#39;vc.19" expl="loop invariant preservation" proved="true">
   <proof prover="0"><result status="valid" time="0.02"/></proof>
   </goal>
   <goal name="no_3_consecutive_zeros_version_3&#39;vc.20" expl="loop invariant preservation" proved="true">
-  <proof prover="0"><result status="valid" time="0.01"/></proof>
+  <proof prover="0"><result status="valid" time="0.03"/></proof>
+  <proof prover="1" obsolete="true"><result status="timeout" time="1.00"/></proof>
   </goal>
   <goal name="no_3_consecutive_zeros_version_3&#39;vc.21" expl="assertion" proved="true">
   <proof prover="0"><result status="valid" time="0.03"/></proof>
@@ -175,8 +178,7 @@
   <proof prover="0"><result status="valid" time="0.03"/></proof>
   </goal>
   <goal name="no_3_consecutive_zeros_version_3&#39;vc.26" expl="loop invariant preservation" proved="true">
-  <proof prover="0"><result status="valid" time="0.02"/></proof>
-  <proof prover="1" obsolete="true"><result status="timeout" time="1.00"/></proof>
+  <proof prover="0"><result status="valid" time="0.03"/></proof>
   </goal>
   <goal name="no_3_consecutive_zeros_version_3&#39;vc.27" expl="loop invariant preservation" proved="true">
   <proof prover="0"><result status="valid" time="0.03"/></proof>
@@ -188,8 +190,7 @@
   <proof prover="0"><result status="valid" time="0.03"/></proof>
   </goal>
   <goal name="no_3_consecutive_zeros_version_3&#39;vc.30" expl="loop invariant preservation" proved="true">
-  <proof prover="0"><result status="valid" time="0.03"/></proof>
-  <proof prover="1" obsolete="true"><result status="timeout" time="1.00"/></proof>
+  <proof prover="0"><result status="valid" time="0.01"/></proof>
   </goal>
   <goal name="no_3_consecutive_zeros_version_3&#39;vc.31" expl="postcondition" proved="true">
   <proof prover="0"><result status="valid" time="0.03"/></proof>
@@ -224,13 +225,13 @@
   <goal name="check_identical_sub_arrays&#39;vc.3" expl="postcondition" proved="true">
   <proof prover="0"><result status="timeout" time="1.00"/></proof>
   <proof prover="1"><result status="timeout" time="1.00"/></proof>
-  <proof prover="3"><result status="valid" time="0.01" steps="38"/></proof>
+  <proof prover="3" timelimit="20"><result status="valid" time="0.01" steps="38"/></proof>
   </goal>
   <goal name="check_identical_sub_arrays&#39;vc.4" expl="assertion" proved="true">
   <proof prover="0"><result status="valid" time="0.02"/></proof>
   </goal>
   <goal name="check_identical_sub_arrays&#39;vc.5" expl="loop invariant preservation" proved="true">
-  <proof prover="3"><result status="valid" time="0.01" steps="44"/></proof>
+  <proof prover="3" timelimit="20"><result status="valid" time="0.01" steps="44"/></proof>
   </goal>
   <goal name="check_identical_sub_arrays&#39;vc.6" expl="postcondition" proved="true">
   <proof prover="0"><result status="valid" time="0.01"/></proof>
@@ -242,17 +243,220 @@
  </goal>
 </theory>
 <theory name="Takuzu">
- <goal name="eq&#39;vc" expl="VC for eq">
+ <goal name="eq&#39;vc" expl="VC for eq" proved="true">
+ <proof prover="0"><result status="valid" time="0.02"/></proof>
  </goal>
- <goal name="column_start_index&#39;vc" expl="VC for column_start_index">
+ <goal name="column_start_index&#39;vc" expl="VC for column_start_index" proved="true">
+ <proof prover="0"><result status="valid" time="0.02"/></proof>
  </goal>
- <goal name="row_start_index&#39;vc" expl="VC for row_start_index">
+ <goal name="row_start_index&#39;vc" expl="VC for row_start_index" proved="true">
+ <proof prover="0"><result status="valid" time="0.02"/></proof>
  </goal>
- <goal name="valid_chunk">
+ <goal name="valid_chunk" proved="true">
+ <proof prover="0"><result status="valid" time="0.04"/></proof>
  </goal>
- <goal name="acc&#39;vc" expl="VC for acc">
+ <goal name="acc&#39;vc" expl="VC for acc" proved="true">
+ <proof prover="0"><result status="valid" time="0.04"/></proof>
  </goal>
- <goal name="check_rule_1_for_chunk&#39;vc" expl="VC for check_rule_1_for_chunk">
+ <goal name="check_rule_1_for_chunk&#39;vc" expl="VC for check_rule_1_for_chunk" proved="true">
+ <proof prover="0" obsolete="true"><result status="timeout" time="1.00"/></proof>
+ <proof prover="1" obsolete="true"><result status="timeout" time="1.00"/></proof>
+ <transf name="split_vc" proved="true" >
+  <goal name="check_rule_1_for_chunk&#39;vc.0" expl="loop invariant init" proved="true">
+  <proof prover="0"><result status="valid" time="0.05"/></proof>
+  </goal>
+  <goal name="check_rule_1_for_chunk&#39;vc.1" expl="loop invariant init" proved="true">
+  <proof prover="0"><result status="valid" time="0.03"/></proof>
+  </goal>
+  <goal name="check_rule_1_for_chunk&#39;vc.2" expl="loop invariant init" proved="true">
+  <proof prover="0"><result status="valid" time="0.03"/></proof>
+  </goal>
+  <goal name="check_rule_1_for_chunk&#39;vc.3" expl="loop invariant init" proved="true">
+  <proof prover="0"><result status="valid" time="0.03"/></proof>
+  </goal>
+  <goal name="check_rule_1_for_chunk&#39;vc.4" expl="loop invariant init" proved="true">
+  <proof prover="0"><result status="valid" time="0.03"/></proof>
+  </goal>
+  <goal name="check_rule_1_for_chunk&#39;vc.5" expl="loop invariant init" proved="true">
+  <proof prover="0"><result status="valid" time="0.03"/></proof>
+  </goal>
+  <goal name="check_rule_1_for_chunk&#39;vc.6" expl="loop invariant init" proved="true">
+  <proof prover="0"><result status="valid" time="0.04"/></proof>
+  </goal>
+  <goal name="check_rule_1_for_chunk&#39;vc.7" expl="loop invariant init" proved="true">
+  <proof prover="0"><result status="valid" time="0.04"/></proof>
+  </goal>
+  <goal name="check_rule_1_for_chunk&#39;vc.8" expl="loop invariant init" proved="true">
+  <proof prover="0"><result status="valid" time="0.04"/></proof>
+  </goal>
+  <goal name="check_rule_1_for_chunk&#39;vc.9" expl="loop invariant init" proved="true">
+  <proof prover="0"><result status="valid" time="0.05"/></proof>
+  </goal>
+  <goal name="check_rule_1_for_chunk&#39;vc.10" expl="loop invariant init" proved="true">
+  <proof prover="0"><result status="valid" time="0.04"/></proof>
+  </goal>
+  <goal name="check_rule_1_for_chunk&#39;vc.11" expl="loop invariant init" proved="true">
+  <proof prover="0"><result status="valid" time="0.03"/></proof>
+  </goal>
+  <goal name="check_rule_1_for_chunk&#39;vc.12" expl="precondition" proved="true">
+  <proof prover="0"><result status="valid" time="0.02"/></proof>
+  </goal>
+  <goal name="check_rule_1_for_chunk&#39;vc.13" expl="precondition" proved="true">
+  <proof prover="0"><result status="valid" time="0.03"/></proof>
+  </goal>
+  <goal name="check_rule_1_for_chunk&#39;vc.14" expl="precondition" proved="true">
+  <proof prover="0"><result status="valid" time="0.03"/></proof>
+  </goal>
+  <goal name="check_rule_1_for_chunk&#39;vc.15" expl="exceptional postcondition" proved="true">
+  <proof prover="0"><result status="valid" time="0.03"/></proof>
+  </goal>
+  <goal name="check_rule_1_for_chunk&#39;vc.16" expl="assertion" proved="true">
+  <proof prover="0"><result status="valid" time="0.06"/></proof>
+  </goal>
+  <goal name="check_rule_1_for_chunk&#39;vc.17" expl="assertion" proved="true">
+  <proof prover="0"><result status="valid" time="0.06"/></proof>
+  </goal>
+  <goal name="check_rule_1_for_chunk&#39;vc.18" expl="loop invariant preservation" proved="true">
+  <proof prover="0"><result status="timeout" time="1.00"/></proof>
+  <proof prover="1"><result status="timeout" time="1.00"/></proof>
+  <proof prover="3"><result status="valid" time="4.54" steps="3784"/></proof>
+  </goal>
+  <goal name="check_rule_1_for_chunk&#39;vc.19" expl="loop invariant preservation" proved="true">
+  <proof prover="0"><result status="valid" time="0.05"/></proof>
+  </goal>
+  <goal name="check_rule_1_for_chunk&#39;vc.20" expl="loop invariant preservation" proved="true">
+  <proof prover="0"><result status="valid" time="0.07"/></proof>
+  </goal>
+  <goal name="check_rule_1_for_chunk&#39;vc.21" expl="loop invariant preservation" proved="true">
+  <proof prover="0"><result status="valid" time="0.04"/></proof>
+  </goal>
+  <goal name="check_rule_1_for_chunk&#39;vc.22" expl="loop invariant preservation" proved="true">
+  <proof prover="0"><result status="valid" time="0.04"/></proof>
+  </goal>
+  <goal name="check_rule_1_for_chunk&#39;vc.23" expl="loop invariant preservation" proved="true">
+  <proof prover="0"><result status="valid" time="0.04"/></proof>
+  </goal>
+  <goal name="check_rule_1_for_chunk&#39;vc.24" expl="loop invariant preservation" proved="true">
+  <proof prover="0"><result status="valid" time="0.06"/></proof>
+  <proof prover="1" obsolete="true"><result status="timeout" time="1.00"/></proof>
+  </goal>
+  <goal name="check_rule_1_for_chunk&#39;vc.25" expl="loop invariant preservation" proved="true">
+  <proof prover="0"><result status="valid" time="0.07"/></proof>
+  <proof prover="1" obsolete="true"><result status="timeout" time="1.00"/></proof>
+  </goal>
+  <goal name="check_rule_1_for_chunk&#39;vc.26" expl="loop invariant preservation" proved="true">
+  <proof prover="0"><result status="valid" time="0.04"/></proof>
+  </goal>
+  <goal name="check_rule_1_for_chunk&#39;vc.27" expl="loop invariant preservation" proved="true">
+  <proof prover="0"><result status="valid" time="0.05"/></proof>
+  </goal>
+  <goal name="check_rule_1_for_chunk&#39;vc.28" expl="loop invariant preservation" proved="true">
+  <proof prover="0"><result status="valid" time="0.05"/></proof>
+  </goal>
+  <goal name="check_rule_1_for_chunk&#39;vc.29" expl="loop invariant preservation" proved="true">
+  <proof prover="0"><result status="valid" time="0.05"/></proof>
+  </goal>
+  <goal name="check_rule_1_for_chunk&#39;vc.30" expl="exceptional postcondition" proved="true">
+  <proof prover="0"><result status="valid" time="0.04"/></proof>
+  </goal>
+  <goal name="check_rule_1_for_chunk&#39;vc.31" expl="assertion" proved="true">
+  <proof prover="0"><result status="valid" time="0.06"/></proof>
+  </goal>
+  <goal name="check_rule_1_for_chunk&#39;vc.32" expl="assertion" proved="true">
+  <proof prover="0"><result status="valid" time="0.07"/></proof>
+  </goal>
+  <goal name="check_rule_1_for_chunk&#39;vc.33" expl="loop invariant preservation" proved="true">
+  <proof prover="0"><result status="timeout" time="1.00"/></proof>
+  <proof prover="1"><result status="timeout" time="1.00"/></proof>
+  <proof prover="3"><result status="valid" time="4.66" steps="3979"/></proof>
+  </goal>
+  <goal name="check_rule_1_for_chunk&#39;vc.34" expl="loop invariant preservation" proved="true">
+  <proof prover="0"><result status="valid" time="0.03"/></proof>
+  </goal>
+  <goal name="check_rule_1_for_chunk&#39;vc.35" expl="loop invariant preservation" proved="true">
+  <proof prover="0"><result status="valid" time="0.07"/></proof>
+  </goal>
+  <goal name="check_rule_1_for_chunk&#39;vc.36" expl="loop invariant preservation" proved="true">
+  <proof prover="0"><result status="valid" time="0.05"/></proof>
+  </goal>
+  <goal name="check_rule_1_for_chunk&#39;vc.37" expl="loop invariant preservation" proved="true">
+  <proof prover="0"><result status="valid" time="0.04"/></proof>
+  </goal>
+  <goal name="check_rule_1_for_chunk&#39;vc.38" expl="loop invariant preservation" proved="true">
+  <proof prover="0"><result status="valid" time="0.04"/></proof>
+  </goal>
+  <goal name="check_rule_1_for_chunk&#39;vc.39" expl="loop invariant preservation" proved="true">
+  <proof prover="0"><result status="valid" time="0.06"/></proof>
+  <proof prover="1" obsolete="true"><result status="timeout" time="1.00"/></proof>
+  </goal>
+  <goal name="check_rule_1_for_chunk&#39;vc.40" expl="loop invariant preservation" proved="true">
+  <proof prover="0"><result status="valid" time="0.06"/></proof>
+  </goal>
+  <goal name="check_rule_1_for_chunk&#39;vc.41" expl="loop invariant preservation" proved="true">
+  <proof prover="0"><result status="valid" time="0.04"/></proof>
+  </goal>
+  <goal name="check_rule_1_for_chunk&#39;vc.42" expl="loop invariant preservation" proved="true">
+  <proof prover="0"><result status="valid" time="0.04"/></proof>
+  </goal>
+  <goal name="check_rule_1_for_chunk&#39;vc.43" expl="loop invariant preservation" proved="true">
+  <proof prover="0"><result status="valid" time="0.04"/></proof>
+  </goal>
+  <goal name="check_rule_1_for_chunk&#39;vc.44" expl="loop invariant preservation" proved="true">
+  <proof prover="0"><result status="valid" time="0.09"/></proof>
+  </goal>
+  <goal name="check_rule_1_for_chunk&#39;vc.45" expl="assertion" proved="true">
+  <proof prover="0"><result status="valid" time="0.05"/></proof>
+  </goal>
+  <goal name="check_rule_1_for_chunk&#39;vc.46" expl="assertion" proved="true">
+  <proof prover="0"><result status="valid" time="0.06"/></proof>
+  </goal>
+  <goal name="check_rule_1_for_chunk&#39;vc.47" expl="loop invariant preservation" proved="true">
+  <proof prover="0"><result status="timeout" time="1.00"/></proof>
+  <proof prover="1"><result status="timeout" time="1.00"/></proof>
+  <proof prover="3"><result status="valid" time="3.52" steps="2791"/></proof>
+  </goal>
+  <goal name="check_rule_1_for_chunk&#39;vc.48" expl="loop invariant preservation" proved="true">
+  <proof prover="0"><result status="valid" time="0.03"/></proof>
+  </goal>
+  <goal name="check_rule_1_for_chunk&#39;vc.49" expl="loop invariant preservation" proved="true">
+  <proof prover="0"><result status="valid" time="0.07"/></proof>
+  </goal>
+  <goal name="check_rule_1_for_chunk&#39;vc.50" expl="loop invariant preservation" proved="true">
+  <proof prover="0"><result status="valid" time="0.04"/></proof>
+  </goal>
+  <goal name="check_rule_1_for_chunk&#39;vc.51" expl="loop invariant preservation" proved="true">
+  <proof prover="0"><result status="valid" time="0.05"/></proof>
+  </goal>
+  <goal name="check_rule_1_for_chunk&#39;vc.52" expl="loop invariant preservation" proved="true">
+  <proof prover="0"><result status="valid" time="0.04"/></proof>
+  </goal>
+  <goal name="check_rule_1_for_chunk&#39;vc.53" expl="loop invariant preservation" proved="true">
+  <proof prover="0"><result status="valid" time="0.06"/></proof>
+  </goal>
+  <goal name="check_rule_1_for_chunk&#39;vc.54" expl="loop invariant preservation" proved="true">
+  <proof prover="0"><result status="valid" time="0.06"/></proof>
+  <proof prover="1" obsolete="true"><result status="timeout" time="1.00"/></proof>
+  </goal>
+  <goal name="check_rule_1_for_chunk&#39;vc.55" expl="loop invariant preservation" proved="true">
+  <proof prover="0"><result status="valid" time="0.05"/></proof>
+  </goal>
+  <goal name="check_rule_1_for_chunk&#39;vc.56" expl="loop invariant preservation" proved="true">
+  <proof prover="0"><result status="valid" time="0.04"/></proof>
+  </goal>
+  <goal name="check_rule_1_for_chunk&#39;vc.57" expl="loop invariant preservation" proved="true">
+  <proof prover="0"><result status="valid" time="0.12"/></proof>
+  </goal>
+  <goal name="check_rule_1_for_chunk&#39;vc.58" expl="loop invariant preservation" proved="true">
+  <proof prover="0"><result status="valid" time="0.05"/></proof>
+  </goal>
+  <goal name="check_rule_1_for_chunk&#39;vc.59" expl="postcondition" proved="true">
+  <proof prover="0"><result status="valid" time="0.04"/></proof>
+  <proof prover="1" obsolete="true"><result status="timeout" time="1.00"/></proof>
+  </goal>
+  <goal name="check_rule_1_for_chunk&#39;vc.60" expl="postcondition" proved="true">
+  <proof prover="0"><result status="valid" time="0.03"/></proof>
+  </goal>
+ </transf>
  </goal>
  <goal name="count_number_of&#39;vc" expl="VC for count_number_of">
  </goal>
