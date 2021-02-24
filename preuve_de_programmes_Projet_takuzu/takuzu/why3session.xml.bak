@@ -8,7 +8,7 @@
 <prover id="4" name="Spass" version="3.7" timelimit="1" steplimit="0" memlimit="1000"/>
 <file format="whyml">
 <path name=".."/><path name="takuzu.mlw"/>
-<theory name="Appetizers">
+<theory name="Appetizers" proved="true">
  <goal name="no_3_consecutive_zeros_version_1&#39;vc" expl="VC for no_3_consecutive_zeros_version_1" proved="true">
  <transf name="split_vc" proved="true" >
   <goal name="no_3_consecutive_zeros_version_1&#39;vc.0" expl="loop invariant init" proved="true">
@@ -211,106 +211,8 @@
  <proof prover="0"><result status="valid" time="0.02"/></proof>
  <proof prover="3" timelimit="30" obsolete="true"><result status="valid" time="0.00" steps="0"/></proof>
  </goal>
- <goal name="check_identical_sub_arrays&#39;vc" expl="VC for check_identical_sub_arrays">
- <transf name="split_vc" >
-  <goal name="check_identical_sub_arrays&#39;vc.0" expl="loop invariant init">
-  <proof prover="0" obsolete="true"><result status="valid" time="0.04"/></proof>
-  </goal>
-  <goal name="check_identical_sub_arrays&#39;vc.1" expl="index in array bounds">
-  <proof prover="0" obsolete="true"><result status="timeout" time="1.00"/></proof>
-  <proof prover="1" obsolete="true"><result status="unknown" time="0.09"/></proof>
-  <proof prover="4" obsolete="true"><result status="timeout" time="1.00"/></proof>
-  <transf name="split_vc" >
-   <goal name="check_identical_sub_arrays&#39;vc.1.0" expl="index in array bounds">
-   <proof prover="0" obsolete="true"><result status="valid" time="0.02"/></proof>
-   </goal>
-   <goal name="check_identical_sub_arrays&#39;vc.1.1" expl="index in array bounds">
-   <proof prover="0" timelimit="30" memlimit="4000" obsolete="true"><result status="timeout" time="30.00"/></proof>
-   <proof prover="1" timelimit="30" memlimit="4000" obsolete="true"><result status="unknown" time="0.09"/></proof>
-   <proof prover="4" timelimit="30" memlimit="4000" obsolete="true"><result status="timeout" time="30.00"/></proof>
-   </goal>
-  </transf>
-  </goal>
-  <goal name="check_identical_sub_arrays&#39;vc.2" expl="index in array bounds">
-  <proof prover="0" obsolete="true"><result status="timeout" time="1.00"/></proof>
-  <proof prover="1" obsolete="true"><result status="unknown" time="0.16"/></proof>
-  <proof prover="4" obsolete="true"><result status="timeout" time="1.00"/></proof>
-  <transf name="split_vc" >
-   <goal name="check_identical_sub_arrays&#39;vc.2.0" expl="index in array bounds">
-   <proof prover="0" obsolete="true"><result status="valid" time="0.03"/></proof>
-   </goal>
-   <goal name="check_identical_sub_arrays&#39;vc.2.1" expl="index in array bounds">
-   <proof prover="0" timelimit="30" memlimit="4000" obsolete="true"><result status="timeout" time="30.00"/></proof>
-   <proof prover="1" timelimit="30" memlimit="4000" obsolete="true"><result status="unknown" time="0.14"/></proof>
-   <proof prover="4" timelimit="30" memlimit="4000" obsolete="true"><result status="timeout" time="30.00"/></proof>
-   </goal>
-  </transf>
-  </goal>
-  <goal name="check_identical_sub_arrays&#39;vc.3" expl="postcondition">
-  <proof prover="0" obsolete="true"><result status="timeout" time="1.00"/></proof>
-  <proof prover="1" obsolete="true"><result status="timeout" time="1.00"/></proof>
-  <proof prover="4" obsolete="true"><result status="timeout" time="1.00"/></proof>
-  <transf name="split_vc" >
-   <goal name="check_identical_sub_arrays&#39;vc.3.0" expl="postcondition">
-   <proof prover="0" obsolete="true"><result status="valid" time="0.03"/></proof>
-   </goal>
-   <goal name="check_identical_sub_arrays&#39;vc.3.1" expl="postcondition">
-   <proof prover="0" timelimit="5" memlimit="2000" obsolete="true"><result status="timeout" time="5.00"/></proof>
-   <proof prover="1" timelimit="5" memlimit="2000" obsolete="true"><result status="timeout" time="5.00"/></proof>
-   <proof prover="4" timelimit="5" memlimit="2000" obsolete="true"><result status="timeout" time="5.00"/></proof>
-   <transf name="inline_goal" >
-    <goal name="check_identical_sub_arrays&#39;vc.3.1.0" expl="postcondition">
-    <transf name="split_all_full" >
-     <goal name="check_identical_sub_arrays&#39;vc.3.1.0.0" expl="postcondition">
-     <proof prover="0" obsolete="true"><result status="timeout" time="1.00"/></proof>
-     <proof prover="1" obsolete="true"><result status="valid" time="0.06"/></proof>
-     </goal>
-    </transf>
-    </goal>
-   </transf>
-   </goal>
-  </transf>
-  </goal>
-  <goal name="check_identical_sub_arrays&#39;vc.4" expl="loop invariant preservation">
-  <proof prover="0" timelimit="5" memlimit="2000" obsolete="true"><result status="timeout" time="5.00"/></proof>
-  <proof prover="1" timelimit="5" memlimit="2000" obsolete="true"><result status="timeout" time="5.00"/></proof>
-  <proof prover="4" timelimit="5" memlimit="2000" obsolete="true"><result status="timeout" time="5.00"/></proof>
-  <transf name="inline_goal" >
-   <goal name="check_identical_sub_arrays&#39;vc.4.0" expl="loop invariant preservation">
-   <transf name="split_all_full" >
-    <goal name="check_identical_sub_arrays&#39;vc.4.0.0" expl="loop invariant preservation">
-    <proof prover="0" obsolete="true"><result status="timeout" time="1.00"/></proof>
-    <proof prover="1" obsolete="true"><result status="timeout" time="1.00"/></proof>
-    <proof prover="4" obsolete="true"><result status="timeout" time="1.00"/></proof>
-    <transf name="split_vc" >
-     <goal name="check_identical_sub_arrays&#39;vc.4.0.0.0" expl="loop invariant preservation">
-     <proof prover="0" timelimit="5" memlimit="2000" obsolete="true"><result status="timeout" time="5.00"/></proof>
-     <proof prover="1" timelimit="5" memlimit="2000" obsolete="true"><result status="timeout" time="5.00"/></proof>
-     <proof prover="4" timelimit="5" memlimit="2000" obsolete="true"><result status="timeout" time="5.00"/></proof>
-     <transf name="inline_goal" >
-      <goal name="check_identical_sub_arrays&#39;vc.4.0.0.0.0" expl="loop invariant preservation">
-      <proof prover="0" timelimit="30" memlimit="4000" obsolete="true"><result status="timeout" time="30.00"/></proof>
-      <proof prover="1" timelimit="30" memlimit="4000" obsolete="true"><result status="timeout" time="30.00"/></proof>
-      <proof prover="4" timelimit="30" memlimit="4000" obsolete="true"><result status="failure" time="0.00"/></proof>
-      </goal>
-     </transf>
-     </goal>
-    </transf>
-    </goal>
-   </transf>
-   </goal>
-  </transf>
-  </goal>
-  <goal name="check_identical_sub_arrays&#39;vc.5" expl="postcondition">
-  <proof prover="0" obsolete="true"><result status="valid" time="0.02"/></proof>
-  </goal>
-  <goal name="check_identical_sub_arrays&#39;vc.6" expl="postcondition">
-  <proof prover="0" obsolete="true"><result status="valid" time="0.01"/></proof>
-  </goal>
-  <goal name="check_identical_sub_arrays&#39;vc.4" expl="assertion">
-  <proof prover="0" obsolete="true"><result status="valid" time="0.03"/></proof>
-  </goal>
- </transf>
+ <goal name="check_identical_sub_arrays&#39;vc" expl="VC for check_identical_sub_arrays" proved="true">
+ <proof prover="3"><result status="valid" time="0.02" steps="98"/></proof>
  </goal>
 </theory>
 <theory name="Takuzu">
@@ -546,139 +448,93 @@
  <proof prover="0"><result status="valid" time="0.05"/></proof>
  </goal>
  <goal name="check_rule_2_for_chunk&#39;vc" expl="VC for check_rule_2_for_chunk" proved="true">
- <transf name="split_vc" proved="true" >
-  <goal name="check_rule_2_for_chunk&#39;vc.0" expl="precondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.03"/></proof>
-  </goal>
-  <goal name="check_rule_2_for_chunk&#39;vc.1" expl="precondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.03"/></proof>
-  </goal>
-  <goal name="check_rule_2_for_chunk&#39;vc.2" expl="precondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.03"/></proof>
-  </goal>
-  <goal name="check_rule_2_for_chunk&#39;vc.3" expl="precondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.03"/></proof>
-  </goal>
-  <goal name="check_rule_2_for_chunk&#39;vc.4" expl="exceptional postcondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.02"/></proof>
-  </goal>
-  <goal name="check_rule_2_for_chunk&#39;vc.5" expl="precondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.03"/></proof>
-  </goal>
-  <goal name="check_rule_2_for_chunk&#39;vc.6" expl="precondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.03"/></proof>
-  </goal>
-  <goal name="check_rule_2_for_chunk&#39;vc.7" expl="precondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.03"/></proof>
-  </goal>
-  <goal name="check_rule_2_for_chunk&#39;vc.8" expl="precondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.03"/></proof>
-  </goal>
-  <goal name="check_rule_2_for_chunk&#39;vc.9" expl="exceptional postcondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.03"/></proof>
-  </goal>
-  <goal name="check_rule_2_for_chunk&#39;vc.10" expl="assertion" proved="true">
-  <proof prover="0"><result status="valid" time="0.02"/></proof>
-  </goal>
-  <goal name="check_rule_2_for_chunk&#39;vc.11" expl="assertion" proved="true">
-  <proof prover="0"><result status="valid" time="0.04"/></proof>
-  </goal>
-  <goal name="check_rule_2_for_chunk&#39;vc.12" expl="postcondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.41"/></proof>
-  </goal>
- </transf>
+ <proof prover="3"><result status="valid" time="0.01" steps="8"/></proof>
  </goal>
  <goal name="check_identical_chunks&#39;vc" expl="VC for check_identical_chunks" proved="true">
- <proof prover="0"><result status="valid" time="0.10"/></proof>
- <transf name="split_vc" proved="true" >
-  <goal name="check_identical_chunks&#39;vc.0" expl="loop invariant init" proved="true">
-  <proof prover="0"><result status="valid" time="0.05"/></proof>
-  </goal>
-  <goal name="check_identical_chunks&#39;vc.1" expl="precondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.03"/></proof>
-  </goal>
-  <goal name="check_identical_chunks&#39;vc.2" expl="precondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.03"/></proof>
-  </goal>
-  <goal name="check_identical_chunks&#39;vc.3" expl="precondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.03"/></proof>
-  </goal>
-  <goal name="check_identical_chunks&#39;vc.4" expl="precondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.03"/></proof>
-  </goal>
-  <goal name="check_identical_chunks&#39;vc.5" expl="precondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.03"/></proof>
-  </goal>
-  <goal name="check_identical_chunks&#39;vc.6" expl="precondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.03"/></proof>
-  </goal>
-  <goal name="check_identical_chunks&#39;vc.7" expl="loop invariant preservation" proved="true">
-  <proof prover="0"><result status="valid" time="0.07"/></proof>
-  </goal>
-  <goal name="check_identical_chunks&#39;vc.8" expl="postcondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.04"/></proof>
-  </goal>
-  <goal name="check_identical_chunks&#39;vc.9" expl="loop invariant preservation" proved="true">
-  <proof prover="0"><result status="valid" time="0.06"/></proof>
-  </goal>
-  <goal name="check_identical_chunks&#39;vc.10" expl="postcondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.05"/></proof>
-  </goal>
-  <goal name="check_identical_chunks&#39;vc.11" expl="postcondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.05"/></proof>
-  </goal>
-  <goal name="check_identical_chunks&#39;vc.12" expl="postcondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.03"/></proof>
-  </goal>
-  <goal name="check_identical_chunks&#39;vc.13" expl="postcondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.03"/></proof>
-  </goal>
- </transf>
+ <proof prover="3"><result status="valid" time="0.66" steps="767"/></proof>
  </goal>
  <goal name="check_rule_3_for_column&#39;vc" expl="VC for check_rule_3_for_column" proved="true">
- <proof prover="3" timelimit="30"><result status="valid" time="0.03" steps="122"/></proof>
+ <proof prover="0"><result status="valid" time="0.05"/></proof>
  </goal>
  <goal name="check_rule_3_for_row&#39;vc" expl="VC for check_rule_3_for_row" proved="true">
- <proof prover="3" timelimit="30"><result status="valid" time="0.51" steps="512"/></proof>
+ <proof prover="0"><result status="valid" time="0.11"/></proof>
+ <proof prover="3" obsolete="true"><result status="valid" time="0.51" steps="512"/></proof>
  </goal>
  <goal name="check_at_cell&#39;vc" expl="VC for check_at_cell" proved="true">
- <proof prover="1" obsolete="true"><result status="valid" time="0.04"/></proof>
- <proof prover="3" timelimit="30"><result status="valid" time="0.64" steps="576"/></proof>
+ <proof prover="0"><result status="timeout" time="1.00"/></proof>
+ <proof prover="1"><result status="valid" time="0.04"/></proof>
  </goal>
- <goal name="invariant_g">
+ <goal name="subst_0">
  </goal>
- <goal name="sym">
+ <goal name="aux_rule_1_and_rule_2_for_chunk">
+ <proof prover="3" obsolete="true"><result status="valid" time="0.02" steps="25"/></proof>
  </goal>
- <goal name="aux_lemma_rule1">
- <proof prover="0" obsolete="true"><result status="valid" time="0.05"/></proof>
- </goal>
- <goal name="aux_lemma_rule2">
+ <goal name="sym_identical_rows_or_columns">
+ <proof prover="3" obsolete="true"><result status="valid" time="0.01" steps="8"/></proof>
  </goal>
  <goal name="inv_not_identical">
+ <proof prover="3" obsolete="true"><result status="valid" time="0.02" steps="25"/></proof>
  </goal>
  <goal name="check_cell_change&#39;vc" expl="VC for check_cell_change" proved="true">
+ <proof prover="0"><result status="timeout" time="1.00"/></proof>
+ <proof prover="1"><result status="timeout" time="1.00"/></proof>
+ <proof prover="3"><result status="timeout" time="20.00"/></proof>
+ <proof prover="4"><result status="timeout" time="1.00"/></proof>
  <transf name="split_vc" proved="true" >
   <goal name="check_cell_change&#39;vc.0" expl="index in array bounds" proved="true">
-  <proof prover="3"><result status="valid" time="0.02" steps="8"/></proof>
+  <proof prover="0"><result status="valid" time="0.09"/></proof>
   </goal>
   <goal name="check_cell_change&#39;vc.1" expl="assertion" proved="true">
-  <proof prover="0" timelimit="5" memlimit="2000" obsolete="true"><result status="timeout" time="5.00"/></proof>
-  <proof prover="1" timelimit="5" memlimit="2000" obsolete="true"><result status="timeout" time="5.00"/></proof>
-  <proof prover="3" obsolete="true"><result status="timeout" time="20.00"/></proof>
-  <proof prover="4" timelimit="5" memlimit="2000" obsolete="true"><result status="timeout" time="5.00"/></proof>
-  <transf name="inline_goal" proved="true" >
-   <goal name="check_cell_change&#39;vc.1.0" expl="assertion" proved="true">
-   <transf name="split_all_full" proved="true" >
-    <goal name="check_cell_change&#39;vc.1.0.0" expl="assertion" proved="true">
-    <proof prover="0" obsolete="true"><result status="timeout" time="1.00"/></proof>
-    <proof prover="1" obsolete="true"><result status="timeout" time="1.00"/></proof>
-    <proof prover="4" obsolete="true"><result status="timeout" time="1.00"/></proof>
-    <transf name="split_vc" proved="true" >
-     <goal name="check_cell_change&#39;vc.1.0.0.0" expl="assertion" proved="true">
-     <proof prover="0" timelimit="5" memlimit="2000" obsolete="true"><result status="timeout" time="5.00"/></proof>
-     <proof prover="1" timelimit="5" memlimit="2000" obsolete="true"><result status="timeout" time="5.00"/></proof>
-     <proof prover="3"><result status="valid" time="0.03" steps="47"/></proof>
-     <proof prover="4" timelimit="5" memlimit="2000" obsolete="true"><result status="failure" time="0.00"/></proof>
+  <proof prover="0"><result status="valid" time="0.11"/></proof>
+  </goal>
+  <goal name="check_cell_change&#39;vc.2" expl="precondition" proved="true">
+  <proof prover="0"><result status="valid" time="0.09"/></proof>
+  </goal>
+  <goal name="check_cell_change&#39;vc.3" expl="assertion" proved="true">
+  <proof prover="0"><result status="valid" time="0.06"/></proof>
+  </goal>
+  <goal name="check_cell_change&#39;vc.4" expl="assertion" proved="true">
+  <proof prover="0"><result status="valid" time="0.12"/></proof>
+  </goal>
+  <goal name="check_cell_change&#39;vc.5" expl="assertion" proved="true">
+  <proof prover="0"><result status="valid" time="0.35"/></proof>
+  </goal>
+  <goal name="check_cell_change&#39;vc.6" expl="assertion" proved="true">
+  <proof prover="0"><result status="valid" time="0.21"/></proof>
+  </goal>
+  <goal name="check_cell_change&#39;vc.7" expl="assertion" proved="true">
+  <proof prover="0"><result status="valid" time="0.13"/></proof>
+  </goal>
+  <goal name="check_cell_change&#39;vc.8" expl="assertion" proved="true">
+  <proof prover="0"><result status="valid" time="0.15"/></proof>
+  </goal>
+  <goal name="check_cell_change&#39;vc.9" expl="assertion" proved="true">
+  <proof prover="0"><result status="valid" time="0.15"/></proof>
+  </goal>
+  <goal name="check_cell_change&#39;vc.10" expl="assertion" proved="true">
+  <proof prover="0"><result status="valid" time="0.09"/></proof>
+  </goal>
+  <goal name="check_cell_change&#39;vc.11" expl="assertion" proved="true">
+  <proof prover="0"><result status="valid" time="0.17"/></proof>
+  </goal>
+  <goal name="check_cell_change&#39;vc.12" expl="assertion" proved="true">
+  <proof prover="0"><result status="timeout" time="1.00"/></proof>
+  <proof prover="1"><result status="timeout" time="1.00"/></proof>
+  <proof prover="4"><result status="timeout" time="1.00"/></proof>
+  <transf name="split_vc" proved="true" >
+   <goal name="check_cell_change&#39;vc.12.0" expl="assertion" proved="true">
+   <proof prover="0"><result status="valid" time="0.20"/></proof>
+   </goal>
+   <goal name="check_cell_change&#39;vc.12.1" expl="assertion" proved="true">
+   <proof prover="0" timelimit="5" memlimit="2000"><result status="timeout" time="5.00"/></proof>
+   <proof prover="1" timelimit="5" memlimit="2000"><result status="timeout" time="5.00"/></proof>
+   <proof prover="4" timelimit="5" memlimit="2000"><result status="timeout" time="5.00"/></proof>
+   <transf name="inline_goal" proved="true" >
+    <goal name="check_cell_change&#39;vc.12.1.0" expl="assertion" proved="true">
+    <transf name="split_all_full" proved="true" >
+     <goal name="check_cell_change&#39;vc.12.1.0.0" expl="assertion" proved="true">
+     <proof prover="0"><result status="timeout" time="1.00"/></proof>
+     <proof prover="1"><result status="valid" time="0.09"/></proof>
      </goal>
     </transf>
     </goal>
@@ -686,90 +542,29 @@
    </goal>
   </transf>
   </goal>
-  <goal name="check_cell_change&#39;vc.2" expl="precondition" proved="true">
-  <proof prover="3"><result status="valid" time="0.02" steps="16"/></proof>
-  </goal>
-  <goal name="check_cell_change&#39;vc.3" expl="precondition" proved="true">
-  <proof prover="3"><result status="valid" time="0.02" steps="17"/></proof>
-  </goal>
-  <goal name="check_cell_change&#39;vc.4" expl="assertion" proved="true">
-  <proof prover="3"><result status="valid" time="0.02" steps="18"/></proof>
-  </goal>
-  <goal name="check_cell_change&#39;vc.5" expl="assertion" proved="true">
-  <proof prover="0"><result status="valid" time="0.13"/></proof>
-  <proof prover="3"><result status="failure" time="0.00"/></proof>
-  </goal>
-  <goal name="check_cell_change&#39;vc.6" expl="assertion" proved="true">
-  <proof prover="3"><result status="valid" time="0.22" steps="259"/></proof>
-  </goal>
-  <goal name="check_cell_change&#39;vc.7" expl="assertion" proved="true">
-  <proof prover="0"><result status="valid" time="0.12"/></proof>
-  <proof prover="3"><result status="failure" time="0.00"/></proof>
-  </goal>
-  <goal name="check_cell_change&#39;vc.8" expl="assertion" proved="true">
-  <proof prover="3"><result status="valid" time="0.22" steps="262"/></proof>
-  </goal>
-  <goal name="check_cell_change&#39;vc.9" expl="assertion" proved="true">
-  <proof prover="3"><result status="valid" time="0.03" steps="20"/></proof>
-  </goal>
-  <goal name="check_cell_change&#39;vc.10" expl="assertion" proved="true">
-  <proof prover="3"><result status="valid" time="0.21" steps="239"/></proof>
-  </goal>
-  <goal name="check_cell_change&#39;vc.11" expl="assertion" proved="true">
-  <proof prover="3"><result status="valid" time="0.40" steps="325"/></proof>
-  </goal>
-  <goal name="check_cell_change&#39;vc.12" expl="assertion" proved="true">
-  <proof prover="0"><result status="valid" time="0.15"/></proof>
-  <proof prover="3"><result status="failure" time="0.00"/></proof>
-  </goal>
   <goal name="check_cell_change&#39;vc.13" expl="assertion" proved="true">
-  <proof prover="0" obsolete="true"><result status="timeout" time="1.00"/></proof>
-  <proof prover="1" obsolete="true"><result status="timeout" time="1.00"/></proof>
-  <proof prover="3" obsolete="true"><result status="timeout" time="20.00"/></proof>
-  <proof prover="4" obsolete="true"><result status="timeout" time="1.00"/></proof>
-  <transf name="split_vc" proved="true" >
-   <goal name="check_cell_change&#39;vc.13.0" expl="assertion" proved="true">
-   <proof prover="0"><result status="valid" time="0.93"/></proof>
-   <proof prover="1" timelimit="5" memlimit="2000" obsolete="true"><result status="timeout" time="5.00"/></proof>
-   <proof prover="3"><result status="failure" time="0.00"/></proof>
-   <proof prover="4" timelimit="5" memlimit="2000" obsolete="true"><result status="valid" time="0.78"/></proof>
-   </goal>
-   <goal name="check_cell_change&#39;vc.13.1" expl="assertion" proved="true">
-   <proof prover="0"><result status="timeout" time="1.00"/></proof>
-   <proof prover="1"><result status="timeout" time="1.00"/></proof>
-   <proof prover="3"><result status="failure" time="0.00"/></proof>
-   <proof prover="4"><result status="valid" time="0.26"/></proof>
-   </goal>
-  </transf>
+  <proof prover="0"><result status="valid" time="0.13"/></proof>
   </goal>
   <goal name="check_cell_change&#39;vc.14" expl="assertion" proved="true">
-  <proof prover="0"><result status="valid" time="0.13"/></proof>
-  <proof prover="3"><result status="failure" time="0.00"/></proof>
+  <proof prover="0"><result status="valid" time="0.56"/></proof>
   </goal>
   <goal name="check_cell_change&#39;vc.15" expl="assertion" proved="true">
-  <proof prover="0"><result status="valid" time="0.13"/></proof>
-  <proof prover="3"><result status="failure" time="0.00"/></proof>
+  <proof prover="0"><result status="valid" time="0.16"/></proof>
   </goal>
   <goal name="check_cell_change&#39;vc.16" expl="assertion" proved="true">
-  <proof prover="0"><result status="valid" time="0.14"/></proof>
-  <proof prover="3"><result status="failure" time="0.00"/></proof>
+  <proof prover="0"><result status="valid" time="0.16"/></proof>
   </goal>
   <goal name="check_cell_change&#39;vc.17" expl="assertion" proved="true">
-  <proof prover="0"><result status="valid" time="0.20"/></proof>
-  <proof prover="1" obsolete="true"><result status="valid" time="0.11"/></proof>
-  <proof prover="3"><result status="failure" time="0.00"/></proof>
+  <proof prover="0"><result status="valid" time="0.15"/></proof>
   </goal>
-  <goal name="check_cell_change&#39;vc.18" expl="postcondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.16"/></proof>
-  <proof prover="3"><result status="failure" time="0.00"/></proof>
+  <goal name="check_cell_change&#39;vc.18" expl="assertion" proved="true">
+  <proof prover="0"><result status="valid" time="0.24"/></proof>
   </goal>
   <goal name="check_cell_change&#39;vc.19" expl="postcondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.08"/></proof>
-  <proof prover="3"><result status="failure" time="0.00"/></proof>
+  <proof prover="0"><result status="valid" time="0.18"/></proof>
   </goal>
   <goal name="check_cell_change&#39;vc.20" expl="exceptional postcondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.07"/></proof>
-  <proof prover="3"><result status="failure" time="0.00"/></proof>
+  <proof prover="0"><result status="valid" time="0.05"/></proof>
   </goal>
  </transf>
  </goal>
@@ -778,6 +573,7 @@
  <goal name="solve_aux&#39;vc" expl="VC for solve_aux">
  <proof prover="0" obsolete="true"><result status="timeout" time="1.00"/></proof>
  <proof prover="1" obsolete="true"><result status="timeout" time="1.00"/></proof>
+ <proof prover="3"><result status="timeout" time="20.00"/></proof>
  </goal>
  <goal name="solve&#39;vc" expl="VC for solve">
  <transf name="split_vc" >
@@ -806,6 +602,22 @@
   <proof prover="0" obsolete="true"><result status="valid" time="0.04"/></proof>
   </goal>
  </transf>
+ </goal>
+ <goal name="eq_takuzu_grid_eq_rule_1">
+ <proof prover="3" obsolete="true"><result status="valid" time="0.21" steps="189"/></proof>
+ </goal>
+ <goal name="eq_takuzu_grid_eq_rule_2">
+ <proof prover="3" obsolete="true"><result status="timeout" time="20.00"/></proof>
+ </goal>
+ <goal name="frame_subst">
+ <proof prover="0" timelimit="20" obsolete="true"><result status="timeout" time="20.00"/></proof>
+ <proof prover="3" obsolete="true"><result status="valid" time="0.02" steps="34"/></proof>
+ <proof prover="4" timelimit="20" obsolete="true"><result status="timeout" time="20.00"/></proof>
+ </goal>
+ <goal name="aux_lemma_rule1">
+ <proof prover="0" obsolete="true"><result status="timeout" time="1.00"/></proof>
+ <proof prover="1" obsolete="true"><result status="timeout" time="1.00"/></proof>
+ <proof prover="3" obsolete="true"><result status="valid" time="0.01" steps="30"/></proof>
  </goal>
 </theory>
 <theory name="Test">
