@@ -742,64 +742,6 @@ let check_at_cell (g:takuzu_grid) (n:int) : unit
 
 
 (** {4 QUESTIONS 18, 19 AND 20} *)
- 
-(*
-lemma invariant_g : forall g:takuzu_grid, n:int, e:elem. 
-      g[n<-e][n<-Empty] = g[n<-Empty] 
-*)
-
-(*
-lemma sym: forall g:takuzu_grid, n m:int.
-    (not identical_rows g m n <-> not identical_rows g n m) /\
-    (not identical_columns g m n <-> not identical_columns g n m)
-*)
-
-(* lemma aux_lemma_rule1 : correct car deux faits independant pour k <> n*)
-(*
-lemma aux_lemma_rule1 : forall g:takuzu_grid, n:int.
-    (forall k. 0 <= k < n -> rule_1_for_cell g[n<-Empty] k ) <-> 
-    (forall k. 0 <= k < n -> rule_1_for_cell g k)
-*)
-
-(* de meme *)
-(*
-lemma aux_lemma_rule2 : forall g:takuzu_grid, n:int.
-    (forall k. 0 <= k < n -> rule_2_for_cell g[n<-Empty] k ) <-> 
-    (forall k. 0 <= k < n -> rule_2_for_cell g k)
-*)
-  
-(**)
-(*lemma inv_not_identical_columns : forall g:takuzu_grid, n k t:int. 
-    0 <= n < g.length /\ 0 <= k < g.length /\ 0 <= t < g.length ->
-    let cn = column_start_index n in
-    let ck = column_start_index k in
-    let ct = column_start_index t in
-  ck <> cn /\ ct <> cn ->
-      (not identical_columns g[n<-Empty] k t <-> not identical_columns g k t)
-      
-lemma inv_not_identical_rows : forall g:takuzu_grid, n k t:int. 
-    0 <= n < g.length /\ 0 <= k < g.length /\ 0 <= t < g.length -> 
-    let cn = row_start_index n in
-    let ck = row_start_index k in
-    let ct = row_start_index t in
-  ck <> cn /\ ct <> cn ->
-      (not identical_rows g[n<-Empty] k t <-> not identical_rows g k t)
-*)   
-
-(* correct parce que les autres lignes et colonnes ne sont pas impactes *) 
-(*
-lemma inv_not_identical: 
-  forall g:takuzu_grid, n k:int. g.length = 64 /\ 0 <= n < g.length /\ 0 <=k < n ->
-              let cs = column_start_index k in
-              let rs = row_start_index k in
-              forall i:int.
-               0 <= i /\ i < 8 ->
-               (not i = cs /\ not cs = column_start_index n /\ not i = column_start_index n -> 
-                      (not identical_columns g[n<-Empty] cs i <-> not identical_columns g cs i)) /\
-               (not (8 * i) = rs /\ not rs = row_start_index n /\ not (8 * i) = row_start_index n -> 
-                      (not identical_rows g[n<-Empty] rs (8 * i) <-> not identical_rows g rs (8 * i))) 
-*)
-
 (* nouveau ***********)
 lemma subst_0 : forall g:takuzu_grid, n:int, e:elem.
   0 <= n < g.length -> g[n<-e][n<-Empty] = g[n<-Empty]
@@ -824,11 +766,10 @@ lemma aux_rule_1_and_rule_2_for_chunk :
                 (rk <> rn -> rule_1_for_chunk g rk 1) /\
                 (ck <> cn -> rule_2_for_chunk g ck 8) /\
                 (rk <> rn -> rule_2_for_chunk g rk 1)))  
-lemma sym_identical_rows_or_columns: forall g:takuzu_grid, n m:int.
-    0 <= m < g.length /\ 0 <= n < g.length /\ m <> n ->
-    (not identical_rows g m n -> not identical_rows g n m) /\
-    (not identical_columns g m n -> not identical_columns g n m)
-(* correct parce que les autres lignes et colonnes ne sont pas impactes *) 
+lemma sym : forall g:takuzu_grid, n m:int.
+  0 <= m < g.length /\ 0 <= n <= g.length /\ m <> n ->
+  (not identical_rows g m n -> not identical_rows g n m) /\
+  (not identical_columns g m n -> not identical_columns g n m)
 
 lemma inv_not_identical: 
   forall g:takuzu_grid, n k:int. g.length = 64 /\ 0 <= n < g.length /\ 0 <=k < n ->
@@ -841,58 +782,6 @@ lemma inv_not_identical:
                (not (8 * i) = rs /\ not rs = row_start_index n /\ not (8 * i) = row_start_index n -> 
                       (not identical_rows g[n<-Empty] rs (8 * i) <-> not identical_rows g rs (8 * i))) 
 
-
-(*lemma aux_identical_chunk : 
-    forall g:takuzu_grid, n k t:int. 
-    0 <= n < g.length /\ 0 <= k < g.length /\ 0 <= t < g.length -> 
-    let cn = column_start_index n in
-    let ck = column_start_index k in
-    let ct = column_start_index t in
-    let rn = row_start_index n in
-    let rk = row_start_index k in
-    let rt = row_start_index t in 
-    (rn <> ck  *)
-      (*/\ 
-      (rk <> rn -> (rule_1_for_chunk g[n<-Empty] rk 1 <-> rule_1_for_chunk g rn 1)) 
-*)
-
-(*lemma aux_rule_1_for_chunk : forall g, n:int. g.length = 64 -> 0 <= n < g.length ->
-      let cn = column_start_index n in
-      let rn = row_start_index n in
-        (rule_1_for_chunk g cn 8 -> rule_1_for_chunk g[n<-Empty] cn 8)
-         /\ (rule_1_for_chunk g rn 1 -> rule_1_for_chunk g[n<-Empty] rn 1)
-lemma aux_rule_2_for_chunk : forall g, n:int. g.length = 64 -> 0 <= n < g.length ->
-      let cn = column_start_index n in
-      let rn = row_start_index n in
-        (rule_2_for_chunk g cn 8 -> rule_2_for_chunk g[n<-Empty] cn 8)
-         /\ (rule_2_for_chunk g rn 1 -> rule_2_for_chunk g[n<-Empty] rn 1)*)
-(*lemma subst_inv_1 : forall g:takuzu_grid, n:int, e1 e2:elem.
-  0 <= n < g.length -> 
-    (forall k:int. 0 <= k < g.length -> k <> n -> g[n<-e1][n<-e2][k] = g[n<-e2][k])
-lemma subst_inv_2: forall g:takuzu_grid, n:int, e1 e2:elem.
-  0 <= n < g.length -> 
-    (forall k:int. 0 <= k < g.length -> k = n -> g[n<-e1][n<-e2][k] = g[n<-e2][k])
-lemma subst_last : forall g:takuzu_grid, n:int, e1 e2:elem.
-  0 <= n < g.length -> 
-    (forall k:int. 0 <= k < g.length -> g[n<-e1][n<-e2][k] = g[n<-e2][k])
-
-predicate eq_takuzu_grid (g1 g2:takuzu_grid) = 
-  g1.length = g2.length /\ forall n:int. 0 <= n < g1.length -> g1[n] = g2[n]
-
-lemma eq_takuzu_grid_eq_rule_1 : forall g1 g2:takuzu_grid, start incr:int.
-  eq_takuzu_grid g1 g2 -> g1.length = 64 ->
-  valid_chunk start incr ->
-  rule_1_for_chunk g1 start incr ->rule_1_for_chunk g2 start incr
-lemma eq_takuzu_grid_eq_rule_2 : forall g1 g2:takuzu_grid, start incr:int.
-  eq_takuzu_grid g1 g2 -> g1.length = 64 ->
-  valid_chunk start incr ->
-  rule_2_for_chunk g1 start incr -> rule_2_for_chunk g2 start incr
-
-lemma subst_inv : forall g:takuzu_grid, n:int, e1 e2:elem.
-  0 <= n < g.length -> 
-    eq_takuzu_grid g[n<-e1][n<-e2] g[n<-e2]
-lemma eq_tab_eq_prop : forall g1 g2:takuzu_grid, n:int.
-  g1 = g2 -> 0 <= n < g1.length -> valid_up_to g1 n -> valid_up_to g2 n *)
 (* nouveau *************)
 
 let check_cell_change (g:takuzu_grid) (n:int) (e:elem) : unit
@@ -907,15 +796,11 @@ let check_cell_change (g:takuzu_grid) (n:int) (e:elem) : unit
   requires { valid_up_to (g[n<-Empty]) n }
   writes { g }
   ensures { valid_up_to g (n+1) }
-  (* la condition de framing est ajoutee pour la fonction solve_aux *)
-  (*ensures { g = (old g)[n<-e] } *)
+  ensures { g = (old g)[n<-e] } 
   raises { Invalid -> true }
 = 
 
-(*  assert { valid_up_to g[n<-Empty] n }; *)
   g[n] <- e;
-(*  assert { valid_up_to (g at Init)[n<-Empty] n };
-  assert { g[n<-Empty] = (g at Init)[n<-Empty] }; *)
   assert { valid_up_to g[n<-Empty] n };
   check_at_cell g n;
 
@@ -935,7 +820,7 @@ let check_cell_change (g:takuzu_grid) (n:int) (e:elem) : unit
   
   (* propriete 1 : forall 0 <= k <= n-1, rule_1_for_cell g k *)
   (* par le lemma ajoute 'invariant_g', on a deja *)
-  assert {forall k:int. 0 <= k < n -> rule_1_for_cell g[n<-Empty] k };
+  (*assert {forall k:int. 0 <= k < n -> rule_1_for_cell g[n<-Empty] k };*)
   (* qq par lemma ajoute 'aux_lemma_rule_1', on obtient *) 
   assert {forall k:int. 0 <= k < n -> 
             let ck = column_start_index k in
@@ -960,9 +845,6 @@ let check_cell_change (g:takuzu_grid) (n:int) (e:elem) : unit
               
   assert { forall k:int. 0 <= k < n -> rule_1_for_cell g k };
   assert { forall k:int. 0 <= k < n -> rule_2_for_cell g k };
-
-  
-    assert { forall k:int. 0 <= k < n -> rule_3_for_cell g[n<-Empty] k };
     
 (*    assert { forall k:int. 0 <= k < n -> 
               (   let col_start = column_start_index k in
@@ -1009,8 +891,6 @@ let check_cell_change (g:takuzu_grid) (n:int) (e:elem) : unit
        (not i = (column_start_index n) -> not identical_columns g (column_start_index n) i) /\
        (not (8 * i) = (row_start_index n) -> not identical_rows g (row_start_index n) (8 * i)) };
  
-   (* qq par le lemma sym ajoute, tout ligne et colonne diff de l(n) et c(n) n'est pas identique
-          a la ligne de n et la colonne de n*) 
   assert { 
       forall k:int. 0 <= k < n ->
          (not (column_start_index k) = (column_start_index n) -> 
@@ -1018,7 +898,7 @@ let check_cell_change (g:takuzu_grid) (n:int) (e:elem) : unit
          (not (row_start_index k) = (row_start_index n) -> 
                not identical_rows g (row_start_index k) (row_start_index n)) };
  
- 
+  (*
   (* propriete 3.2 :
       dans g, tous les deux lignes ou colonnes tous les deux diff de celui de n sont diff *)
   (* comme une consequence de 'valid_up_to g[n<-Empty] n', 
@@ -1052,7 +932,7 @@ let check_cell_change (g:takuzu_grid) (n:int) (e:elem) : unit
                0 <= i /\ i < 8 ->
                (not i = cs /\ not cs = column_start_index n /\ i = column_start_index n -> not identical_columns g cs i) /\
                (not (8 * i) = rs /\ not rs = row_start_index n /\ (8 * i) = row_start_index n -> not identical_rows g rs (8 * i)) };
-
+    *)
    (*  l(k) <> l(n) /\ l(i) <> l(n) ou c(k) <> c(n) /\ c(i) <> c(n) *)  
    assert {forall k:int. 0 <=k < n ->
               let cs = column_start_index k in
@@ -1092,28 +972,9 @@ predicate extends (g1:takuzu_grid) (g2:takuzu_grid)
 
 
 exception SolutionFound
-
-(* lemma ajoute *)
-(* si g[n] = empty alors g[n<-Empty] = g *)
-(*lemma aux_lemma_1 : forall g:takuzu_grid, n:int. 0 <= n < g.length /\ g[n] = Empty ->
-                        g[n<-Empty] = g
-lemma aux_lemma_2 : forall g:takuzu_grid, n k:int, e:elem. 0 <= n < g.length /\ 0 <= k < g.length ->
-    n <> k -> g[n<-e][k] = g[k]       
-
-lemma aux_lemma_3 : forall g:takuzu_grid, n:int. 0 <= n < g.length ->
-                            valid_up_to g n -> valid_up_to g[n<-Empty] n 
-lemma aux_lemma_4 : forall g g1:takuzu_grid, n:int. 0 <= n < g.length ->
-                            valid_up_to g n -> extends g g1 -> valid_up_to g1 n
-*)
 lemma aux_lemma_5 : forall g:takuzu_grid, n:int.
                      0 <= n < g.length -> g[n] = Empty -> 
                      g[n<-Empty] = g 
- (*
-lemma aux_lemma_6 : forall g:takuzu_grid, n:int, e1 e2:elem.
-                     0 <= n < g.length -> g[n] = Empty -> g = g[n<-Empty] 
-lemma aux_lemma_7 : forall g:takuzu_grid, n:int, e1 e2:elem.
-                     0 <= n < g.length -> g[n<-e1][n<-e2] = g[n<-e2]  
-*)
 let rec solve_aux (g:takuzu_grid) (n:int) : unit
   requires { g.length = 64 }
   requires { 0 <= n <= 64 }
@@ -1123,7 +984,7 @@ let rec solve_aux (g:takuzu_grid) (n:int) : unit
   variant { 64 - n }
   ensures { valid_up_to g n }
   ensures { full_up_to g n }
-  ensures { old g = g }
+  ensures { g = old g }
   raises { SolutionFound -> extends (old g) g /\ full_up_to g 64 /\ valid_up_to g 64 }
 = 
   if n=64 then raise SolutionFound;
