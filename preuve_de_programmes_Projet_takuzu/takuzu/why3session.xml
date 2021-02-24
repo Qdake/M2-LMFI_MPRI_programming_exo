@@ -4,8 +4,8 @@
 <why3session shape_version="6">
 <prover id="0" name="CVC4" version="1.6" timelimit="1" steplimit="0" memlimit="1000"/>
 <prover id="1" name="Z3" version="4.8.6" timelimit="1" steplimit="0" memlimit="1000"/>
-<prover id="3" name="Alt-Ergo" version="2.0.0" timelimit="10" steplimit="0" memlimit="1000"/>
-<prover id="4" name="Spass" version="3.7" timelimit="60" steplimit="0" memlimit="1000"/>
+<prover id="3" name="Alt-Ergo" version="2.0.0" timelimit="20" steplimit="0" memlimit="1000"/>
+<prover id="4" name="Spass" version="3.7" timelimit="1" steplimit="0" memlimit="1000"/>
 <file format="whyml">
 <path name=".."/><path name="takuzu.mlw"/>
 <theory name="Appetizers" proved="true">
@@ -124,7 +124,7 @@
   <proof prover="0"><result status="valid" time="0.05"/></proof>
   <proof prover="1" obsolete="true"><result status="timeout" time="1.00"/></proof>
   <proof prover="3" timelimit="60" obsolete="true"><result status="failure" time="0.00"/></proof>
-  <proof prover="4" obsolete="true"><result status="failure" time="0.00"/></proof>
+  <proof prover="4" timelimit="60" obsolete="true"><result status="failure" time="0.00"/></proof>
   </goal>
   <goal name="no_3_consecutive_zeros_version_3&#39;vc.11" expl="assertion" proved="true">
   <proof prover="0"><result status="valid" time="0.04"/></proof>
@@ -204,40 +204,114 @@
  <proof prover="0"><result status="valid" time="0.02"/></proof>
  </goal>
  <goal name="count_number_of&#39;vc" expl="VC for count_number_of" proved="true">
- <proof prover="0"><result status="valid" time="0.05"/></proof>
- <proof prover="3" timelimit="30" obsolete="true"><result status="valid" time="0.03" steps="68"/></proof>
+ <proof prover="0" obsolete="true"><result status="valid" time="0.05"/></proof>
+ <proof prover="3"><result status="valid" time="0.03" steps="67"/></proof>
  </goal>
  <goal name="same_number_of_zeros_and_ones&#39;vc" expl="VC for same_number_of_zeros_and_ones" proved="true">
  <proof prover="0"><result status="valid" time="0.02"/></proof>
  <proof prover="3" timelimit="30" obsolete="true"><result status="valid" time="0.00" steps="0"/></proof>
  </goal>
  <goal name="check_identical_sub_arrays&#39;vc" expl="VC for check_identical_sub_arrays" proved="true">
- <transf name="split_vc" proved="true" >
-  <goal name="check_identical_sub_arrays&#39;vc.0" expl="loop invariant init" proved="true">
-  <proof prover="0"><result status="valid" time="0.02"/></proof>
+ <proof prover="0"><result status="unknown" time="0.59"/></proof>
+ <proof prover="1"><result status="highfailure" time="0.29"/></proof>
+ <proof prover="3"><result status="valid" time="0.02" steps="98"/></proof>
+ <transf name="split_vc" >
+  <goal name="check_identical_sub_arrays&#39;vc.0" expl="loop invariant init">
+  <proof prover="0" obsolete="true"><result status="valid" time="0.04"/></proof>
   </goal>
-  <goal name="check_identical_sub_arrays&#39;vc.1" expl="index in array bounds" proved="true">
-  <proof prover="0"><result status="valid" time="0.03"/></proof>
+  <goal name="check_identical_sub_arrays&#39;vc.1" expl="index in array bounds">
+  <proof prover="0" obsolete="true"><result status="timeout" time="1.00"/></proof>
+  <proof prover="1" obsolete="true"><result status="unknown" time="0.09"/></proof>
+  <proof prover="4" obsolete="true"><result status="timeout" time="1.00"/></proof>
+  <transf name="split_vc" >
+   <goal name="check_identical_sub_arrays&#39;vc.1.0" expl="index in array bounds">
+   <proof prover="0" obsolete="true"><result status="valid" time="0.02"/></proof>
+   </goal>
+   <goal name="check_identical_sub_arrays&#39;vc.1.1" expl="index in array bounds">
+   <proof prover="0" timelimit="30" memlimit="4000" obsolete="true"><result status="timeout" time="30.00"/></proof>
+   <proof prover="1" timelimit="30" memlimit="4000" obsolete="true"><result status="unknown" time="0.09"/></proof>
+   <proof prover="4" timelimit="30" memlimit="4000" obsolete="true"><result status="timeout" time="30.00"/></proof>
+   </goal>
+  </transf>
   </goal>
-  <goal name="check_identical_sub_arrays&#39;vc.2" expl="index in array bounds" proved="true">
-  <proof prover="0"><result status="valid" time="0.02"/></proof>
+  <goal name="check_identical_sub_arrays&#39;vc.2" expl="index in array bounds">
+  <proof prover="0" obsolete="true"><result status="timeout" time="1.00"/></proof>
+  <proof prover="1" obsolete="true"><result status="unknown" time="0.16"/></proof>
+  <proof prover="4" obsolete="true"><result status="timeout" time="1.00"/></proof>
+  <transf name="split_vc" >
+   <goal name="check_identical_sub_arrays&#39;vc.2.0" expl="index in array bounds">
+   <proof prover="0" obsolete="true"><result status="valid" time="0.03"/></proof>
+   </goal>
+   <goal name="check_identical_sub_arrays&#39;vc.2.1" expl="index in array bounds">
+   <proof prover="0" timelimit="30" memlimit="4000" obsolete="true"><result status="timeout" time="30.00"/></proof>
+   <proof prover="1" timelimit="30" memlimit="4000" obsolete="true"><result status="unknown" time="0.14"/></proof>
+   <proof prover="4" timelimit="30" memlimit="4000" obsolete="true"><result status="timeout" time="30.00"/></proof>
+   </goal>
+  </transf>
   </goal>
-  <goal name="check_identical_sub_arrays&#39;vc.3" expl="postcondition" proved="true">
-  <proof prover="0"><result status="timeout" time="1.00"/></proof>
-  <proof prover="1"><result status="timeout" time="1.00"/></proof>
-  <proof prover="3" timelimit="20"><result status="valid" time="0.01" steps="38"/></proof>
+  <goal name="check_identical_sub_arrays&#39;vc.3" expl="postcondition">
+  <proof prover="0" obsolete="true"><result status="timeout" time="1.00"/></proof>
+  <proof prover="1" obsolete="true"><result status="timeout" time="1.00"/></proof>
+  <proof prover="4" obsolete="true"><result status="timeout" time="1.00"/></proof>
+  <transf name="split_vc" >
+   <goal name="check_identical_sub_arrays&#39;vc.3.0" expl="postcondition">
+   <proof prover="0" obsolete="true"><result status="valid" time="0.03"/></proof>
+   </goal>
+   <goal name="check_identical_sub_arrays&#39;vc.3.1" expl="postcondition">
+   <proof prover="0" timelimit="5" memlimit="2000" obsolete="true"><result status="timeout" time="5.00"/></proof>
+   <proof prover="1" timelimit="5" memlimit="2000" obsolete="true"><result status="timeout" time="5.00"/></proof>
+   <proof prover="4" timelimit="5" memlimit="2000" obsolete="true"><result status="timeout" time="5.00"/></proof>
+   <transf name="inline_goal" >
+    <goal name="check_identical_sub_arrays&#39;vc.3.1.0" expl="postcondition">
+    <transf name="split_all_full" >
+     <goal name="check_identical_sub_arrays&#39;vc.3.1.0.0" expl="postcondition">
+     <proof prover="0" obsolete="true"><result status="timeout" time="1.00"/></proof>
+     <proof prover="1" obsolete="true"><result status="valid" time="0.06"/></proof>
+     </goal>
+    </transf>
+    </goal>
+   </transf>
+   </goal>
+  </transf>
   </goal>
-  <goal name="check_identical_sub_arrays&#39;vc.4" expl="assertion" proved="true">
-  <proof prover="0"><result status="valid" time="0.02"/></proof>
+  <goal name="check_identical_sub_arrays&#39;vc.4" expl="loop invariant preservation">
+  <proof prover="0" timelimit="5" memlimit="2000" obsolete="true"><result status="timeout" time="5.00"/></proof>
+  <proof prover="1" timelimit="5" memlimit="2000" obsolete="true"><result status="timeout" time="5.00"/></proof>
+  <proof prover="4" timelimit="5" memlimit="2000" obsolete="true"><result status="timeout" time="5.00"/></proof>
+  <transf name="inline_goal" >
+   <goal name="check_identical_sub_arrays&#39;vc.4.0" expl="loop invariant preservation">
+   <transf name="split_all_full" >
+    <goal name="check_identical_sub_arrays&#39;vc.4.0.0" expl="loop invariant preservation">
+    <proof prover="0" obsolete="true"><result status="timeout" time="1.00"/></proof>
+    <proof prover="1" obsolete="true"><result status="timeout" time="1.00"/></proof>
+    <proof prover="4" obsolete="true"><result status="timeout" time="1.00"/></proof>
+    <transf name="split_vc" >
+     <goal name="check_identical_sub_arrays&#39;vc.4.0.0.0" expl="loop invariant preservation">
+     <proof prover="0" timelimit="5" memlimit="2000" obsolete="true"><result status="timeout" time="5.00"/></proof>
+     <proof prover="1" timelimit="5" memlimit="2000" obsolete="true"><result status="timeout" time="5.00"/></proof>
+     <proof prover="4" timelimit="5" memlimit="2000" obsolete="true"><result status="timeout" time="5.00"/></proof>
+     <transf name="inline_goal" >
+      <goal name="check_identical_sub_arrays&#39;vc.4.0.0.0.0" expl="loop invariant preservation">
+      <proof prover="0" timelimit="30" memlimit="4000" obsolete="true"><result status="timeout" time="30.00"/></proof>
+      <proof prover="1" timelimit="30" memlimit="4000" obsolete="true"><result status="timeout" time="30.00"/></proof>
+      <proof prover="4" timelimit="30" memlimit="4000" obsolete="true"><result status="failure" time="0.00"/></proof>
+      </goal>
+     </transf>
+     </goal>
+    </transf>
+    </goal>
+   </transf>
+   </goal>
+  </transf>
   </goal>
-  <goal name="check_identical_sub_arrays&#39;vc.5" expl="loop invariant preservation" proved="true">
-  <proof prover="3" timelimit="20"><result status="valid" time="0.01" steps="44"/></proof>
+  <goal name="check_identical_sub_arrays&#39;vc.5" expl="postcondition">
+  <proof prover="0" obsolete="true"><result status="valid" time="0.02"/></proof>
   </goal>
-  <goal name="check_identical_sub_arrays&#39;vc.6" expl="postcondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.01"/></proof>
+  <goal name="check_identical_sub_arrays&#39;vc.6" expl="postcondition">
+  <proof prover="0" obsolete="true"><result status="valid" time="0.01"/></proof>
   </goal>
-  <goal name="check_identical_sub_arrays&#39;vc.7" expl="postcondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.02"/></proof>
+  <goal name="check_identical_sub_arrays&#39;vc.4" expl="assertion">
+  <proof prover="0" obsolete="true"><result status="valid" time="0.03"/></proof>
   </goal>
  </transf>
  </goal>
@@ -586,391 +660,28 @@
  <goal name="inv_not_identical">
  </goal>
  <goal name="check_cell_change&#39;vc" expl="VC for check_cell_change" proved="true">
- <proof prover="3"><result status="timeout" time="10.00"/></proof>
  <transf name="split_vc" proved="true" >
   <goal name="check_cell_change&#39;vc.0" expl="index in array bounds" proved="true">
-  <proof prover="0" timelimit="5"><result status="valid" time="0.05"/></proof>
+  <proof prover="3"><result status="valid" time="0.02" steps="8"/></proof>
   </goal>
   <goal name="check_cell_change&#39;vc.1" expl="assertion" proved="true">
-  <proof prover="0" timelimit="5"><result status="valid" time="0.07"/></proof>
-  </goal>
-  <goal name="check_cell_change&#39;vc.2" expl="precondition" proved="true">
-  <proof prover="0" timelimit="5"><result status="valid" time="0.06"/></proof>
-  </goal>
-  <goal name="check_cell_change&#39;vc.3" expl="precondition" proved="true">
-  <proof prover="0" timelimit="5"><result status="valid" time="0.05"/></proof>
-  </goal>
-  <goal name="check_cell_change&#39;vc.4" expl="assertion" proved="true">
-  <proof prover="0"><result status="valid" time="0.04"/></proof>
-  </goal>
-  <goal name="check_cell_change&#39;vc.5" expl="assertion" proved="true">
-  <proof prover="0"><result status="valid" time="0.12"/></proof>
-  </goal>
-  <goal name="check_cell_change&#39;vc.6" expl="assertion" proved="true">
-  <proof prover="0"><result status="timeout" time="1.00"/></proof>
-  <proof prover="1"><result status="valid" time="0.07"/></proof>
-  </goal>
-  <goal name="check_cell_change&#39;vc.7" expl="assertion" proved="true">
-  <proof prover="0"><result status="valid" time="0.10"/></proof>
-  </goal>
-  <goal name="check_cell_change&#39;vc.8" expl="assertion" proved="true">
-  <proof prover="0"><result status="timeout" time="1.00"/></proof>
-  <proof prover="1"><result status="valid" time="0.06"/></proof>
-  </goal>
-  <goal name="check_cell_change&#39;vc.9" expl="assertion" proved="true">
-  <proof prover="0"><result status="valid" time="0.08"/></proof>
-  </goal>
-  <goal name="check_cell_change&#39;vc.10" expl="assertion" proved="true">
-  <proof prover="0"><result status="valid" time="0.14"/></proof>
-  </goal>
-  <goal name="check_cell_change&#39;vc.11" expl="assertion" proved="true">
-  <proof prover="0"><result status="timeout" time="1.00"/></proof>
-  <proof prover="1"><result status="timeout" time="1.00"/></proof>
-  <proof prover="3" timelimit="30"><result status="valid" time="0.26" steps="325"/></proof>
-  </goal>
-  <goal name="check_cell_change&#39;vc.12" expl="assertion" proved="true">
-  <proof prover="0"><result status="valid" time="0.12"/></proof>
-  </goal>
-  <goal name="check_cell_change&#39;vc.13" expl="assertion" proved="true">
-  <proof prover="0"><result status="valid" time="0.93"/></proof>
-  </goal>
-  <goal name="check_cell_change&#39;vc.14" expl="assertion" proved="true">
-  <proof prover="0"><result status="valid" time="0.14"/></proof>
-  </goal>
-  <goal name="check_cell_change&#39;vc.15" expl="assertion" proved="true">
-  <proof prover="0"><result status="valid" time="0.14"/></proof>
-  </goal>
-  <goal name="check_cell_change&#39;vc.16" expl="assertion" proved="true">
-  <proof prover="0"><result status="valid" time="0.14"/></proof>
-  </goal>
-  <goal name="check_cell_change&#39;vc.17" expl="assertion" proved="true">
-  <proof prover="0"><result status="valid" time="0.16"/></proof>
-  </goal>
-  <goal name="check_cell_change&#39;vc.18" expl="postcondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.16"/></proof>
-  </goal>
-  <goal name="check_cell_change&#39;vc.19" expl="postcondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.05"/></proof>
-  <proof prover="3" timelimit="30" obsolete="true"><result status="valid" time="0.02" steps="22"/></proof>
-  </goal>
-  <goal name="check_cell_change&#39;vc.20" expl="exceptional postcondition" proved="true">
-  <proof prover="0" timelimit="5"><result status="valid" time="0.05"/></proof>
-  </goal>
- </transf>
- </goal>
- <goal name="aux_lemma_1">
- </goal>
- <goal name="aux_lemma_2">
- </goal>
- <goal name="aux_lemma_3">
- </goal>
- <goal name="aux_lemma_4">
- </goal>
- <goal name="aux_lemma_5">
- </goal>
- <goal name="solve_aux&#39;vc" expl="VC for solve_aux">
- <transf name="split_vc" >
-  <goal name="solve_aux&#39;vc.0" expl="exceptional postcondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.07"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.1" expl="index in array bounds" proved="true">
-  <proof prover="0"><result status="valid" time="0.08"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.2" expl="precondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.04"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.3" expl="precondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.08"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.4" expl="assertion" proved="true">
-  <proof prover="0"><result status="valid" time="0.04"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.5" expl="assertion" proved="true">
-  <proof prover="0"><result status="valid" time="0.04"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.6" expl="assertion" proved="true">
-  <proof prover="0"><result status="valid" time="0.07"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.7" expl="variant decrease" proved="true">
-  <proof prover="0"><result status="valid" time="0.06"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.8" expl="precondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.06"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.9" expl="precondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.08"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.10" expl="precondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.11"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.11" expl="precondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.11"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.12" expl="assertion" proved="true">
-  <proof prover="0"><result status="valid" time="0.06"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.13" expl="assertion" proved="true">
-  <proof prover="0"><result status="valid" time="0.06"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.14" expl="assertion" proved="true">
-  <proof prover="3"><result status="valid" time="0.02" steps="26"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.15" expl="postcondition" proved="true">
-  <proof prover="3"><result status="valid" time="0.02" steps="26"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.16" expl="postcondition" proved="true">
-  <proof prover="3"><result status="valid" time="0.02" steps="26"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.17" expl="postcondition" proved="true">
-  <proof prover="3"><result status="valid" time="0.02" steps="26"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.18" expl="exceptional postcondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.04"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.19" expl="postcondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.07"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.20" expl="postcondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.06"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.21" expl="postcondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.04"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.22" expl="precondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.06"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.23" expl="precondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.08"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.24" expl="assertion" proved="true">
-  <proof prover="0"><result status="valid" time="0.04"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.25" expl="assertion" proved="true">
-  <proof prover="0"><result status="valid" time="0.04"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.26" expl="assertion" proved="true">
-  <proof prover="0"><result status="valid" time="0.06"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.27" expl="variant decrease" proved="true">
-  <proof prover="0"><result status="valid" time="0.04"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.28" expl="precondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.04"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.29" expl="precondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.09"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.30" expl="precondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.11"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.31" expl="precondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.12"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.32" expl="assertion" proved="true">
-  <proof prover="0"><result status="valid" time="0.05"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.33" expl="assertion" proved="true">
-  <proof prover="0"><result status="valid" time="0.04"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.34" expl="assertion" proved="true">
-  <proof prover="3"><result status="valid" time="0.02" steps="26"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.35" expl="postcondition" proved="true">
-  <proof prover="3"><result status="valid" time="0.02" steps="26"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.36" expl="postcondition" proved="true">
-  <proof prover="3"><result status="valid" time="0.02" steps="26"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.37" expl="postcondition" proved="true">
+  <proof prover="0" timelimit="5" memlimit="2000" obsolete="true"><result status="timeout" time="5.00"/></proof>
+  <proof prover="1" timelimit="5" memlimit="2000" obsolete="true"><result status="timeout" time="5.00"/></proof>
+  <proof prover="3" obsolete="true"><result status="timeout" time="20.00"/></proof>
+  <proof prover="4" timelimit="5" memlimit="2000" obsolete="true"><result status="timeout" time="5.00"/></proof>
   <transf name="inline_goal" proved="true" >
-   <goal name="solve_aux&#39;vc.37.0" expl="postcondition" proved="true">
+   <goal name="check_cell_change&#39;vc.1.0" expl="assertion" proved="true">
    <transf name="split_all_full" proved="true" >
-    <goal name="solve_aux&#39;vc.37.0.0" expl="postcondition" proved="true">
-    <proof prover="3"><result status="valid" time="0.02" steps="26"/></proof>
-    </goal>
-   </transf>
-   </goal>
-  </transf>
-  </goal>
-  <goal name="solve_aux&#39;vc.38" expl="exceptional postcondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.05"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.39" expl="postcondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.06"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.40" expl="postcondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.04"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.41" expl="postcondition" proved="true">
-  <transf name="inline_goal" proved="true" >
-   <goal name="solve_aux&#39;vc.41.0" expl="postcondition" proved="true">
-   <transf name="split_all_full" proved="true" >
-   </transf>
-   </goal>
-  </transf>
-  </goal>
-  <goal name="solve_aux&#39;vc.42" expl="precondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.04"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.43" expl="precondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.07"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.44" expl="precondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.09"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.45" expl="assertion" proved="true">
-  <proof prover="0"><result status="valid" time="0.09"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.46" expl="assertion" proved="true">
-  <proof prover="0"><result status="valid" time="0.11"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.47" expl="assertion" proved="true">
-  <proof prover="3"><result status="valid" time="0.02" steps="24"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.48" expl="variant decrease" proved="true">
-  <proof prover="3"><result status="valid" time="0.02" steps="24"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.49" expl="precondition" proved="true">
-  <proof prover="3"><result status="valid" time="0.02" steps="24"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.50" expl="precondition" proved="true">
-  <proof prover="3"><result status="valid" time="0.02" steps="25"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.51" expl="precondition" proved="true">
-  <proof prover="3"><result status="valid" time="0.04" steps="89"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.52" expl="precondition" proved="true">
-  <proof prover="3"><result status="valid" time="0.02" steps="29"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.53" expl="assertion" proved="true">
-  <proof prover="3"><result status="valid" time="0.02" steps="32"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.54" expl="assertion" proved="true">
-  <proof prover="3"><result status="valid" time="0.02" steps="33"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.55" expl="assertion" proved="true">
-  <proof prover="3"><result status="valid" time="0.02" steps="34"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.56" expl="precondition" proved="true">
-  <proof prover="3"><result status="valid" time="0.02" steps="35"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.57" expl="precondition" proved="true">
-  <proof prover="3"><result status="valid" time="0.02" steps="36"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.58" expl="precondition" proved="true">
-  <proof prover="3"><result status="valid" time="0.02" steps="39"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.59" expl="assertion" proved="true">
-  <proof prover="3"><result status="valid" time="0.06" steps="86"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.60" expl="assertion" proved="true">
-  <proof prover="3"><result status="valid" time="0.09" steps="164"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.61" expl="assertion">
-  </goal>
-  <goal name="solve_aux&#39;vc.62" expl="variant decrease" proved="true">
-  <proof prover="3"><result status="valid" time="0.02" steps="47"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.63" expl="precondition" proved="true">
-  <proof prover="3"><result status="valid" time="0.02" steps="47"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.64" expl="precondition" proved="true">
-  <proof prover="3"><result status="valid" time="0.02" steps="48"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.65" expl="precondition" proved="true">
-  <proof prover="3"><result status="valid" time="0.06" steps="174"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.66" expl="precondition" proved="true">
-  <proof prover="3"><result status="valid" time="0.03" steps="52"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.67" expl="assertion" proved="true">
-  <proof prover="3"><result status="valid" time="0.02" steps="55"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.68" expl="assertion" proved="true">
-  <proof prover="3"><result status="valid" time="0.02" steps="56"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.69" expl="assertion" proved="true">
-  <proof prover="3"><result status="valid" time="0.03" steps="57"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.70" expl="index in array bounds" proved="true">
-  <proof prover="3"><result status="valid" time="0.02" steps="58"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.71" expl="assertion" proved="true">
-  <proof prover="3"><result status="valid" time="0.03" steps="66"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.72" expl="postcondition" proved="true">
-  <proof prover="3"><result status="valid" time="0.03" steps="66"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.73" expl="postcondition" proved="true">
-  <proof prover="3"><result status="valid" time="0.03" steps="67"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.74" expl="postcondition" proved="true">
-  <proof prover="3"><result status="valid" time="0.05" steps="68"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.75" expl="exceptional postcondition" proved="true">
-  <proof prover="3"><result status="valid" time="0.07" steps="182"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.76" expl="index in array bounds" proved="true">
-  <proof prover="3"><result status="valid" time="0.03" steps="37"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.77" expl="assertion">
-  </goal>
-  <goal name="solve_aux&#39;vc.78" expl="postcondition" proved="true">
-  <proof prover="3"><result status="valid" time="0.03" steps="45"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.79" expl="postcondition" proved="true">
-  <proof prover="3"><result status="valid" time="0.03" steps="46"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.80" expl="postcondition" proved="true">
-  <proof prover="3"><result status="valid" time="0.03" steps="47"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.81" expl="exceptional postcondition" proved="true">
-  <proof prover="3"><result status="valid" time="0.05" steps="104"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.82" expl="precondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.07"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.83" expl="precondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.09"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.84" expl="precondition">
-  <proof prover="0" timelimit="10"><result status="timeout" time="10.00"/></proof>
-  <proof prover="1" timelimit="10"><result status="timeout" time="10.00"/></proof>
-  <proof prover="3"><result status="timeout" time="10.00"/></proof>
-  <proof prover="4" timelimit="10"><result status="timeout" time="7.88"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.85" expl="assertion" proved="true">
-  <proof prover="0"><result status="valid" time="0.14"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.86" expl="assertion">
-  </goal>
-  <goal name="solve_aux&#39;vc.87" expl="assertion">
-  </goal>
-  <goal name="solve_aux&#39;vc.88" expl="variant decrease" proved="true">
-  <proof prover="3"><result status="valid" time="0.03" steps="28"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.89" expl="precondition" proved="true">
-  <proof prover="3"><result status="valid" time="0.03" steps="28"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.90" expl="precondition" proved="true">
-  <proof prover="3"><result status="valid" time="0.02" steps="29"/></proof>
-  </goal>
-  <goal name="solve_aux&#39;vc.91" expl="precondition" proved="true">
-  <transf name="split_vc" proved="true" >
-   <goal name="solve_aux&#39;vc.91.0" expl="precondition" proved="true">
-   <transf name="inline_goal" proved="true" >
-    <goal name="solve_aux&#39;vc.91.0.0" expl="precondition" proved="true">
-    <transf name="split_all_full" proved="true" >
-     <goal name="solve_aux&#39;vc.91.0.0.0" expl="precondition" proved="true">
-     <transf name="split_vc" proved="true" >
-      <goal name="solve_aux&#39;vc.91.0.0.0.0" expl="precondition" proved="true">
-      <transf name="inline_goal" proved="true" >
-       <goal name="solve_aux&#39;vc.91.0.0.0.0.0" expl="precondition" proved="true">
-       <proof prover="3"><result status="valid" time="0.07" steps="66"/></proof>
-       </goal>
-      </transf>
-      </goal>
-     </transf>
+    <goal name="check_cell_change&#39;vc.1.0.0" expl="assertion" proved="true">
+    <proof prover="0" obsolete="true"><result status="timeout" time="1.00"/></proof>
+    <proof prover="1" obsolete="true"><result status="timeout" time="1.00"/></proof>
+    <proof prover="4" obsolete="true"><result status="timeout" time="1.00"/></proof>
+    <transf name="split_vc" proved="true" >
+     <goal name="check_cell_change&#39;vc.1.0.0.0" expl="assertion" proved="true">
+     <proof prover="0" timelimit="5" memlimit="2000" obsolete="true"><result status="timeout" time="5.00"/></proof>
+     <proof prover="1" timelimit="5" memlimit="2000" obsolete="true"><result status="timeout" time="5.00"/></proof>
+     <proof prover="3"><result status="valid" time="0.03" steps="47"/></proof>
+     <proof prover="4" timelimit="5" memlimit="2000" obsolete="true"><result status="failure" time="0.00"/></proof>
      </goal>
     </transf>
     </goal>
@@ -978,77 +689,124 @@
    </goal>
   </transf>
   </goal>
-  <goal name="solve_aux&#39;vc.92" expl="precondition" proved="true">
-  <proof prover="3"><result status="valid" time="0.03" steps="33"/></proof>
+  <goal name="check_cell_change&#39;vc.2" expl="precondition" proved="true">
+  <proof prover="3"><result status="valid" time="0.02" steps="16"/></proof>
   </goal>
-  <goal name="solve_aux&#39;vc.93" expl="assertion" proved="true">
-  <proof prover="3"><result status="valid" time="0.03" steps="36"/></proof>
+  <goal name="check_cell_change&#39;vc.3" expl="precondition" proved="true">
+  <proof prover="3"><result status="valid" time="0.02" steps="17"/></proof>
   </goal>
-  <goal name="solve_aux&#39;vc.94" expl="assertion" proved="true">
-  <proof prover="3"><result status="valid" time="0.03" steps="37"/></proof>
+  <goal name="check_cell_change&#39;vc.4" expl="assertion" proved="true">
+  <proof prover="3"><result status="valid" time="0.02" steps="18"/></proof>
   </goal>
-  <goal name="solve_aux&#39;vc.95" expl="assertion" proved="true">
-  <proof prover="3"><result status="valid" time="0.03" steps="38"/></proof>
+  <goal name="check_cell_change&#39;vc.5" expl="assertion" proved="true">
+  <proof prover="0"><result status="valid" time="0.13"/></proof>
+  <proof prover="3"><result status="failure" time="0.00"/></proof>
   </goal>
-  <goal name="solve_aux&#39;vc.96" expl="index in array bounds" proved="true">
-  <proof prover="3"><result status="valid" time="0.03" steps="39"/></proof>
+  <goal name="check_cell_change&#39;vc.6" expl="assertion" proved="true">
+  <proof prover="3"><result status="valid" time="0.22" steps="259"/></proof>
   </goal>
-  <goal name="solve_aux&#39;vc.97" expl="assertion" proved="true">
-  <proof prover="3"><result status="valid" time="0.04" steps="47"/></proof>
+  <goal name="check_cell_change&#39;vc.7" expl="assertion" proved="true">
+  <proof prover="0"><result status="valid" time="0.12"/></proof>
+  <proof prover="3"><result status="failure" time="0.00"/></proof>
   </goal>
-  <goal name="solve_aux&#39;vc.98" expl="postcondition" proved="true">
-  <proof prover="3"><result status="valid" time="0.04" steps="47"/></proof>
+  <goal name="check_cell_change&#39;vc.8" expl="assertion" proved="true">
+  <proof prover="3"><result status="valid" time="0.22" steps="262"/></proof>
   </goal>
-  <goal name="solve_aux&#39;vc.99" expl="postcondition" proved="true">
-  <proof prover="3"><result status="valid" time="0.04" steps="48"/></proof>
+  <goal name="check_cell_change&#39;vc.9" expl="assertion" proved="true">
+  <proof prover="3"><result status="valid" time="0.03" steps="20"/></proof>
   </goal>
-  <goal name="solve_aux&#39;vc.100" expl="postcondition" proved="true">
-  <proof prover="3"><result status="valid" time="0.05" steps="49"/></proof>
+  <goal name="check_cell_change&#39;vc.10" expl="assertion" proved="true">
+  <proof prover="3"><result status="valid" time="0.21" steps="239"/></proof>
   </goal>
-  <goal name="solve_aux&#39;vc.101" expl="exceptional postcondition" proved="true">
-  <proof prover="3"><result status="valid" time="0.07" steps="123"/></proof>
+  <goal name="check_cell_change&#39;vc.11" expl="assertion" proved="true">
+  <proof prover="3"><result status="valid" time="0.40" steps="325"/></proof>
   </goal>
-  <goal name="solve_aux&#39;vc.102" expl="index in array bounds" proved="true">
-  <proof prover="0"><result status="valid" time="0.09"/></proof>
+  <goal name="check_cell_change&#39;vc.12" expl="assertion" proved="true">
+  <proof prover="0"><result status="valid" time="0.15"/></proof>
+  <proof prover="3"><result status="failure" time="0.00"/></proof>
   </goal>
-  <goal name="solve_aux&#39;vc.103" expl="assertion">
+  <goal name="check_cell_change&#39;vc.13" expl="assertion" proved="true">
+  <proof prover="0" obsolete="true"><result status="timeout" time="1.00"/></proof>
+  <proof prover="1" obsolete="true"><result status="timeout" time="1.00"/></proof>
+  <proof prover="3" obsolete="true"><result status="timeout" time="20.00"/></proof>
+  <proof prover="4" obsolete="true"><result status="timeout" time="1.00"/></proof>
+  <transf name="split_vc" proved="true" >
+   <goal name="check_cell_change&#39;vc.13.0" expl="assertion" proved="true">
+   <proof prover="0"><result status="valid" time="0.93"/></proof>
+   <proof prover="1" timelimit="5" memlimit="2000" obsolete="true"><result status="timeout" time="5.00"/></proof>
+   <proof prover="3"><result status="failure" time="0.00"/></proof>
+   <proof prover="4" timelimit="5" memlimit="2000" obsolete="true"><result status="valid" time="0.78"/></proof>
+   </goal>
+   <goal name="check_cell_change&#39;vc.13.1" expl="assertion" proved="true">
+   <proof prover="0"><result status="timeout" time="1.00"/></proof>
+   <proof prover="1"><result status="timeout" time="1.00"/></proof>
+   <proof prover="3"><result status="failure" time="0.00"/></proof>
+   <proof prover="4"><result status="valid" time="0.26"/></proof>
+   </goal>
+  </transf>
   </goal>
-  <goal name="solve_aux&#39;vc.104" expl="postcondition" proved="true">
-  <proof prover="3"><result status="valid" time="0.03" steps="26"/></proof>
+  <goal name="check_cell_change&#39;vc.14" expl="assertion" proved="true">
+  <proof prover="0"><result status="valid" time="0.13"/></proof>
+  <proof prover="3"><result status="failure" time="0.00"/></proof>
   </goal>
-  <goal name="solve_aux&#39;vc.105" expl="postcondition" proved="true">
-  <proof prover="3"><result status="valid" time="0.03" steps="27"/></proof>
+  <goal name="check_cell_change&#39;vc.15" expl="assertion" proved="true">
+  <proof prover="0"><result status="valid" time="0.13"/></proof>
+  <proof prover="3"><result status="failure" time="0.00"/></proof>
   </goal>
-  <goal name="solve_aux&#39;vc.106" expl="postcondition" proved="true">
-  <proof prover="3"><result status="valid" time="0.03" steps="28"/></proof>
+  <goal name="check_cell_change&#39;vc.16" expl="assertion" proved="true">
+  <proof prover="0"><result status="valid" time="0.14"/></proof>
+  <proof prover="3"><result status="failure" time="0.00"/></proof>
+  </goal>
+  <goal name="check_cell_change&#39;vc.17" expl="assertion" proved="true">
+  <proof prover="0"><result status="valid" time="0.20"/></proof>
+  <proof prover="1" obsolete="true"><result status="valid" time="0.11"/></proof>
+  <proof prover="3"><result status="failure" time="0.00"/></proof>
+  </goal>
+  <goal name="check_cell_change&#39;vc.18" expl="postcondition" proved="true">
+  <proof prover="0"><result status="valid" time="0.16"/></proof>
+  <proof prover="3"><result status="failure" time="0.00"/></proof>
+  </goal>
+  <goal name="check_cell_change&#39;vc.19" expl="postcondition" proved="true">
+  <proof prover="0"><result status="valid" time="0.08"/></proof>
+  <proof prover="3"><result status="failure" time="0.00"/></proof>
+  </goal>
+  <goal name="check_cell_change&#39;vc.20" expl="exceptional postcondition" proved="true">
+  <proof prover="0"><result status="valid" time="0.07"/></proof>
+  <proof prover="3"><result status="failure" time="0.00"/></proof>
   </goal>
  </transf>
  </goal>
- <goal name="solve&#39;vc" expl="VC for solve" proved="true">
- <transf name="split_vc" proved="true" >
-  <goal name="solve&#39;vc.0" expl="precondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.04"/></proof>
+ <goal name="aux_lemma_5">
+ </goal>
+ <goal name="solve_aux&#39;vc" expl="VC for solve_aux">
+ <proof prover="0" obsolete="true"><result status="timeout" time="1.00"/></proof>
+ <proof prover="1" obsolete="true"><result status="timeout" time="1.00"/></proof>
+ </goal>
+ <goal name="solve&#39;vc" expl="VC for solve">
+ <transf name="split_vc" >
+  <goal name="solve&#39;vc.0" expl="precondition">
+  <proof prover="0" obsolete="true"><result status="valid" time="0.04"/></proof>
   </goal>
-  <goal name="solve&#39;vc.1" expl="precondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.03"/></proof>
+  <goal name="solve&#39;vc.1" expl="precondition">
+  <proof prover="0" obsolete="true"><result status="valid" time="0.03"/></proof>
   </goal>
-  <goal name="solve&#39;vc.2" expl="precondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.06"/></proof>
+  <goal name="solve&#39;vc.2" expl="precondition">
+  <proof prover="0" obsolete="true"><result status="valid" time="0.06"/></proof>
   </goal>
-  <goal name="solve&#39;vc.3" expl="precondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.06"/></proof>
+  <goal name="solve&#39;vc.3" expl="precondition">
+  <proof prover="0" obsolete="true"><result status="valid" time="0.06"/></proof>
   </goal>
-  <goal name="solve&#39;vc.4" expl="exceptional postcondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.05"/></proof>
+  <goal name="solve&#39;vc.4" expl="exceptional postcondition">
+  <proof prover="0" obsolete="true"><result status="valid" time="0.05"/></proof>
   </goal>
-  <goal name="solve&#39;vc.5" expl="postcondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.04"/></proof>
+  <goal name="solve&#39;vc.5" expl="postcondition">
+  <proof prover="0" obsolete="true"><result status="valid" time="0.04"/></proof>
   </goal>
-  <goal name="solve&#39;vc.6" expl="postcondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.05"/></proof>
+  <goal name="solve&#39;vc.6" expl="postcondition">
+  <proof prover="0" obsolete="true"><result status="valid" time="0.05"/></proof>
   </goal>
-  <goal name="solve&#39;vc.7" expl="postcondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.04"/></proof>
+  <goal name="solve&#39;vc.7" expl="postcondition">
+  <proof prover="0" obsolete="true"><result status="valid" time="0.04"/></proof>
   </goal>
  </transf>
  </goal>

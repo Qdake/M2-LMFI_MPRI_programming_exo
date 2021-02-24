@@ -144,26 +144,6 @@ let no_3_consecutive_zeros_version_3 (a : array int) : bool
   with TripleFound -> False
   end
   
-(*
-let no_3_consecutive_zeros_version_3 (a : array int) : bool
-  ensures { result = True <-> no_3_consecutive_zeros a }
-  =
-  let ref count_zeros = 0 in
-  try
-    for i=__EXPRESSION_TO_BE_COMPLETED__ to __EXPRESSION_TO_BE_COMPLETED__ do
-      invariant { __FORMULA_TO_BE_COMPLETED__ }
-      if a[i] = 0 then
-        if count_zeros = 2 then raise TripleFound
-        else count_zeros <- count_zeros + 1
-      else count_zeros <- 0
-    done;
-    True
-  with TripleFound -> False
-  end
-*)
-
-
-
 (**
 
 {3 Checking if an array contains as many zeros and ones}
@@ -184,14 +164,6 @@ let rec ghost function num_occ (e:int) (f:int -> int) (i j :int) : int
   = if i >= j then 0 else
     if f (j-1) = e then 1 + num_occ e f i (j-1) else num_occ e f i (j-1)
 
-
-
-(*
-  variant { __VARIANT_TO_BE_COMPLETED__ }
-  = if __FORMULA_TO_BE_COMPLETED__ then 0 else
-    if __FORMULA_TO_BE_COMPLETED__ then 1 + num_occ e f i (j-1) else num_occ e f i (j-1)
-*)
-
 (**
 
 {4 QUESTIONS 6 and 7}
@@ -203,7 +175,6 @@ let count_number_of (e:int) (a:array int) : int
   =
   let ref n = 0 in
   for i=0 to a.length - 1 do
-    invariant { 0 <= n <= i + 1 }
     invariant { n = num_occ e a.elts 0 i }
     if a[i] = e then n <- n + 1
   done;
@@ -265,15 +236,14 @@ exception DiffFound
 let check_identical_sub_arrays (a:array int) (o1 o2 l:int) : bool
   requires { 0 <= o1 < a.length }
   requires { 0 <= o2 < a.length }
-  requires { 1 <= l < a.length }
-  requires { 0 <= o1 + (l - 1) < a.length }
-  requires { 0 <= o2 + (l - 1) < a.length } 
+  requires { 1 <= l < a.length }   
+  requires { 0 <= o1 + (l-1) < a.length }
+  requires { 0 <= o2 + (l-1) < a.length }
   ensures { result = True <-> identical_sub_arrays a o1 o2 l }
 = try
     for k= 0 to l-1 do
       invariant { identical_sub_arrays a o1 o2 k }
       if a[o1+k] <> a[o2+k] then raise DiffFound;
-      assert { a[o1+k] = a[o2+k] }
     done;
     True
   with DiffFound -> false
@@ -591,8 +561,7 @@ predicate identical_chunks (g:takuzu_grid) (s1 s2:int) (incr:int) (l:int)
 exception DiffFound
 
 let check_identical_chunks g start1 start2 incr : bool
-  requires { g.length = 64 }
-  requires { valid_chunk start1 incr /\ valid_chunk start2 incr }
+  requires { g.length = 64 /\ valid_chunk start1 incr /\ valid_chunk start2 incr }
   ensures { result = True <-> identical_chunks g start1 start2 incr 8 }
 = try
     for i=0 to 7 do
@@ -633,10 +602,9 @@ predicate identical_columns (g:takuzu_grid) (s1 s2:int) =
   identical_chunks g s1 s2 8 8
 
 let check_rule_3_for_column (g:takuzu_grid) (start:int) : unit
-  requires { g.length = 64 }  (* qq : it's a grid *)
-  requires { 0 <= start <= 7 }    
+  requires { g.length = 64 /\ 0 <= start <= 7 }    
   ensures { forall k. 0 <= k < 8 /\ k <> start -> 
-                                                  not (identical_columns g start k) }
+                      not (identical_columns g start k) }
   raises { Invalid -> true }
 =
   for i=0 to 7 do
@@ -666,15 +634,14 @@ predicate identical_rows (g:takuzu_grid) (s1 s2:int) =
   identical_chunks g s1 s2 1 8
 
 let check_rule_3_for_row (g:takuzu_grid) (start:int) : unit
-  requires { g.length = 64 }  (* qq : it's a grid *)
-  requires { 0 <= start < 64 /\ mod start 8 = 0 }    
+  requires { g.length = 64 /\ 0 <= start < 64 /\ mod start 8 = 0 }    
   ensures { forall k. 0 <= k < 8 /\ 8*k <> start ->
                not (identical_rows g start (8*k)) }
   raises { Invalid -> true }
 = 
   for i=0 to 63 do
       invariant { forall k. 0 <= k < i /\ (mod k 8 = 0) /\ k <> start -> 
-                                                        not (identical_rows g start k) }
+                    not (identical_rows g start k) }
       if mod i 8 = 0 then
         if (i <> start) then
           match check_identical_chunks g start i 1 with 
@@ -882,7 +849,7 @@ let check_cell_change (g:takuzu_grid) (n:int) (e:elem) : unit
   g[n] <- e;
   assert { valid_up_to g[n<-Empty] n };
   check_at_cell g n;
-  
+
   (* on veut montrer :  valid_up_to g (n+1) i.e. forall 0<=k <= n, valid_for_cell g k *)
   (* on a deja, par la postcondition de "check_at_cell" *) assert {valid_for_cell g n};
   (* il reste a montrer forall 0 <= k <= n-1, valid_for_cell g k 
@@ -1020,7 +987,7 @@ exception SolutionFound
 
 (* lemma ajoute *)
 (* si g[n] = empty alors g[n<-Empty] = g *)
-lemma aux_lemma_1 : forall g:takuzu_grid, n:int. 0 <= n < g.length /\ g[n] = Empty ->
+(*lemma aux_lemma_1 : forall g:takuzu_grid, n:int. 0 <= n < g.length /\ g[n] = Empty ->
                         g[n<-Empty] = g
 lemma aux_lemma_2 : forall g:takuzu_grid, n k:int, e:elem. 0 <= n < g.length /\ 0 <= k < g.length ->
     n <> k -> g[n<-e][k] = g[k]       
@@ -1029,9 +996,16 @@ lemma aux_lemma_3 : forall g:takuzu_grid, n:int. 0 <= n < g.length ->
                             valid_up_to g n -> valid_up_to g[n<-Empty] n 
 lemma aux_lemma_4 : forall g g1:takuzu_grid, n:int. 0 <= n < g.length ->
                             valid_up_to g n -> extends g g1 -> valid_up_to g1 n
+*)
 lemma aux_lemma_5 : forall g:takuzu_grid, n:int.
                      0 <= n < g.length -> g[n] = Empty -> 
-                     (g[n<-Zero][n<-Empty] = g /\ g[n<-Zero][n<-One][n<-Empty] = g)
+                     g[n<-Empty] = g 
+ (*
+lemma aux_lemma_6 : forall g:takuzu_grid, n:int, e1 e2:elem.
+                     0 <= n < g.length -> g[n] = Empty -> g = g[n<-Empty] 
+lemma aux_lemma_7 : forall g:takuzu_grid, n:int, e1 e2:elem.
+                     0 <= n < g.length -> g[n<-e1][n<-e2] = g[n<-e2]  
+*)
 let rec solve_aux (g:takuzu_grid) (n:int) : unit
   requires { g.length = 64 }
   requires { 0 <= n <= 64 }
@@ -1043,46 +1017,27 @@ let rec solve_aux (g:takuzu_grid) (n:int) : unit
   ensures { full_up_to g n }
   ensures { old g = g }
   raises { SolutionFound -> extends (old g) g /\ full_up_to g 64 /\ valid_up_to g 64 }
-= label Init in
+= 
   if n=64 then raise SolutionFound;
   match g[n] with
   | Zero | One ->
     try
       check_at_cell g n;
-      assert { valid_up_to g n };
-      assert { full_up_to g n };
-      assert { g = g at Init };
       solve_aux g (n+1);
-      assert { valid_up_to g n };
-      assert { full_up_to g n };
-      assert { g = g at Init };
     with Invalid -> ()
     end
-  | Empty ->
+  | Empty -> label L in
     try
       check_cell_change g n Zero;
-      assert { valid_up_to g n };
-      assert { full_up_to g n };
-      assert { g = (g at Init)[n<-Zero] };
       solve_aux g (n+1);
-      assert { valid_up_to g n };
-      assert { full_up_to g n };
-      assert { g = (g at Init)[n<-Zero] };
     with Invalid -> ()
     end;
     try
       check_cell_change g n One;
-      assert { valid_up_to g n };
-      assert { full_up_to g n };
-      assert { g = (g at Init)[n<-One] };
       solve_aux g (n+1);
-      assert { valid_up_to g n };
-      assert { full_up_to g n };
-      assert { g = (g at Init)[n<-One] };
     with Invalid -> ()
     end;
     g[n] <- Empty;
-    assert { g = g at Init };
   end
 (*
 let rec solve_aux (g:takuzu_grid) (n:int) : unit
@@ -1090,6 +1045,7 @@ let rec solve_aux (g:takuzu_grid) (n:int) : unit
   requires { full_up_to g n }
   requires { valid_up_to g n }
   writes { g }
+
   variant { __VARIANT_TO_BE_COMPLETED__ }
   ensures { __FORMULA_TO_BE_COMPLETED__ }
   raises { SolutionFound -> extends (old g) g /\ full_up_to g 64 /\ valid_up_to g 64 }
