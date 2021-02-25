@@ -4,6 +4,7 @@
 <why3session shape_version="6">
 <prover id="0" name="CVC4" version="1.6" timelimit="1" steplimit="0" memlimit="1000"/>
 <prover id="1" name="Z3" version="4.8.6" timelimit="1" steplimit="0" memlimit="1000"/>
+<prover id="2" name="Coq" version="8.11.0" timelimit="0" steplimit="0" memlimit="0"/>
 <prover id="3" name="Alt-Ergo" version="2.0.0" timelimit="20" steplimit="0" memlimit="1000"/>
 <prover id="4" name="Spass" version="3.7" timelimit="20" steplimit="0" memlimit="1000"/>
 <file format="whyml">
@@ -416,6 +417,9 @@
   <goal name="check_rule_1_for_chunk&#39;vc.60" expl="postcondition" proved="true">
   <proof prover="0"><result status="valid" time="0.03"/></proof>
   </goal>
+  <goal name="check_rule_1_for_chunk&#39;vc.61" expl="out of loop bounds" proved="true">
+  <proof prover="0"><result status="valid" time="0.02"/></proof>
+  </goal>
  </transf>
  </goal>
  <goal name="num_occ&#39;vc" expl="VC for num_occ" proved="true">
@@ -448,10 +452,12 @@
  <proof prover="0"><result status="valid" time="0.05"/></proof>
  </goal>
  <goal name="check_rule_2_for_chunk&#39;vc" expl="VC for check_rule_2_for_chunk" proved="true">
- <proof prover="3"><result status="valid" time="0.01" steps="8"/></proof>
+ <proof prover="0"><result status="valid" time="0.04"/></proof>
+ <proof prover="3" obsolete="true"><result status="valid" time="0.01" steps="8"/></proof>
  </goal>
  <goal name="check_identical_chunks&#39;vc" expl="VC for check_identical_chunks" proved="true">
- <proof prover="3"><result status="valid" time="0.66" steps="767"/></proof>
+ <proof prover="0"><result status="valid" time="0.10"/></proof>
+ <proof prover="3" obsolete="true"><result status="valid" time="0.66" steps="767"/></proof>
  </goal>
  <goal name="check_rule_3_for_column&#39;vc" expl="VC for check_rule_3_for_column" proved="true">
  <proof prover="0"><result status="valid" time="0.05"/></proof>
@@ -460,61 +466,69 @@
  <proof prover="0"><result status="valid" time="0.11"/></proof>
  </goal>
  <goal name="check_at_cell&#39;vc" expl="VC for check_at_cell" proved="true">
- <proof prover="3" timelimit="180"><result status="valid" time="0.60" steps="548"/></proof>
+ <proof prover="0"><result status="timeout" time="1.00"/></proof>
+ <proof prover="1"><result status="valid" time="0.08"/></proof>
+ <proof prover="3" timelimit="180" obsolete="true"><result status="valid" time="0.60" steps="548"/></proof>
  </goal>
  <goal name="subst_0">
+ <proof prover="1" timelimit="20"><result status="unknown" time="5.14"/></proof>
  </goal>
  <goal name="aux_rule_1_and_rule_2_for_chunk">
- <proof prover="3" timelimit="180"><undone/></proof>
  </goal>
- <goal name="sym" proved="true">
- <proof prover="0"><result status="valid" time="0.08"/></proof>
+ <goal name="sym">
  </goal>
  <goal name="inv_not_identical">
- <proof prover="0" timelimit="180"><undone/></proof>
  </goal>
  <goal name="check_cell_change&#39;vc" expl="VC for check_cell_change" proved="true">
  <transf name="split_vc" proved="true" >
   <goal name="check_cell_change&#39;vc.0" expl="index in array bounds" proved="true">
-  <proof prover="0"><result status="valid" time="0.07"/></proof>
+  <proof prover="0"><result status="valid" time="0.06"/></proof>
   </goal>
   <goal name="check_cell_change&#39;vc.1" expl="assertion" proved="true">
   <proof prover="0"><result status="valid" time="0.12"/></proof>
+  <proof prover="1" obsolete="true"><result status="timeout" time="1.00"/></proof>
+  <proof prover="3" obsolete="true"><result status="failure" time="0.00"/></proof>
+  <proof prover="4" obsolete="true"><result status="timeout" time="20.00"/></proof>
   </goal>
   <goal name="check_cell_change&#39;vc.2" expl="precondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.07"/></proof>
+  <proof prover="0"><result status="valid" time="0.08"/></proof>
   </goal>
   <goal name="check_cell_change&#39;vc.3" expl="assertion" proved="true">
-  <proof prover="3" timelimit="180"><result status="valid" time="0.02" steps="18"/></proof>
+  <proof prover="0"><result status="valid" time="0.20"/></proof>
+  <proof prover="3"><result status="failure" time="0.00"/></proof>
   </goal>
   <goal name="check_cell_change&#39;vc.4" expl="assertion" proved="true">
-  <proof prover="0"><result status="valid" time="0.25"/></proof>
+  <proof prover="0"><result status="valid" time="0.19"/></proof>
+  <proof prover="1" obsolete="true"><result status="valid" time="0.06"/></proof>
+  <proof prover="3"><result status="failure" time="0.00"/></proof>
   </goal>
   <goal name="check_cell_change&#39;vc.5" expl="assertion" proved="true">
-  <proof prover="0"><result status="valid" time="0.20"/></proof>
+  <proof prover="0"><result status="valid" time="0.04"/></proof>
+  <proof prover="3"><result status="failure" time="0.00"/></proof>
   </goal>
   <goal name="check_cell_change&#39;vc.6" expl="assertion" proved="true">
-  <proof prover="0"><result status="valid" time="0.12"/></proof>
+  <proof prover="0"><result status="valid" time="0.16"/></proof>
+  <proof prover="3"><result status="failure" time="0.00"/></proof>
   </goal>
   <goal name="check_cell_change&#39;vc.7" expl="assertion" proved="true">
-  <proof prover="0"><result status="valid" time="0.12"/></proof>
-  </goal>
-  <goal name="check_cell_change&#39;vc.8" expl="assertion" proved="true">
-  <proof prover="0"><result status="valid" time="0.09"/></proof>
-  </goal>
-  <goal name="check_cell_change&#39;vc.9" expl="assertion" proved="true">
-  <proof prover="0"><result status="valid" time="0.12"/></proof>
-  </goal>
-  <goal name="check_cell_change&#39;vc.10" expl="assertion" proved="true">
+  <proof prover="0"><result status="timeout" time="1.00"/></proof>
+  <proof prover="1"><result status="timeout" time="1.00"/></proof>
+  <proof prover="3"><result status="failure" time="0.00"/></proof>
+  <proof prover="4" timelimit="1"><result status="timeout" time="1.00"/></proof>
   <transf name="split_vc" proved="true" >
-   <goal name="check_cell_change&#39;vc.10.0" expl="assertion" proved="true">
-   <proof prover="0"><result status="valid" time="0.20"/></proof>
+   <goal name="check_cell_change&#39;vc.7.0" expl="assertion" proved="true">
+   <proof prover="0"><result status="valid" time="0.14"/></proof>
    </goal>
-   <goal name="check_cell_change&#39;vc.10.1" expl="assertion" proved="true">
+   <goal name="check_cell_change&#39;vc.7.1" expl="assertion" proved="true">
+   <proof prover="0" timelimit="5" memlimit="2000"><result status="timeout" time="5.00"/></proof>
+   <proof prover="1" timelimit="5" memlimit="2000"><result status="timeout" time="5.00"/></proof>
+   <proof prover="3"><result status="valid" time="0.19" steps="217"/></proof>
+   <proof prover="4" timelimit="5" memlimit="2000"><result status="timeout" time="5.00"/></proof>
    <transf name="inline_goal" proved="true" >
-    <goal name="check_cell_change&#39;vc.10.1.0" expl="assertion" proved="true">
+    <goal name="check_cell_change&#39;vc.7.1.0" expl="assertion" proved="true">
     <transf name="split_all_full" proved="true" >
-     <goal name="check_cell_change&#39;vc.10.1.0.0" expl="assertion" proved="true">
+     <goal name="check_cell_change&#39;vc.7.1.0.0" expl="assertion" proved="true">
+     <proof prover="0"><result status="timeout" time="1.00"/></proof>
      <proof prover="1"><result status="valid" time="0.08"/></proof>
      </goal>
     </transf>
@@ -523,27 +537,44 @@
    </goal>
   </transf>
   </goal>
-  <goal name="check_cell_change&#39;vc.11" expl="assertion" proved="true">
-  <proof prover="1"><result status="valid" time="0.07"/></proof>
+  <goal name="check_cell_change&#39;vc.8" expl="assertion" proved="true">
+  <proof prover="0"><result status="timeout" time="1.00"/></proof>
+  <proof prover="1"><result status="valid" time="0.09"/></proof>
+  <proof prover="2" obsolete="true"><path name="takuzu_Takuzu_check_cell_changeqtvc_1.v"/><result status="unknown" time="0.00" steps="0"/></proof>
+  <proof prover="3"><result status="failure" time="0.00"/></proof>
+  <proof prover="4" obsolete="true"><result status="valid" time="2.55"/></proof>
   </goal>
-  <goal name="check_cell_change&#39;vc.12" expl="assertion" proved="true">
-  <proof prover="0"><result status="valid" time="0.24"/></proof>
+  <goal name="check_cell_change&#39;vc.9" expl="assertion" proved="true">
+  <proof prover="0"><result status="valid" time="0.10"/></proof>
+  <proof prover="3"><result status="failure" time="0.00"/></proof>
+  </goal>
+  <goal name="check_cell_change&#39;vc.10" expl="assertion" proved="true">
+  <proof prover="0"><result status="valid" time="0.08"/></proof>
+  <proof prover="3"><result status="failure" time="0.00"/></proof>
+  </goal>
+  <goal name="check_cell_change&#39;vc.11" expl="assertion" proved="true">
+  <proof prover="0"><result status="valid" time="0.29"/></proof>
+  <proof prover="1" obsolete="true"><result status="timeout" time="1.00"/></proof>
+  <proof prover="3"><result status="failure" time="0.00"/></proof>
+  <proof prover="4" obsolete="true"><result status="timeout" time="20.00"/></proof>
+  </goal>
+  <goal name="check_cell_change&#39;vc.12" expl="postcondition" proved="true">
+  <proof prover="0"><result status="valid" time="0.13"/></proof>
+  <proof prover="3"><result status="failure" time="0.00"/></proof>
   </goal>
   <goal name="check_cell_change&#39;vc.13" expl="postcondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.11"/></proof>
+  <proof prover="0"><result status="valid" time="0.05"/></proof>
+  <proof prover="3"><result status="failure" time="0.00"/></proof>
   </goal>
-  <goal name="check_cell_change&#39;vc.14" expl="postcondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.04"/></proof>
-  </goal>
-  <goal name="check_cell_change&#39;vc.15" expl="exceptional postcondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.04"/></proof>
+  <goal name="check_cell_change&#39;vc.14" expl="exceptional postcondition" proved="true">
+  <proof prover="0"><result status="valid" time="0.05"/></proof>
   </goal>
  </transf>
  </goal>
- <goal name="aux_lemma_5">
+ <goal name="subst_inchange">
  </goal>
- <goal name="solve_aux&#39;vc" expl="VC for solve_aux">
- <transf name="split_vc" >
+ <goal name="solve_aux&#39;vc" expl="VC for solve_aux" proved="true">
+ <transf name="split_vc" proved="true" >
   <goal name="solve_aux&#39;vc.0" expl="exceptional postcondition" proved="true">
   <proof prover="0"><result status="valid" time="0.06"/></proof>
   </goal>
@@ -590,10 +621,10 @@
   <proof prover="3" timelimit="180" obsolete="true"><result status="valid" time="0.02" steps="24"/></proof>
   </goal>
   <goal name="solve_aux&#39;vc.12" expl="postcondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.04"/></proof>
+  <proof prover="0"><result status="valid" time="0.06"/></proof>
   </goal>
   <goal name="solve_aux&#39;vc.13" expl="postcondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.05"/></proof>
+  <proof prover="0"><result status="valid" time="0.04"/></proof>
   </goal>
   <goal name="solve_aux&#39;vc.14" expl="postcondition" proved="true">
   <proof prover="0"><result status="valid" time="0.04"/></proof>
@@ -639,10 +670,10 @@
   <proof prover="3" timelimit="180" obsolete="true"><result status="valid" time="0.02" steps="24"/></proof>
   </goal>
   <goal name="solve_aux&#39;vc.25" expl="postcondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.06"/></proof>
+  <proof prover="0"><result status="valid" time="0.04"/></proof>
   </goal>
   <goal name="solve_aux&#39;vc.26" expl="postcondition" proved="true">
-  <proof prover="0"><result status="valid" time="0.04"/></proof>
+  <proof prover="0"><result status="valid" time="0.05"/></proof>
   </goal>
   <goal name="solve_aux&#39;vc.27" expl="postcondition" proved="true">
   <proof prover="0"><result status="valid" time="0.04"/></proof>
@@ -653,9 +684,9 @@
   </goal>
   <goal name="solve_aux&#39;vc.29" expl="precondition" proved="true">
   <proof prover="0"><result status="valid" time="0.08"/></proof>
-  <proof prover="1" timelimit="20" obsolete="true"><undone/></proof>
+  <proof prover="1" timelimit="20" obsolete="true"><result status="failure" time="0.00"/></proof>
   <proof prover="3" obsolete="true"><result status="timeout" time="20.00"/></proof>
-  <proof prover="4" timelimit="1" obsolete="true"><undone/></proof>
+  <proof prover="4" timelimit="1" obsolete="true"><result status="failure" time="0.00"/></proof>
   </goal>
   <goal name="solve_aux&#39;vc.30" expl="variant decrease" proved="true">
   <proof prover="0"><result status="valid" time="0.06"/></proof>
@@ -676,10 +707,33 @@
   <proof prover="4" timelimit="1" obsolete="true"><result status="timeout" time="1.00"/></proof>
   <transf name="split_vc" proved="true" >
    <goal name="solve_aux&#39;vc.33.0" expl="precondition" proved="true">
-   <proof prover="0" timelimit="20"><result status="timeout" time="20.00"/></proof>
-   <proof prover="1" timelimit="5" memlimit="2000"><result status="timeout" time="20.00"/></proof>
-   <proof prover="3"><result status="valid" time="0.61" steps="462"/></proof>
-   <proof prover="4" timelimit="1"><result status="timeout" time="1.00"/></proof>
+   <proof prover="0" timelimit="5" memlimit="2000" obsolete="true"><result status="timeout" time="5.00"/></proof>
+   <proof prover="1" timelimit="5" memlimit="2000" obsolete="true"><result status="timeout" time="5.00"/></proof>
+   <proof prover="3" obsolete="true"><result status="valid" time="0.61" steps="462"/></proof>
+   <proof prover="4" timelimit="5" memlimit="2000" obsolete="true"><result status="timeout" time="5.00"/></proof>
+   <transf name="inline_goal" proved="true" >
+    <goal name="solve_aux&#39;vc.33.0.0" expl="precondition" proved="true">
+    <transf name="split_all_full" proved="true" >
+     <goal name="solve_aux&#39;vc.33.0.0.0" expl="precondition" proved="true">
+     <proof prover="0" obsolete="true"><result status="timeout" time="1.00"/></proof>
+     <proof prover="1" obsolete="true"><result status="timeout" time="1.00"/></proof>
+     <proof prover="4" timelimit="1" obsolete="true"><result status="timeout" time="1.00"/></proof>
+     <transf name="split_vc" proved="true" >
+      <goal name="solve_aux&#39;vc.33.0.0.0.0" expl="precondition" proved="true">
+      <proof prover="0" timelimit="5" memlimit="2000" obsolete="true"><result status="timeout" time="5.00"/></proof>
+      <proof prover="1" timelimit="5" memlimit="2000" obsolete="true"><result status="timeout" time="5.00"/></proof>
+      <proof prover="4" timelimit="5" memlimit="2000" obsolete="true"><result status="timeout" time="5.00"/></proof>
+      <transf name="inline_goal" proved="true" >
+       <goal name="solve_aux&#39;vc.33.0.0.0.0.0" expl="precondition" proved="true">
+       <proof prover="0"><result status="valid" time="0.14"/></proof>
+       </goal>
+      </transf>
+      </goal>
+     </transf>
+     </goal>
+    </transf>
+    </goal>
+   </transf>
    </goal>
   </transf>
   </goal>
@@ -695,7 +749,7 @@
   <proof prover="0"><result status="valid" time="0.11"/></proof>
   <proof prover="1" timelimit="20" obsolete="true"><result status="timeout" time="1.00"/></proof>
   <proof prover="3" obsolete="true"><result status="timeout" time="20.00"/></proof>
-  <proof prover="4" timelimit="1" obsolete="true"><undone/></proof>
+  <proof prover="4" timelimit="1" obsolete="true"><result status="failure" time="0.00"/></proof>
   </goal>
   <goal name="solve_aux&#39;vc.37" expl="variant decrease" proved="true">
   <proof prover="0"><result status="valid" time="0.06"/></proof>
@@ -716,10 +770,33 @@
   <proof prover="4" timelimit="1" obsolete="true"><result status="timeout" time="1.00"/></proof>
   <transf name="split_vc" proved="true" >
    <goal name="solve_aux&#39;vc.40.0" expl="precondition" proved="true">
-   <proof prover="0" timelimit="20"><result status="timeout" time="20.00"/></proof>
-   <proof prover="1" timelimit="5" memlimit="2000"><result status="timeout" time="20.00"/></proof>
-   <proof prover="3"><result status="valid" time="0.79" steps="431"/></proof>
-   <proof prover="4" timelimit="1"><result status="timeout" time="1.00"/></proof>
+   <proof prover="0" timelimit="5" memlimit="2000" obsolete="true"><result status="timeout" time="5.00"/></proof>
+   <proof prover="1" timelimit="5" memlimit="2000" obsolete="true"><result status="timeout" time="5.00"/></proof>
+   <proof prover="3" obsolete="true"><result status="valid" time="0.59" steps="431"/></proof>
+   <proof prover="4" timelimit="5" memlimit="2000" obsolete="true"><result status="timeout" time="5.00"/></proof>
+   <transf name="inline_goal" proved="true" >
+    <goal name="solve_aux&#39;vc.40.0.0" expl="precondition" proved="true">
+    <transf name="split_all_full" proved="true" >
+     <goal name="solve_aux&#39;vc.40.0.0.0" expl="precondition" proved="true">
+     <proof prover="0" obsolete="true"><result status="timeout" time="1.00"/></proof>
+     <proof prover="1" obsolete="true"><result status="timeout" time="1.00"/></proof>
+     <proof prover="4" timelimit="1" obsolete="true"><result status="timeout" time="1.00"/></proof>
+     <transf name="split_vc" proved="true" >
+      <goal name="solve_aux&#39;vc.40.0.0.0.0" expl="precondition" proved="true">
+      <proof prover="0" timelimit="5" memlimit="2000" obsolete="true"><result status="timeout" time="5.00"/></proof>
+      <proof prover="1" timelimit="5" memlimit="2000" obsolete="true"><result status="timeout" time="5.00"/></proof>
+      <proof prover="4" timelimit="5" memlimit="2000" obsolete="true"><result status="timeout" time="5.00"/></proof>
+      <transf name="inline_goal" proved="true" >
+       <goal name="solve_aux&#39;vc.40.0.0.0.0.0" expl="precondition" proved="true">
+       <proof prover="0"><result status="valid" time="0.14"/></proof>
+       </goal>
+      </transf>
+      </goal>
+     </transf>
+     </goal>
+    </transf>
+    </goal>
+   </transf>
    </goal>
   </transf>
   </goal>
@@ -733,21 +810,21 @@
   </goal>
   <goal name="solve_aux&#39;vc.43" expl="postcondition" proved="true">
   <proof prover="0"><result status="valid" time="0.09"/></proof>
-  <proof prover="1" timelimit="20" obsolete="true"><undone/></proof>
-  <proof prover="3" obsolete="true"><undone/></proof>
-  <proof prover="4" obsolete="true"><undone/></proof>
+  <proof prover="1" timelimit="20" obsolete="true"><result status="failure" time="0.00"/></proof>
+  <proof prover="3" obsolete="true"><result status="failure" time="0.00"/></proof>
+  <proof prover="4" obsolete="true"><result status="failure" time="0.00"/></proof>
   </goal>
   <goal name="solve_aux&#39;vc.44" expl="postcondition" proved="true">
   <proof prover="0"><result status="valid" time="0.09"/></proof>
-  <proof prover="1" timelimit="20" obsolete="true"><undone/></proof>
+  <proof prover="1" timelimit="20" obsolete="true"><result status="failure" time="0.00"/></proof>
   <proof prover="3" obsolete="true"><result status="valid" time="2.88" steps="953"/></proof>
-  <proof prover="4" obsolete="true"><undone/></proof>
+  <proof prover="4" obsolete="true"><result status="failure" time="0.00"/></proof>
   </goal>
   <goal name="solve_aux&#39;vc.45" expl="postcondition" proved="true">
   <proof prover="0"><result status="valid" time="0.08"/></proof>
-  <proof prover="1" timelimit="20" obsolete="true"><undone/></proof>
-  <proof prover="3" obsolete="true"><undone/></proof>
-  <proof prover="4" obsolete="true"><undone/></proof>
+  <proof prover="1" timelimit="20" obsolete="true"><result status="failure" time="0.00"/></proof>
+  <proof prover="3" obsolete="true"><result status="failure" time="0.00"/></proof>
+  <proof prover="4" obsolete="true"><result status="failure" time="0.00"/></proof>
   </goal>
   <goal name="solve_aux&#39;vc.46" expl="exceptional postcondition" proved="true">
   <proof prover="0" obsolete="true"><result status="timeout" time="1.00"/></proof>
@@ -756,18 +833,41 @@
   <proof prover="4" timelimit="1" obsolete="true"><result status="timeout" time="1.00"/></proof>
   <transf name="split_vc" proved="true" >
    <goal name="solve_aux&#39;vc.46.0" expl="exceptional postcondition" proved="true">
-   <proof prover="0" timelimit="20"><result status="timeout" time="20.00"/></proof>
-   <proof prover="1" timelimit="5" memlimit="2000"><result status="timeout" time="20.00"/></proof>
-   <proof prover="3"><result status="valid" time="0.10" steps="254"/></proof>
-   <proof prover="4" timelimit="1"><result status="timeout" time="1.00"/></proof>
+   <proof prover="0" timelimit="5" memlimit="2000" obsolete="true"><result status="timeout" time="5.00"/></proof>
+   <proof prover="1" timelimit="5" memlimit="2000" obsolete="true"><result status="timeout" time="5.00"/></proof>
+   <proof prover="3" obsolete="true"><result status="valid" time="0.10" steps="254"/></proof>
+   <proof prover="4" timelimit="5" memlimit="2000" obsolete="true"><result status="timeout" time="5.00"/></proof>
+   <transf name="inline_goal" proved="true" >
+    <goal name="solve_aux&#39;vc.46.0.0" expl="exceptional postcondition" proved="true">
+    <transf name="split_all_full" proved="true" >
+     <goal name="solve_aux&#39;vc.46.0.0.0" expl="exceptional postcondition" proved="true">
+     <proof prover="0" obsolete="true"><result status="timeout" time="1.00"/></proof>
+     <proof prover="1" obsolete="true"><result status="timeout" time="1.00"/></proof>
+     <proof prover="4" timelimit="1" obsolete="true"><result status="timeout" time="1.00"/></proof>
+     <transf name="split_vc" proved="true" >
+      <goal name="solve_aux&#39;vc.46.0.0.0.0" expl="exceptional postcondition" proved="true">
+      <proof prover="0" timelimit="5" memlimit="2000" obsolete="true"><result status="timeout" time="5.00"/></proof>
+      <proof prover="1" timelimit="5" memlimit="2000" obsolete="true"><result status="timeout" time="5.00"/></proof>
+      <proof prover="4" timelimit="5" memlimit="2000" obsolete="true"><result status="timeout" time="5.00"/></proof>
+      <transf name="inline_goal" proved="true" >
+       <goal name="solve_aux&#39;vc.46.0.0.0.0.0" expl="exceptional postcondition" proved="true">
+       <proof prover="0"><result status="valid" time="0.14"/></proof>
+       </goal>
+      </transf>
+      </goal>
+     </transf>
+     </goal>
+    </transf>
+    </goal>
+   </transf>
    </goal>
    <goal name="solve_aux&#39;vc.46.1" expl="exceptional postcondition" proved="true">
    <proof prover="0"><result status="valid" time="0.04"/></proof>
-   <proof prover="1" timelimit="20" obsolete="true"><undone/></proof>
+   <proof prover="1" timelimit="20" obsolete="true"><result status="failure" time="0.00"/></proof>
    </goal>
    <goal name="solve_aux&#39;vc.46.2" expl="exceptional postcondition" proved="true">
    <proof prover="0"><result status="valid" time="0.03"/></proof>
-   <proof prover="1" timelimit="20" obsolete="true"><undone/></proof>
+   <proof prover="1" timelimit="20" obsolete="true"><result status="failure" time="0.00"/></proof>
    </goal>
   </transf>
   </goal>
@@ -775,184 +875,261 @@
   <proof prover="0"><result status="valid" time="0.08"/></proof>
   <proof prover="3" timelimit="180" obsolete="true"><result status="valid" time="0.02" steps="30"/></proof>
   </goal>
-  <goal name="solve_aux&#39;vc.48" expl="postcondition">
-  <proof prover="0" timelimit="20"><result status="timeout" time="20.00"/></proof>
-  <proof prover="1" timelimit="5" memlimit="2000"><result status="timeout" time="20.00"/></proof>
-  <proof prover="3"><result status="timeout" time="20.00"/></proof>
-  <proof prover="4"><undone/></proof>
+  <goal name="solve_aux&#39;vc.48" expl="postcondition" proved="true">
+  <proof prover="0"><result status="valid" time="0.08"/></proof>
+  <proof prover="1" timelimit="5" memlimit="2000" obsolete="true"><result status="timeout" time="20.00"/></proof>
+  <proof prover="3" obsolete="true"><result status="timeout" time="20.00"/></proof>
+  <proof prover="4" obsolete="true"><result status="failure" time="0.00"/></proof>
   </goal>
-  <goal name="solve_aux&#39;vc.49" expl="postcondition">
-  <proof prover="0" timelimit="20"><result status="timeout" time="20.00"/></proof>
-  <proof prover="1" timelimit="5" memlimit="2000"><result status="timeout" time="20.00"/></proof>
-  <proof prover="3"><result status="timeout" time="20.00"/></proof>
-  <proof prover="4"><undone/></proof>
+  <goal name="solve_aux&#39;vc.49" expl="postcondition" proved="true">
+  <proof prover="0"><result status="valid" time="0.08"/></proof>
+  <proof prover="1" timelimit="5" memlimit="2000" obsolete="true"><result status="timeout" time="20.00"/></proof>
+  <proof prover="3" obsolete="true"><result status="timeout" time="20.00"/></proof>
+  <proof prover="4" obsolete="true"><result status="failure" time="0.00"/></proof>
   </goal>
-  <goal name="solve_aux&#39;vc.50" expl="postcondition">
-  <proof prover="0" timelimit="20"><result status="timeout" time="20.00"/></proof>
-  <proof prover="1" timelimit="5" memlimit="2000"><result status="timeout" time="20.00"/></proof>
-  <proof prover="3"><result status="timeout" time="20.00"/></proof>
-  <proof prover="4"><undone/></proof>
+  <goal name="solve_aux&#39;vc.50" expl="postcondition" proved="true">
+  <proof prover="0"><result status="valid" time="0.09"/></proof>
+  <proof prover="1" timelimit="5" memlimit="2000" obsolete="true"><result status="timeout" time="20.00"/></proof>
+  <proof prover="3" obsolete="true"><result status="timeout" time="20.00"/></proof>
+  <proof prover="4" obsolete="true"><result status="failure" time="0.00"/></proof>
   </goal>
   <goal name="solve_aux&#39;vc.51" expl="exceptional postcondition" proved="true">
-  <proof prover="0" timelimit="20" obsolete="true"><undone/></proof>
+  <proof prover="0" timelimit="20" obsolete="true"><result status="failure" time="0.00"/></proof>
   <proof prover="1" obsolete="true"><result status="timeout" time="1.00"/></proof>
-  <proof prover="3" obsolete="true"><undone/></proof>
+  <proof prover="3" obsolete="true"><result status="failure" time="0.00"/></proof>
   <proof prover="4" timelimit="1" obsolete="true"><result status="timeout" time="1.00"/></proof>
   <transf name="split_vc" proved="true" >
    <goal name="solve_aux&#39;vc.51.0" expl="exceptional postcondition" proved="true">
-   <proof prover="0" timelimit="5" memlimit="2000"><result status="timeout" time="5.00"/></proof>
-   <proof prover="1" timelimit="5" memlimit="2000"><result status="timeout" time="20.00"/></proof>
-   <proof prover="3"><result status="valid" time="0.08" steps="150"/></proof>
-   <proof prover="4"><undone/></proof>
+   <proof prover="0" timelimit="5" memlimit="2000" obsolete="true"><result status="timeout" time="5.00"/></proof>
+   <proof prover="1" timelimit="5" memlimit="2000" obsolete="true"><result status="timeout" time="5.00"/></proof>
+   <proof prover="3" obsolete="true"><result status="valid" time="0.08" steps="150"/></proof>
+   <proof prover="4" timelimit="5" memlimit="2000" obsolete="true"><result status="timeout" time="5.00"/></proof>
+   <transf name="inline_goal" proved="true" >
+    <goal name="solve_aux&#39;vc.51.0.0" expl="exceptional postcondition" proved="true">
+    <transf name="split_all_full" proved="true" >
+     <goal name="solve_aux&#39;vc.51.0.0.0" expl="exceptional postcondition" proved="true">
+     <proof prover="0" obsolete="true"><result status="timeout" time="1.00"/></proof>
+     <proof prover="1" obsolete="true"><result status="timeout" time="1.00"/></proof>
+     <proof prover="4" timelimit="1" obsolete="true"><result status="timeout" time="1.00"/></proof>
+     <transf name="split_vc" proved="true" >
+      <goal name="solve_aux&#39;vc.51.0.0.0.0" expl="exceptional postcondition" proved="true">
+      <proof prover="0" timelimit="5" memlimit="2000" obsolete="true"><result status="timeout" time="5.00"/></proof>
+      <proof prover="1" timelimit="5" memlimit="2000" obsolete="true"><result status="timeout" time="5.00"/></proof>
+      <proof prover="4" timelimit="5" memlimit="2000" obsolete="true"><result status="timeout" time="5.00"/></proof>
+      <transf name="inline_goal" proved="true" >
+       <goal name="solve_aux&#39;vc.51.0.0.0.0.0" expl="exceptional postcondition" proved="true">
+       <proof prover="0"><result status="valid" time="0.14"/></proof>
+       </goal>
+      </transf>
+      </goal>
+     </transf>
+     </goal>
+    </transf>
+    </goal>
+   </transf>
    </goal>
    <goal name="solve_aux&#39;vc.51.1" expl="exceptional postcondition" proved="true">
    <proof prover="0"><result status="valid" time="0.06"/></proof>
-   <proof prover="1" timelimit="20" obsolete="true"><undone/></proof>
-   <proof prover="3" obsolete="true"><undone/></proof>
+   <proof prover="1" timelimit="20" obsolete="true"><result status="failure" time="0.00"/></proof>
+   <proof prover="3" obsolete="true"><result status="failure" time="0.00"/></proof>
    </goal>
    <goal name="solve_aux&#39;vc.51.2" expl="exceptional postcondition" proved="true">
    <proof prover="0"><result status="valid" time="0.04"/></proof>
-   <proof prover="1" timelimit="20" obsolete="true"><undone/></proof>
-   <proof prover="3" obsolete="true"><undone/></proof>
+   <proof prover="1" timelimit="20" obsolete="true"><result status="failure" time="0.00"/></proof>
+   <proof prover="3" obsolete="true"><result status="failure" time="0.00"/></proof>
    </goal>
   </transf>
   </goal>
   <goal name="solve_aux&#39;vc.52" expl="precondition" proved="true">
   <proof prover="0"><result status="valid" time="0.09"/></proof>
-  <proof prover="3" obsolete="true"><undone/></proof>
+  <proof prover="3" obsolete="true"><result status="failure" time="0.00"/></proof>
   </goal>
-  <goal name="solve_aux&#39;vc.53" expl="precondition">
-  <proof prover="0" timelimit="20" obsolete="true"><undone/></proof>
+  <goal name="solve_aux&#39;vc.53" expl="precondition" proved="true">
+  <proof prover="0" timelimit="20" obsolete="true"><result status="failure" time="0.00"/></proof>
   <proof prover="1" obsolete="true"><result status="timeout" time="1.00"/></proof>
-  <proof prover="3" obsolete="true"><undone/></proof>
+  <proof prover="3" obsolete="true"><result status="failure" time="0.00"/></proof>
   <proof prover="4" timelimit="1" obsolete="true"><result status="timeout" time="1.00"/></proof>
-  <transf name="split_vc" >
-   <goal name="solve_aux&#39;vc.53.0" expl="precondition">
-   <proof prover="0" timelimit="5" memlimit="2000"><result status="timeout" time="5.00"/></proof>
-   <proof prover="1" timelimit="5" memlimit="2000"><result status="timeout" time="20.00"/></proof>
-   <proof prover="3"><result status="timeout" time="20.00"/></proof>
-   <proof prover="4"><undone/></proof>
+  <transf name="split_vc" proved="true" >
+   <goal name="solve_aux&#39;vc.53.0" expl="precondition" proved="true">
+   <proof prover="0"><result status="valid" time="0.06"/></proof>
+   <proof prover="1" timelimit="5" memlimit="2000" obsolete="true"><result status="timeout" time="20.00"/></proof>
+   <proof prover="3" obsolete="true"><result status="timeout" time="20.00"/></proof>
+   <proof prover="4" obsolete="true"><result status="failure" time="0.00"/></proof>
    </goal>
   </transf>
   </goal>
   <goal name="solve_aux&#39;vc.54" expl="variant decrease" proved="true">
   <proof prover="0"><result status="valid" time="0.05"/></proof>
-  <proof prover="3" obsolete="true"><undone/></proof>
+  <proof prover="3" obsolete="true"><result status="failure" time="0.00"/></proof>
   </goal>
   <goal name="solve_aux&#39;vc.55" expl="precondition" proved="true">
   <proof prover="0"><result status="valid" time="0.08"/></proof>
-  <proof prover="3" obsolete="true"><undone/></proof>
+  <proof prover="3" obsolete="true"><result status="failure" time="0.00"/></proof>
   </goal>
   <goal name="solve_aux&#39;vc.56" expl="precondition" proved="true">
   <proof prover="0"><result status="valid" time="0.09"/></proof>
-  <proof prover="3" obsolete="true"><undone/></proof>
+  <proof prover="3" obsolete="true"><result status="failure" time="0.00"/></proof>
   </goal>
-  <goal name="solve_aux&#39;vc.57" expl="precondition">
-  <proof prover="0" timelimit="20" obsolete="true"><undone/></proof>
+  <goal name="solve_aux&#39;vc.57" expl="precondition" proved="true">
+  <proof prover="0" timelimit="20" obsolete="true"><result status="failure" time="0.00"/></proof>
   <proof prover="1" obsolete="true"><result status="timeout" time="1.00"/></proof>
-  <proof prover="3" obsolete="true"><undone/></proof>
+  <proof prover="3" obsolete="true"><result status="valid" time="2.05" steps="740"/></proof>
   <proof prover="4" timelimit="1" obsolete="true"><result status="timeout" time="1.00"/></proof>
-  <transf name="split_vc" >
-   <goal name="solve_aux&#39;vc.57.0" expl="precondition">
-   <proof prover="0" timelimit="5" memlimit="2000"><result status="timeout" time="5.00"/></proof>
-   <proof prover="1" timelimit="5" memlimit="2000"><result status="timeout" time="20.00"/></proof>
-   <proof prover="3"><result status="timeout" time="20.00"/></proof>
-   <proof prover="4"><undone/></proof>
+  <transf name="split_vc" proved="true" >
+   <goal name="solve_aux&#39;vc.57.0" expl="precondition" proved="true">
+   <proof prover="0" timelimit="5" memlimit="2000" obsolete="true"><result status="timeout" time="5.00"/></proof>
+   <proof prover="1" timelimit="5" memlimit="2000" obsolete="true"><result status="timeout" time="5.00"/></proof>
+   <proof prover="3" obsolete="true"><result status="valid" time="2.49" steps="740"/></proof>
+   <proof prover="4" timelimit="5" memlimit="2000" obsolete="true"><result status="timeout" time="5.00"/></proof>
+   <transf name="inline_goal" proved="true" >
+    <goal name="solve_aux&#39;vc.57.0.0" expl="precondition" proved="true">
+    <transf name="split_all_full" proved="true" >
+     <goal name="solve_aux&#39;vc.57.0.0.0" expl="precondition" proved="true">
+     <proof prover="0" obsolete="true"><result status="timeout" time="1.00"/></proof>
+     <proof prover="1" obsolete="true"><result status="timeout" time="1.00"/></proof>
+     <proof prover="4" timelimit="1" obsolete="true"><result status="timeout" time="1.00"/></proof>
+     <transf name="split_vc" proved="true" >
+      <goal name="solve_aux&#39;vc.57.0.0.0.0" expl="precondition" proved="true">
+      <proof prover="0" timelimit="5" memlimit="2000" obsolete="true"><result status="timeout" time="5.00"/></proof>
+      <proof prover="1" timelimit="5" memlimit="2000" obsolete="true"><result status="timeout" time="5.00"/></proof>
+      <proof prover="4" timelimit="5" memlimit="2000" obsolete="true"><result status="timeout" time="5.00"/></proof>
+      <transf name="inline_goal" proved="true" >
+       <goal name="solve_aux&#39;vc.57.0.0.0.0.0" expl="precondition" proved="true">
+       <proof prover="0"><result status="valid" time="0.14"/></proof>
+       </goal>
+      </transf>
+      </goal>
+     </transf>
+     </goal>
+    </transf>
+    </goal>
+   </transf>
    </goal>
   </transf>
   </goal>
   <goal name="solve_aux&#39;vc.58" expl="precondition" proved="true">
   <proof prover="0"><result status="valid" time="0.06"/></proof>
-  <proof prover="3" obsolete="true"><undone/></proof>
+  <proof prover="3" obsolete="true"><result status="failure" time="0.00"/></proof>
   </goal>
   <goal name="solve_aux&#39;vc.59" expl="index in array bounds" proved="true">
   <proof prover="0"><result status="valid" time="0.08"/></proof>
-  <proof prover="3" obsolete="true"><undone/></proof>
+  <proof prover="3" obsolete="true"><result status="failure" time="0.00"/></proof>
   </goal>
-  <goal name="solve_aux&#39;vc.60" expl="postcondition">
-  <proof prover="0" timelimit="5" memlimit="2000"><result status="timeout" time="5.00"/></proof>
-  <proof prover="1" timelimit="5" memlimit="2000"><result status="timeout" time="20.00"/></proof>
-  <proof prover="3"><result status="timeout" time="20.00"/></proof>
-  <proof prover="4"><undone/></proof>
+  <goal name="solve_aux&#39;vc.60" expl="postcondition" proved="true">
+  <proof prover="0"><result status="valid" time="0.07"/></proof>
+  <proof prover="1" timelimit="5" memlimit="2000" obsolete="true"><result status="timeout" time="20.00"/></proof>
+  <proof prover="3" obsolete="true"><result status="timeout" time="20.00"/></proof>
+  <proof prover="4" obsolete="true"><result status="failure" time="0.00"/></proof>
   </goal>
   <goal name="solve_aux&#39;vc.61" expl="postcondition" proved="true">
-  <proof prover="0" timelimit="5" memlimit="2000"><result status="timeout" time="5.00"/></proof>
-  <proof prover="1" timelimit="5" memlimit="2000"><result status="timeout" time="20.00"/></proof>
-  <proof prover="3"><result status="valid" time="2.24" steps="742"/></proof>
-  <proof prover="4"><undone/></proof>
+  <proof prover="0"><result status="valid" time="0.08"/></proof>
+  <proof prover="1" timelimit="5" memlimit="2000" obsolete="true"><result status="timeout" time="20.00"/></proof>
+  <proof prover="3" obsolete="true"><result status="valid" time="2.24" steps="742"/></proof>
+  <proof prover="4" obsolete="true"><result status="failure" time="0.00"/></proof>
   </goal>
-  <goal name="solve_aux&#39;vc.62" expl="postcondition">
-  <proof prover="0" timelimit="5" memlimit="2000"><result status="timeout" time="20.00"/></proof>
-  <proof prover="1" timelimit="20"><result status="timeout" time="20.00"/></proof>
-  <proof prover="3"><result status="timeout" time="20.00"/></proof>
-  <proof prover="4"><undone/></proof>
+  <goal name="solve_aux&#39;vc.62" expl="postcondition" proved="true">
+  <proof prover="0"><result status="valid" time="0.08"/></proof>
+  <proof prover="1" timelimit="20" obsolete="true"><result status="timeout" time="20.00"/></proof>
+  <proof prover="3" obsolete="true"><result status="timeout" time="20.00"/></proof>
+  <proof prover="4" obsolete="true"><result status="failure" time="0.00"/></proof>
   </goal>
-  <goal name="solve_aux&#39;vc.63" expl="exceptional postcondition">
-  <proof prover="0" timelimit="20" obsolete="true"><undone/></proof>
-  <proof prover="1" timelimit="20" obsolete="true"><undone/></proof>
-  <proof prover="3" obsolete="true"><undone/></proof>
+  <goal name="solve_aux&#39;vc.63" expl="exceptional postcondition" proved="true">
+  <proof prover="0" timelimit="20" obsolete="true"><result status="failure" time="0.00"/></proof>
+  <proof prover="1" timelimit="20" obsolete="true"><result status="failure" time="0.00"/></proof>
+  <proof prover="3" obsolete="true"><result status="valid" time="0.08" steps="233"/></proof>
   <proof prover="4" timelimit="1" obsolete="true"><result status="timeout" time="1.00"/></proof>
-  <transf name="split_vc" >
-   <goal name="solve_aux&#39;vc.63.0" expl="exceptional postcondition">
-   <proof prover="0" timelimit="5" memlimit="2000"><result status="timeout" time="20.00"/></proof>
-   <proof prover="1" timelimit="20"><result status="timeout" time="20.00"/></proof>
-   <proof prover="3"><result status="timeout" time="20.00"/></proof>
-   <proof prover="4"><undone/></proof>
+  <transf name="split_vc" proved="true" >
+   <goal name="solve_aux&#39;vc.63.0" expl="exceptional postcondition" proved="true">
+   <proof prover="0" timelimit="5" memlimit="2000" obsolete="true"><result status="timeout" time="5.00"/></proof>
+   <proof prover="1" timelimit="5" memlimit="2000" obsolete="true"><result status="timeout" time="5.00"/></proof>
+   <proof prover="3" obsolete="true"><result status="valid" time="0.12" steps="233"/></proof>
+   <proof prover="4" timelimit="5" memlimit="2000" obsolete="true"><result status="timeout" time="5.00"/></proof>
+   <transf name="inline_goal" proved="true" >
+    <goal name="solve_aux&#39;vc.63.0.0" expl="exceptional postcondition" proved="true">
+    <transf name="split_all_full" proved="true" >
+     <goal name="solve_aux&#39;vc.63.0.0.0" expl="exceptional postcondition" proved="true">
+     <proof prover="0" obsolete="true"><result status="timeout" time="1.00"/></proof>
+     <proof prover="1" obsolete="true"><result status="timeout" time="1.00"/></proof>
+     <proof prover="4" timelimit="1" obsolete="true"><result status="timeout" time="1.00"/></proof>
+     <transf name="split_vc" proved="true" >
+      <goal name="solve_aux&#39;vc.63.0.0.0.0" expl="exceptional postcondition" proved="true">
+      <proof prover="0" timelimit="5" memlimit="2000" obsolete="true"><result status="timeout" time="5.00"/></proof>
+      <proof prover="1" timelimit="5" memlimit="2000" obsolete="true"><result status="timeout" time="5.00"/></proof>
+      <proof prover="4" timelimit="5" memlimit="2000" obsolete="true"><result status="timeout" time="5.00"/></proof>
+      <transf name="inline_goal" proved="true" >
+       <goal name="solve_aux&#39;vc.63.0.0.0.0.0" expl="exceptional postcondition" proved="true">
+       <proof prover="0"><result status="valid" time="0.11"/></proof>
+       </goal>
+      </transf>
+      </goal>
+     </transf>
+     </goal>
+    </transf>
+    </goal>
+   </transf>
    </goal>
    <goal name="solve_aux&#39;vc.63.1" expl="exceptional postcondition" proved="true">
-   <proof prover="0"><result status="valid" time="0.03"/></proof>
-   <proof prover="3" obsolete="true"><undone/></proof>
-   <proof prover="4" obsolete="true"><undone/></proof>
+   <proof prover="0"><result status="valid" time="0.04"/></proof>
+   <proof prover="3" obsolete="true"><result status="failure" time="0.00"/></proof>
+   <proof prover="4" obsolete="true"><result status="failure" time="0.00"/></proof>
    </goal>
    <goal name="solve_aux&#39;vc.63.2" expl="exceptional postcondition" proved="true">
    <proof prover="0"><result status="valid" time="0.04"/></proof>
-   <proof prover="3" obsolete="true"><undone/></proof>
-   <proof prover="4" obsolete="true"><undone/></proof>
+   <proof prover="3" obsolete="true"><result status="failure" time="0.00"/></proof>
+   <proof prover="4" obsolete="true"><result status="failure" time="0.00"/></proof>
    </goal>
   </transf>
   </goal>
   <goal name="solve_aux&#39;vc.64" expl="index in array bounds" proved="true">
-  <proof prover="0"><result status="valid" time="0.06"/></proof>
-  <proof prover="3" obsolete="true"><undone/></proof>
-  <proof prover="4" obsolete="true"><undone/></proof>
+  <proof prover="0"><result status="valid" time="0.07"/></proof>
+  <proof prover="3" obsolete="true"><result status="failure" time="0.00"/></proof>
+  <proof prover="4" obsolete="true"><result status="failure" time="0.00"/></proof>
   </goal>
-  <goal name="solve_aux&#39;vc.65" expl="postcondition">
-  <proof prover="0" timelimit="5" memlimit="2000"><result status="timeout" time="20.00"/></proof>
-  <proof prover="1" timelimit="20"><result status="timeout" time="20.00"/></proof>
-  <proof prover="3"><result status="timeout" time="20.00"/></proof>
-  <proof prover="4"><undone/></proof>
+  <goal name="solve_aux&#39;vc.65" expl="postcondition" proved="true">
+  <proof prover="0"><result status="valid" time="0.09"/></proof>
+  <proof prover="1" timelimit="20" obsolete="true"><result status="timeout" time="20.00"/></proof>
+  <proof prover="3" obsolete="true"><result status="timeout" time="20.00"/></proof>
+  <proof prover="4" obsolete="true"><result status="failure" time="0.00"/></proof>
   </goal>
-  <goal name="solve_aux&#39;vc.66" expl="postcondition">
-  <proof prover="0" timelimit="5" memlimit="2000"><result status="timeout" time="20.00"/></proof>
-  <proof prover="1" timelimit="20"><undone/></proof>
-  <proof prover="3"><result status="timeout" time="20.00"/></proof>
-  <proof prover="4"><result status="timeout" time="1.00"/></proof>
+  <goal name="solve_aux&#39;vc.66" expl="postcondition" proved="true">
+  <proof prover="0"><result status="valid" time="0.12"/></proof>
+  <proof prover="1" timelimit="20" obsolete="true"><result status="failure" time="0.00"/></proof>
+  <proof prover="3" obsolete="true"><result status="timeout" time="20.00"/></proof>
+  <proof prover="4" obsolete="true"><result status="timeout" time="1.00"/></proof>
   </goal>
-  <goal name="solve_aux&#39;vc.67" expl="postcondition">
-  <proof prover="0" timelimit="5" memlimit="2000"><result status="timeout" time="20.00"/></proof>
-  <proof prover="1" timelimit="20"><undone/></proof>
-  <proof prover="3"><result status="timeout" time="20.00"/></proof>
-  <proof prover="4"><result status="timeout" time="1.00"/></proof>
+  <goal name="solve_aux&#39;vc.67" expl="postcondition" proved="true">
+  <proof prover="0"><result status="valid" time="0.12"/></proof>
+  <proof prover="1" timelimit="20" obsolete="true"><result status="failure" time="0.00"/></proof>
+  <proof prover="3" obsolete="true"><result status="timeout" time="20.00"/></proof>
+  <proof prover="4" obsolete="true"><result status="timeout" time="1.00"/></proof>
   </goal>
  </transf>
  </goal>
- <goal name="solve&#39;vc" expl="VC for solve">
+ <goal name="solve&#39;vc" expl="VC for solve" proved="true">
+ <proof prover="0"><result status="valid" time="0.07"/></proof>
  </goal>
 </theory>
-<theory name="Test">
- <goal name="empty&#39;vc" expl="VC for empty">
+<theory name="Test" proved="true">
+ <goal name="empty&#39;vc" expl="VC for empty" proved="true">
+ <proof prover="0"><result status="valid" time="0.04"/></proof>
  </goal>
- <goal name="example1&#39;vc" expl="VC for example1">
+ <goal name="example1&#39;vc" expl="VC for example1" proved="true">
+ <proof prover="0"><result status="valid" time="0.09"/></proof>
  </goal>
- <goal name="example2&#39;vc" expl="VC for example2">
+ <goal name="example2&#39;vc" expl="VC for example2" proved="true">
+ <proof prover="0"><result status="valid" time="0.08"/></proof>
  </goal>
- <goal name="example3&#39;vc" expl="VC for example3">
+ <goal name="example3&#39;vc" expl="VC for example3" proved="true">
+ <proof prover="0"><result status="valid" time="0.07"/></proof>
  </goal>
- <goal name="example4&#39;vc" expl="VC for example4">
+ <goal name="example4&#39;vc" expl="VC for example4" proved="true">
+ <proof prover="0"><result status="valid" time="0.07"/></proof>
  </goal>
- <goal name="example5&#39;vc" expl="VC for example5">
+ <goal name="example5&#39;vc" expl="VC for example5" proved="true">
+ <proof prover="0"><result status="valid" time="0.06"/></proof>
  </goal>
- <goal name="example6&#39;vc" expl="VC for example6">
+ <goal name="example6&#39;vc" expl="VC for example6" proved="true">
+ <proof prover="0"><result status="valid" time="0.08"/></proof>
  </goal>
 </theory>
 </file>

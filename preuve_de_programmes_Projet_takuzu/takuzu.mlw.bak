@@ -323,13 +323,8 @@ predicate valid_chunk (s i:int) =
 lemma valid_chunk :
   forall s i. valid_chunk s i ->
     forall k. 0 <= k < 8 -> 0 <= s + k*i < 64
-(* qq: (0,8) (1,8) ... ( 7,8) 
-       (0,1) (8,1) ... (56,1) *)
-
+    
 function acc (g:takuzu_grid) (start incr k : int) : elem = g[start+incr*k]
-(* qq : ex :    k = 0,...,7 
-                acc 8 1 3 = g[8+1*3] = 11
-*)
 
 let acc (g:takuzu_grid) (start incr k : int) : elem
   requires { g.length = 64 }
@@ -363,8 +358,6 @@ predicate no_3_consecutive_identical_elem (g:takuzu_grid) (start incr : int) (l:
    forall k:int. 0 <= k <= l-3 -> (not (g[start+incr*k] = g[start+incr*(k+1)] = g[start+incr*(k+2)]=One) 
                                    /\ not (g[start+incr*k] = g[start+incr*(k+1)] = g[start+incr*(k+2)]=Zero)) 
   
-(*    forall k:int. __FORMULA_TO_BE_COMPLETED__ *)
-
 predicate rule_1_for_chunk (g:takuzu_grid) (start incr:int) =
   (** `rule_1_for_chunk g s i` is true when rule 1 is not violated in chunk
       `(s,i)` of grid `g` *)
@@ -379,7 +372,8 @@ let check_rule_1_for_chunk (g:takuzu_grid) start incr
   requires { g.length = 64 }
   requires { valid_chunk start incr }
   ensures { rule_1_for_chunk g start incr }
-  raises { Invalid -> true }
+  ensures { g = old g }
+  raises { Invalid -> g = old g }
 =
   let ref count_zeros = 0 in
   let ref count_ones = 0 in
@@ -416,33 +410,6 @@ let check_rule_1_for_chunk (g:takuzu_grid) start incr
     assert {i <= 1 \/ not (acc g start incr i) = (acc g start incr (i-1)) = (acc g start incr (i-2)) = One}  
   done
 
-(*
-let check_rule_1_for_chunk (g:takuzu_grid) start incr
-(** `check_no_3_consecutive_identical_elements g s i` check whether
-    the chunk `(s,i)` in grid `g` is satisfiable *)
-  requires { g.length = 64 }
-  requires { valid_chunk start incr }
-  ensures { rule_1_for_chunk g start incr }
-  raises { Invalid -> true }
-=
-  let ref count_zeros = 0 in
-  let ref count_ones = 0 in
-  for i=0 to 7 do
-      invariant { __FORMULA_TO_BE_COMPLETED__ }
-    match acc g start incr i with
-      | Zero ->
-        if count_zeros = 2 then raise Invalid else
-           begin count_zeros <- count_zeros + 1; count_ones <- 0 end
-      | One ->
-        if count_ones = 2 then raise Invalid else
-           begin count_ones <- count_ones + 1; count_zeros <- 0 end
-      | Empty -> count_zeros <- 0; count_ones <- 0
-    end
-  done
-*)
-
-
-
 (** {QUESTION 12}
 
   Rule 2 for chunks
@@ -477,60 +444,23 @@ let count_number_of (e:elem) (g:takuzu_grid) start incr : int
   done;
   n
   
-(*
-
-let count_number_of (e:elem) (g:takuzu_grid) start incr : int
-  (** `count_number_of e g start incr` returns the number of occurrences of `e` in the
-      chunk `(start,incr)` of the grid `g` *)
-  requires { __FORMULA_TO_BE_COMPLETED__ }
-  ensures { result = num_occ e g start incr 8 }
-  =
-  let ref n = 0 in
-  for i=0 to 7 do
-    invariant { __FORMULA_TO_BE_COMPLETED__ }
-    if eq (acc g start incr i) e then n <- n+1
-  done;
-  n
-*)
-
 (** {QUESTION 13} *)
 
 predicate rule_2_for_chunk (g:takuzu_grid) (start incr:int) =
   (** `rule_2_for_chunk g s i` is true when rule 2 is not violated in chunk
       `(s,i)` of grid `g` *)
   num_occ Zero g start incr 8 <= 4 /\
-  num_occ Zero g start incr 8 <= 4 
-
-(*
-predicate rule_2_for_chunk (g:takuzu_grid) (start incr:int) =
-  (** `rule_2_for_chunk g s i` is true when rule 2 is not violated in chunk
-      `(s,i)` of grid `g` *)
-  num_occ Zero g start incr 8 <= __TERM_TO_BE_COMPLETED__ /\
-  __FORMULA_TO_BE_COMPLETED__
-*)
+  num_occ One g start incr 8 <= 4 
 
 let check_rule_2_for_chunk (g:takuzu_grid) start incr : unit
   requires { g.length = 64 }
   requires { valid_chunk start incr }
   ensures { rule_2_for_chunk g start incr }
-  raises { Invalid -> true }
+  ensures { g = old g }
+  raises { Invalid -> g = old g }
   =
   if count_number_of Zero g start incr > 4 then raise Invalid;
-  if count_number_of Zero g start incr > 4 then raise Invalid;  
-(*
-let check_rule_2_for_chunk (g:takuzu_grid) start incr : unit
-  requires { g.length = 64 }
-  requires { valid_chunk start incr }
-  ensures { rule_2_for_chunk g start incr }
-  raises { Invalid -> true }
-  =
-  if count_number_of Zero g start incr > __EXPRESSION_TO_BE_COMPLETED__ then raise Invalid;
-  __CODE_TO_BE_COMPLETED__
-*)
-
-
-
-
+  if count_number_of One g start incr > 4 then raise Invalid;  
 
 (** {QUESTION 14}
 
@@ -548,12 +478,6 @@ predicate identical_chunks (g:takuzu_grid) (s1 s2:int) (incr:int) (l:int)
                            (acc g s1 incr k) <> Empty
                            )
   
-     
-(*
-= forall k. 0 <= k < l ->
-    __FORMULA_TO_BE_COMPLETED__
-*)
-
 exception DiffFound
 
 let check_identical_chunks g start1 start2 incr : bool
@@ -571,26 +495,6 @@ let check_identical_chunks g start1 start2 incr : bool
     True
   with DiffFound -> False
   end
-  
-(*
-
-let check_identical_chunks g start1 start2 incr : bool
-  requires { __FORMULA_TO_BE_COMPLETED__ }
-  ensures { result = True <-> identical_chunks g start1 start2 incr 8 }
-= try
-    for i=0 to 7 do
-      invariant { __FORMULA_TO_BE_COMPLETED__ }
-      match acc g start1 incr i, acc g start2 incr i with
-      | Zero,Zero -> __CODE_TO_BE_COMPLETED__
-      | One,One -> __CODE_TO_BE_COMPLETED__
-      | _ -> __CODE_TO_BE_COMPLETED__
-      end
-    done;
-    True
-  with DiffFound -> False
-  end
-*)
-
 
 (** {QUESTION 15} *)
 
@@ -601,7 +505,8 @@ let check_rule_3_for_column (g:takuzu_grid) (start:int) : unit
   requires { g.length = 64 /\ 0 <= start <= 7 }    
   ensures { forall k. 0 <= k < 8 /\ k <> start -> 
                       not (identical_columns g start k) }
-  raises { Invalid -> true }
+  ensures { g = old g }
+  raises { Invalid -> g = old g }
 =
   for i=0 to 7 do
     invariant { forall k. 0 <= k < i /\ k <> start -> 
@@ -612,19 +517,6 @@ let check_rule_3_for_column (g:takuzu_grid) (start:int) : unit
         |False -> ()
         end
   done
-  
-(*
-let check_rule_3_for_column (g:takuzu_grid) (start:int) : unit
-  requires { __FORMULA_TO_BE_COMPLETED__ }
-  ensures { forall k. 0 <= k < 8 /\ k <> start ->
-               not (identical_columns g start k) }
-  raises { Invalid -> true }
-=
-  for i=0 to 7 do
-    invariant { __FORMULA_TO_BE_COMPLETED__ }
-      (* CODE TO BE COMPLETED *)raise Invalid
-  done
-*)  
 
 predicate identical_rows (g:takuzu_grid) (s1 s2:int) =
   identical_chunks g s1 s2 1 8
@@ -633,7 +525,8 @@ let check_rule_3_for_row (g:takuzu_grid) (start:int) : unit
   requires { g.length = 64 /\ 0 <= start < 64 /\ mod start 8 = 0 }    
   ensures { forall k. 0 <= k < 8 /\ 8*k <> start ->
                not (identical_rows g start (8*k)) }
-  raises { Invalid -> true }
+  ensures { g = old g }
+  raises { Invalid -> g = old g }
 = 
   for i=0 to 63 do
       invariant { forall k. 0 <= k < i /\ (mod k 8 = 0) /\ k <> start -> 
@@ -645,18 +538,6 @@ let check_rule_3_for_row (g:takuzu_grid) (start:int) : unit
           |False -> ()
           end
   done
-
-(*
-let check_rule_3_for_row (g:takuzu_grid) (start:int) : unit
-  requires { __FORMULA_TO_BE_COMPLETED__ }
-  ensures { forall k. 0 <= k < 8 /\ 8*k <> start ->
-               not (identical_rows g start (8*k)) }
-  raises { Invalid -> true }
-= (* CODE TO BE COMPLETED *)raise Invalid
-*)
-
-
-
 
 (** {3 Rules satisfaction for a given cell} *)
 
@@ -676,14 +557,6 @@ predicate rule_2_for_cell (g:takuzu_grid) (n:int) =
   let rs = row_start_index n in
   rule_2_for_chunk g cs 8 /\ rule_2_for_chunk g rs 1 
 
-(*
-predicate rule_3_for_cell (g:takuzu_grid) (n:int) =
-(** `rule_3_for_cell g n` is true whenever the third Takuzu rule is
-    satisfied for the row and the column of the cell number `n` *)
-  let cs = column_start_index n in
-  let rs = row_start_index n in
-  forall i. 0 <= i < 8 -> __FORMULA_TO_BE_COMPLETED__
-*)
 predicate rule_3_for_cell (g:takuzu_grid) (n:int) =
 (** `rule_3_for_cell g n` is true whenever the third Takuzu rule is
     satisfied for the row and the column of the cell number `n` *)
@@ -703,33 +576,13 @@ predicate valid_up_to (g:takuzu_grid) (n:int)
     than `n` satisfy the Takuzu rules *)
 = forall i. 0 <= i < n -> valid_for_cell g i
 
-
-(** {4 QUESTION 17} *)
-
-(*
-let check_at_cell (g:takuzu_grid) (n:int) : unit
-(** `check_at_cell g n` returns normally if the grid `g` satisfy the
-    rules for cell `n`. *)
-  requires { __FORMULA_TO_BE_COMPLETED__ }
-  ensures { valid_for_cell g n }
-  raises { Invalid -> true }
-=
-  let col_start = column_start_index n in
-  let row_start = row_start_index n in
-  check_rule_1_for_chunk g col_start 8;
-  check_rule_1_for_chunk g row_start 1;
-  check_rule_2_for_chunk g col_start 8;
-  check_rule_2_for_chunk g row_start 1;
-  check_rule_3_for_column g col_start;
-  check_rule_3_for_row g row_start
-*)
 let check_at_cell (g:takuzu_grid) (n:int) : unit
 (** `check_at_cell g n` returns normally if the grid `g` satisfy the
     rules for cell `n`. *)
   requires { g.length = 64 /\ 0 <= n < 64 }
   ensures { valid_for_cell g n }
   ensures { g = old g}
-  raises { Invalid -> true }
+  raises { Invalid -> g = old g }
 =
   let col_start = column_start_index n in
   let row_start = row_start_index n in
@@ -742,9 +595,10 @@ let check_at_cell (g:takuzu_grid) (n:int) : unit
 
 
 (** {4 QUESTIONS 18, 19 AND 20} *)
-(* nouveau ***********)
-lemma subst_0 : forall g:takuzu_grid, n:int, e:elem.
-  0 <= n < g.length -> g[n<-e][n<-Empty] = g[n<-Empty]
+(* nouveau ***********)    
+lemma subst_0 : forall g:takuzu_grid, n:int, e:elem. 0 <= n < g.length ->
+    g[n<-e][n<-Empty] = g[n<-Empty] 
+    
 lemma aux_rule_1_and_rule_2_for_chunk : 
     forall g, n:int. (g.length = 64 /\ 0 <= n < 64) ->
       ((  forall k. 0 <= k < n ->
@@ -797,94 +651,42 @@ let check_cell_change (g:takuzu_grid) (n:int) (e:elem) : unit
   writes { g }
   ensures { valid_up_to g (n+1) }
   ensures { g = (old g)[n<-e] } 
-  raises { Invalid -> true }
+  raises { Invalid -> g = (old g)[n<-e] }
 = 
 
   g[n] <- e;
   assert { valid_up_to g[n<-Empty] n };
   check_at_cell g n;
 
-  (* on veut montrer :  valid_up_to g (n+1) i.e. forall 0<=k <= n, valid_for_cell g k *)
-  (* on a deja, par la postcondition de "check_at_cell" *) 
+
   assert {valid_for_cell g n}; 
-  (* il reste a montrer forall 0 <= k <= n-1, valid_for_cell g k 
-      ce qui est equivalent a, par definition du predicat, 
-      forall 0 <= k <= n-1, rule_1_for_cell g k /\ rule_2_for_cell g k /\ rule_3_for_cell g k
-      par la distributivite de forall par rapport a /\, 
-      il suffit de montrer :
-          1:forall 0 <= k <= n-1,   rule_1_for_cell g k
-          2:forall 0 <= k <= n-1,   rule_2_for_cell g k
-          3:forall 0 <= k <= n-1,   rule_3_for_cell g k   *)           
-  
-  (* !!!!!!!!!!!!!!!  g = (g at Init)[n<-e] !!!!!!!!!!!*)
-  
-  (* propriete 1 : forall 0 <= k <= n-1, rule_1_for_cell g k *)
-  (* par le lemma ajoute 'invariant_g', on a deja *)
-  (*assert {forall k:int. 0 <= k < n -> rule_1_for_cell g[n<-Empty] k };*)
-  (* qq par lemma ajoute 'aux_lemma_rule_1', on obtient *) 
+
   assert {forall k:int. 0 <= k < n -> 
-            let ck = column_start_index k in
-            let rk = row_start_index k in
-            let cn = column_start_index n in
-            let rn = row_start_index n in
-                (ck <> cn -> rule_1_for_chunk g[n<-Empty] ck 8) /\
-                (rk <> rn -> rule_1_for_chunk g[n<-Empty] rk 1) /\
-                (ck <> cn -> rule_2_for_chunk g[n<-Empty] ck 8) /\
-                (rk <> rn -> rule_2_for_chunk g[n<-Empty] rk 1)
-                 };
-    assert {forall k:int. 0 <= k < n -> 
-            let ck = column_start_index k in
-            let rk = row_start_index k in
-            let cn = column_start_index n in
-            let rn = row_start_index n in
-                (ck <> cn -> rule_1_for_chunk g ck 8) /\
-                (rk <> rn -> rule_1_for_chunk g rk 1) /\
-                (ck <> cn -> rule_2_for_chunk g ck 8) /\
-                (rk <> rn -> rule_2_for_chunk g rk 1)
-                 };
+          let ck = column_start_index k in
+          let rk = row_start_index k in
+          let cn = column_start_index n in
+          let rn = row_start_index n in
+              (ck <> cn -> rule_1_for_chunk g[n<-Empty] ck 8) /\
+              (rk <> rn -> rule_1_for_chunk g[n<-Empty] rk 1) /\
+              (ck <> cn -> rule_2_for_chunk g[n<-Empty] ck 8) /\
+              (rk <> rn -> rule_2_for_chunk g[n<-Empty] rk 1)
+               };
+
+  assert {forall k:int. 0 <= k < n -> 
+          let ck = column_start_index k in
+          let rk = row_start_index k in
+          let cn = column_start_index n in
+          let rn = row_start_index n in
+              (ck <> cn -> rule_1_for_chunk g ck 8) /\
+              (rk <> rn -> rule_1_for_chunk g rk 1) /\
+              (ck <> cn -> rule_2_for_chunk g ck 8) /\
+              (rk <> rn -> rule_2_for_chunk g rk 1)
+               };
               
-  assert { forall k:int. 0 <= k < n -> rule_1_for_cell g k };
-  assert { forall k:int. 0 <= k < n -> rule_2_for_cell g k };
+
     
-(*    assert { forall k:int. 0 <= k < n -> 
-              (   let col_start = column_start_index k in
-  let row_start = row_start_index k in
-  0 = 0 };
-  *)  
-
-
- (*   assert {
-    forall k t:int. 
-    0 <= k < 64 /\ 0 <= t < 64 -> 
-    let cn = column_start_index n in
-    let ck = column_start_index k in
-    let ct = column_start_index t in
-    let rn = row_start_index n in
-    let rk = row_start_index k in
-    let rt = row_start_index t in 
-    (ck <> cn /\ ct <> cn /\ ck <> ct -> not (identical_columns g[n<-Empty] ck ct)) };
-
-*)
-
- 
-  (* propriete 3 : forall 0 <= k <= n-1, rule_3_for_cell g k 
-     <=> dans g, tous les lignes distinctes et tous les colonnes distincts ne sont pas identiques  
-     <=> forall 0 <=k <= n-1, 
-              let cs = column_start_index k in
-              let rs = row_start_index k in
-              forall i:int.
-               0 <= i /\ i < 8 ->
-               (not i = cs -> not identical_columns g cs i) /\
-               (not (8 * i) = rs -> not identical_rows g rs (8 * i)) *)  
-
-
-  (* propriete 3.1 :
-    dans g, tout ligne ou colonne distinct de celui de n est diffenret de celui de n *)
-    
-  (* qq : comme une consequence de la postcondition de 'check_at_cell g n', on a *) 
   assert { rule_3_for_cell g n};
-  (* qq autrement dit, pour tout ligne et tout colonne dont n n'est pas un case i,
-        ce ligne ou colonne n'est pas identique a la ligne ou colonne ou se situe n*) 
+
   assert { 
       forall i:int.
        0 <= i /\ i < 8 ->
@@ -897,43 +699,7 @@ let check_cell_change (g:takuzu_grid) (n:int) (e:elem) : unit
                not identical_columns g (column_start_index k) (column_start_index n)) /\
          (not (row_start_index k) = (row_start_index n) -> 
                not identical_rows g (row_start_index k) (row_start_index n)) };
- 
-  (*
-  (* propriete 3.2 :
-      dans g, tous les deux lignes ou colonnes tous les deux diff de celui de n sont diff *)
-  (* comme une consequence de 'valid_up_to g[n<-Empty] n', 
-      on a : forall 0 <= k < n. rule_3_for_cell g[n<-Empty] k *)
-  assert { forall k:int. 0 <= k < n -> rule_3_for_cell g[n<-Empty] k };
-    
-  (* ie par def *)
-  assert {  forall k:int. 0<= k < n -> 
-          let cs = column_start_index k in
-          let rs = row_start_index k in
-          forall i:int.
-           0 <= i /\ i < 8 ->
-           (not i = cs -> not identical_columns g[n<-Empty] cs i) /\
-           (not (8 * i) = rs -> not identical_rows g[n<-Empty] rs (8 * i)) };
-
-  
-  (* l(k) = l(n)  ou  c(k) = c(n) *)
-  assert {forall k:int. 0 <=k < n -> 
-              let cs = column_start_index k in
-              let rs = row_start_index k in
-              forall i:int.
-               0 <= i /\ i < 8 ->
-               (not i = cs /\ cs = column_start_index n -> not identical_columns g cs i) /\
-               (not (8 * i) = rs /\ rs = row_start_index n -> not identical_rows g rs (8 * i)) };  
-  
-  (*  l(k) <> l(n) /\ l(i) = l(n) ou c(k) <> c(n) /\ c(i) = c(n) *)  
-  assert {forall k:int. 0 <=k < n ->
-              let cs = column_start_index k in
-              let rs = row_start_index k in
-              forall i:int.
-               0 <= i /\ i < 8 ->
-               (not i = cs /\ not cs = column_start_index n /\ i = column_start_index n -> not identical_columns g cs i) /\
-               (not (8 * i) = rs /\ not rs = row_start_index n /\ (8 * i) = row_start_index n -> not identical_rows g rs (8 * i)) };
-    *)
-   (*  l(k) <> l(n) /\ l(i) <> l(n) ou c(k) <> c(n) /\ c(i) <> c(n) *)  
+               
    assert {forall k:int. 0 <=k < n ->
               let cs = column_start_index k in
               let rs = row_start_index k in
@@ -941,16 +707,10 @@ let check_cell_change (g:takuzu_grid) (n:int) (e:elem) : unit
                0 <= i /\ i < 8 ->
                (not i = cs /\ not cs = column_start_index n /\ not i = column_start_index n -> not identical_columns g[n<-Empty] cs i) /\
                (not (8 * i) = rs /\ not rs = row_start_index n /\ not (8 * i) = row_start_index n -> not identical_rows g[n<-Empty] rs (8 * i)) };
-         
+
+  assert { forall k:int. 0 <= k < n -> rule_1_for_cell g k };
+  assert { forall k:int. 0 <= k < n -> rule_2_for_cell g k };
   assert { forall k:int. 0 <= k < n -> rule_3_for_cell g k };
-
-(*qq 
-predicate valid_up_to (g:takuzu_grid) (n:int)
-(** `valid_up_to g n` is true whenever all cells with number smaller
-    than `n` satisfy the Takuzu rules *)
-= forall i. 0 <= i < n -> valid_for_cell g i
-*)
-
 
 (** {3 The main algorithm} *)
 
@@ -968,33 +728,10 @@ predicate extends (g1:takuzu_grid) (g2:takuzu_grid)
 
 (** {4 QUESTION 21} *)
 
-
-
-
 exception SolutionFound
-
-(* lemma ajoute *)
-(* si g[n] = empty alors g[n<-Empty] = g *)
-(*lemma aux_lemma_1 : forall g:takuzu_grid, n:int. 0 <= n < g.length /\ g[n] = Empty ->
-                        g[n<-Empty] = g
-lemma aux_lemma_2 : forall g:takuzu_grid, n k:int, e:elem. 0 <= n < g.length /\ 0 <= k < g.length ->
-    n <> k -> g[n<-e][k] = g[k]       
-
-lemma aux_lemma_3 : forall g:takuzu_grid, n:int. 0 <= n < g.length ->
-                            valid_up_to g n -> valid_up_to g[n<-Empty] n 
-lemma aux_lemma_4 : forall g g1:takuzu_grid, n:int. 0 <= n < g.length ->
-                            valid_up_to g n -> extends g g1 -> valid_up_to g1 n
-
-(*lemma aux_lemma_5 : forall g:takuzu_grid, n:int.
+lemma subst_inchange : forall g:takuzu_grid, n:int.
                      0 <= n < g.length -> g[n] = Empty -> 
                      g[n<-Empty] = g 
-
- (*
-lemma aux_lemma_6 : forall g:takuzu_grid, n:int, e1 e2:elem.
-                     0 <= n < g.length -> g[n] = Empty -> g = g[n<-Empty] 
-lemma aux_lemma_7 : forall g:takuzu_grid, n:int, e1 e2:elem.
-                     0 <= n < g.length -> g[n<-e1][n<-e2] = g[n<-e2]  
-*)
 let rec solve_aux (g:takuzu_grid) (n:int) : unit
   requires { g.length = 64 }
   requires { 0 <= n <= 64 }
@@ -1028,39 +765,6 @@ let rec solve_aux (g:takuzu_grid) (n:int) : unit
     end;
     g[n] <- Empty;
   end
-(*
-let rec solve_aux (g:takuzu_grid) (n:int) : unit
-  requires { __FORMULA_TO_BE_COMPLETED__ }
-  requires { full_up_to g n }
-  requires { valid_up_to g n }
-  writes { g }
-
-  variant { __VARIANT_TO_BE_COMPLETED__ }
-  ensures { __FORMULA_TO_BE_COMPLETED__ }
-  raises { SolutionFound -> extends (old g) g /\ full_up_to g 64 /\ valid_up_to g 64 }
-=
-  if n=64 then raise SolutionFound;
-  match g[n] with
-  | Zero | One ->
-    try
-      check_at_cell g n; solve_aux g (n+1)
-    with Invalid -> ()
-    end
-  | Empty ->
-    try
-      check_cell_change g n Zero;
-      solve_aux g (n+1)
-    with Invalid -> ()
-    end;
-    try
-      check_cell_change g n One;
-      solve_aux g (n+1)
-    with Invalid -> ()
-    end;
-    g[n] <- Empty
-  end
-*)
-
 
 exception NoSolution
 
