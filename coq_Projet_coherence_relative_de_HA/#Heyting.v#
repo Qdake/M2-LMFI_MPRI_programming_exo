@@ -64,7 +64,7 @@ Fixpoint tlift n t k :=
 Lemma tlift_1 : forall t n n' k k', k <= k' -> k' <= k + n ->
   tlift n' (tlift n t k) k' = tlift (n' + n) t k.
 Proof.
-  induction t; intros; simpl; f_equal; repeat break; auto.
+    induction t; intros; simpl; f_equal; repeat break; auto.
 Qed.
 
 (* + n to all var >= k et puis +n' to all var >= k' 
@@ -99,15 +99,13 @@ Fixpoint tsubst x t' t :=
 Lemma tsubst_1 : forall t x t' n k, k <= x -> x <= k + n ->
   tsubst x t' (tlift (S n) t k) = tlift n t k.
 Proof.
-  induction t; intros; simpl; f_equal; auto.
-  repeat (break; simpl; auto).
+  induction t; intros; simpl; f_equal; auto; repeat (break; simpl; auto).
 Qed.
 
 Lemma tsubst_2 : forall t x t' n k, k <= x ->
   tlift n (tsubst x t' t) k = tsubst (n + x) t' (tlift n t k).
 Proof.
-  induction t; intros; simpl; f_equal; auto.
-  repeat (break; simpl; auto).
+  induction t; intros; simpl; f_equal; auto; repeat (break; simpl; auto).
 Qed.
 
 Hint Resolve tsubst_1 tsubst_2.
@@ -116,8 +114,7 @@ Lemma tsubst_3 : forall t x t' n k,
   tlift n (tsubst x t' t) (x + k) =
   tsubst x (tlift n t' k) (tlift n t (x + S k)).
 Proof.
-  induction t; intros; simpl; f_equal; auto.
-  repeat (break; simpl; auto).
+  induction t; intros; simpl; f_equal; auto; repeat (break; simpl; auto).
   symmetry. auto.
 Qed.
 
@@ -127,7 +124,7 @@ Lemma tsubst_4 : forall t x t' y u',
 Proof.
   induction t; intros; simpl; try (f_equal; auto; fail).
   repeat (break; simpl; auto);
-   symmetry; rewrite <- ?plus_n_Sm; auto.
+  symmetry; rewrite <- ?plus_n_Sm; auto.
 Qed.
 
 (* Terms where all variables are < n *)
@@ -336,7 +333,7 @@ Qed.
 
 
 Lemma cformula_4 : forall n A, cformula (S n) A ->
-  forall t', cterm 0 t' -> cformula n (fsubst n t' A).
+  forall t', cterm 0 t' -> cformula n (fsubst n t' A).  
 Proof.
   intros n A; 
   revert n.
@@ -759,17 +756,6 @@ Qed.
 
 Definition cinterp v Γ := forall A, In A Γ -> finterp v A.
 
-(* Soundess of deduction rules *)
-(*Lemma finterp_0 : forall A v0 v1,
-  finterp (v0 ++ v1 ++ v2) (flift (length v1) A (length v0)) <->
-  finterp (v0 ++ v2) A.
-
-
-Lemma finterp_0 : forall A v0 v1,
-  finterp (v0 ++ v1 ++ v2) (flift (length v1) A (length v0)) <->
-  finterp (v0 ++ v2) A.
-*)
-
 Lemma clift_1 : forall Γ A, In A Γ -> In (flift 1 A 0) (clift 1 Γ 0).
 Proof.
   induction Γ;auto.
@@ -930,117 +916,6 @@ Qed.
 
 
 
-Lemma soundness_pa_refl : forall v, finterp v (nFforall 1 (#0 = #0)).
-Proof.
-  intros v.
-  simpl. auto.
-Qed.
-
-Lemma soundness_pa_compat_plus_r : forall v, finterp v (nFforall 3 (#1 = #0 ==> #2 + #1 = #2 + #0)).
-Proof.
-  intros v .
-  simpl. auto.
-Qed.
-
-(* 
-Lemma nFforall_1 : forall n x t A,
-  fsubst x t (nFforall n A) = nFforall n (fsubst (n + x) t A).*)
-(*
-
-
-
-Fixpoint tsubst x t' t :=
-  match t with
-    | Tvar i =>
-      match x ?= i with
-        | Eq => tlift x t' 0
-        | Lt => Tvar (pred i)
-        | Gt => Tvar i
-      end
-    | Tzero => Tzero
-    | Tsucc u => Tsucc (tsubst x t' u)
-    | Tplus u v => Tplus (tsubst x t' u) (tsubst x t' v)
-    | Tmult u v => Tmult (tsubst x t' u) (tsubst x t' v)
-  end.
-
-(* qq :  +(n+1) to all var >= k (there's no x anymore)  and then  subs 
-        var x by t'    =    *)
-Lemma tsubst_1 : forall t x t' n k, k <= x -> x <= k + n ->
-  tsubst x t' (tlift (S n) t k) = tlift n t k.
-
-Lemma tsubst_2 : forall t x t' n k, k <= x ->
-  tlift n (tsubst x t' t) k = tsubst (n + x) t' (tlift n t k).
-
-Hint Resolve tsubst_1 tsubst_2.
-
-Lemma tsubst_3 : forall t x t' n k,
-  tlift n (tsubst x t' t) (x + k) =
-  tsubst x (tlift n t' k) (tlift n t (x + S k)).
-
-Lemma tsubst_4 : forall t x t' y u',
-  tsubst (x + y) u' (tsubst x t' t) =
-  tsubst x (tsubst y u' t') (tsubst (x + S y) u' t).
-
-(* Formula substitution: replace variable x by (tlift x t' 0) in A *)
-
-Fixpoint fsubst x t' A :=
-  match A with
-    | Fequal u v => Fequal (tsubst x t' u) (tsubst x t' v)
-    | Ffalse => Ffalse
-    | Fand B C => Fand (fsubst x t' B) (fsubst x t' C)
-    | For B C => For (fsubst x t' B) (fsubst x t' C)
-    | Fimplies B C => Fimplies (fsubst x t' B) (fsubst x t' C)
-    | Fexists B => Fexists (fsubst (S x) t' B)
-    | Fforall B => Fforall (fsubst (S x) t' B)
-  end.
-*)
-(*
-Lemma fsubst_1 : forall A x t' n k, k <= x -> x <= k + n ->
-  fsubst x t' (flift (S n) A k) = flift n A k.
-Proof.
-  induction A; intros; simpl; f_equal; auto.
-Qed.
-
-Lemma fsubst_2 : forall A x t' n k, k <= x ->
-  flift n (fsubst x t' A) k = fsubst (n + x) t' (flift n A k).
-
-Lemma fsubst_3 : forall A x t' n k,
-  flift n (fsubst x t' A) (x + k) =
-  fsubst x (tlift n t' k) (flift n A (x + S k)).
-
-Lemma fsubst_4 : forall A x t' y u',
-  fsubst (x + y) u' (fsubst x t' A) =
-  fsubst x (tsubst y u' t') (fsubst (x + S y) u' A).
-
-
-(* Formula lifting: add n to all variables of t which are >= k *)
-
-Fixpoint flift n A k :=
-  match A with
-    | Fequal u v => Fequal (tlift n u k) (tlift n v k)
-    | Ffalse => Ffalse
-    | Fand B C => Fand (flift n B k) (flift n C k)
-    | For B C => For (flift n B k) (flift n C k)
-    | Fimplies B C => Fimplies (flift n B k) (flift n C k)
-    | Fexists B => Fexists (flift n B (S k))
-    | Fforall B => Fforall (flift n B (S k))
-  end.
-
-Lemma flift_1 : forall A n n' k k', k <= k' -> k' <= k + n ->
-  flift n' (flift n A k) k' = flift (n' + n) A k.
-
-
-Lemma flift_2 : forall A n n' k k', k' <= k ->
-  flift n' (flift n A k) k' = flift n (flift n' A k') (n' + k).
-
-*)
-
-Lemma soundness_pa_ind_aux_1_aux_1 : forall v t, tinterp v (tsubst 0 Tzero t) = tinterp (0 :: v) t.
-Proof.
-  intros v t.
-  induction t; simpl; auto.
-  induction n;simpl;auto.
-Qed.
 
 (*
 Lemma soundness_pa_ind_aux_1 : forall v A, finterp v (fsubst 0 Tzero A) <-> finterp (0 :: v) A.
@@ -1073,43 +948,7 @@ Proof.
 Qed.
 *)
 
-Lemma soundness_pa_ind_aux_1 : forall v A, (forall n : nat, finterp (n :: v) A -> 
-                                          finterp (n :: v) (fsubst 0 (Tsucc # 0) (flift 1 A 1))) <->
-                          (forall n : nat, finterp (n :: v) A -> 
-                                          finterp ((n+1) :: v) A).
-Admitted.
 
-
-Lemma soundness_pa_ind : forall n A, cformula (S n) A ->
-    forall v, finterp 
-                      v
-                      
-                      (nFforall n (
-                                    fsubst 0 Tzero A /\
-                                    Fforall (A ==> fsubst 0 (Tsucc #0) (flift 1 A 1))
-                                    ==> Fforall A
-                                  )
-                      ).
-Proof.  
-  induction n.  
-  - simpl. intros A H_cformul v (H_0,H_Sn) n. 
-    (* finterp (0::v) A *)
-    assert (H_0_equal := finterp_2 Tzero A [] v). simpl in H_0_equal.
-    assert (H_Sn_equal := (forall n : nat, finterp (n :: v) A -> 
-                                          finterp (n :: v) (fsubst 0 (Tsucc # 0) (flift 1 A 1))) <->
-                          (forall n : nat, finterp (n :: v) A -> 
-                                          finterp ((n+1) :: v) A)).
-Admitted.
-
-(*
-Lemma soundness_aux_interp_1 : forall t n v, tinterp (S (nth 0 v 0) :: v) t = tinterp (S n :: v) t.
-Proof.
-  induction t; simpl; auto.
-  induction n; simpl; auto. 
-  Print nth.
-
-
-*)
 
 Lemma aux_interp_1 : forall t n v, tinterp (n :: v) (tsubst 0 (Tsucc # 0) (tlift 1 t 1)) = tinterp (S n :: v) t.
 Proof. 
@@ -1117,166 +956,103 @@ Proof.
   induction n; simpl;auto.
 Qed.
 
-
-Lemma aux_finterp_1 : forall A n v, finterp (n :: v) (fsubst 0 (Tsucc # 0) (flift 1 A 1)) <-> finterp (S n :: v) A.
-Proof.
-  
-
-
-
-  (*induction A; induction n; simpl; auto.
-  - intros. split.
-    + intros. assert (H1 := aux_interp_1).
-      rewrite <- H1. rewrite <- H1. assumption.
-    + intros. assert (H1 := aux_interp_1).
-      rewrite H1. rewrite H1. assumption.
-  - intros. assert (H1 := aux_interp_1). 
-    split.
-    + intros. rewrite <- (H1 t (S n)). rewrite <- (H1 t0 (S n)). assumption.
-    + intros. rewrite (H1 t (S n)). rewrite (H1 t0 (S n)). assumption.
-  - intros. split;auto.
-  - split;intros.
-    + rewrite <- (IHA1 0). rewrite <- (IHA2 0). assumption.
-    + rewrite (IHA1 0). rewrite (IHA2 0). assumption.
-  - split; intros.
-    + rewrite <- (IHA1 (S n)). rewrite <- (IHA2 (S n)). assumption.
-    + rewrite (IHA1 (S n)). rewrite (IHA2 (S n)). assumption.
-  - split; intros.
-    + destruct H.
-      ++  left. rewrite <- IHA1. assumption.
-      ++  right. rewrite <- IHA2. assumption.
-    + destruct H.
-      ++  left. rewrite IHA1. assumption.
-      ++  right. rewrite IHA2. assumption.
-  - split; intros; destruct H.
-    +  left. rewrite <- IHA1. assumption.
-    +  right. rewrite <- IHA2. assumption.
-    +  left. rewrite IHA1. assumption.
-    +  right. rewrite IHA2. assumption.
-  - split; intros.
-    + rewrite <- IHA2. apply H. rewrite IHA1. assumption.
-    + apply IHA2. apply H. rewrite <- IHA1. assumption.
-  - split;intros. 
-    + rewrite <- IHA2. apply H. rewrite IHA1. assumption.
-    + apply IHA2. apply H. rewrite <- IHA1. assumption.
-  - split;intros. 
-    + destruct H. exists x. 
-
-(*
-Lemma fsubst_1 : forall A x t' n k, k <= x -> x <= k + n ->
-  fsubst x t' (flift (S n) A k) = flift n A k.
-Proof.
-  induction A; intros; simpl; f_equal; auto.
-Qed.
-
-Lemma fsubst_2 : forall A x t' n k, k <= x ->
-  flift n (fsubst x t' A) k = fsubst (n + x) t' (flift n A k).
-
-Lemma fsubst_3 : forall A x t' n k,
-  flift n (fsubst x t' A) (x + k) =
-  fsubst x (tlift n t' k) (flift n A (x + S k)).
-
-Lemma fsubst_4 : forall A x t' y u',
-  fsubst (x + y) u' (fsubst x t' A) =
-  fsubst x (tsubst y u' t') (fsubst (x + S y) u' A).
-
-Lemma finterp_1 : forall A v0 v1 v2,
-  finterp (v0 ++ v1 ++ v2) (flift (length v1) A (length v0)) <->
-  finterp (v0 ++ v2) A.
-
- 
-Lemma finterp_2 : forall t' A v1 v2,
-  finterp (v1 ++ v2) (fsubst (length v1) t' A) <->
-  finterp (v1 ++ (tinterp v2 t') :: v2) A.
-
-Lemma finterp_3 : forall n A,
-  (forall v, finterp v A) -> (forall v, finterp v (nFforall n A)).
-*)
-
-    + destruct H. exists x. admit.
-  - split;intros.
-    + destruct H. exists x. admit.
-    + destruct H. exists x. admit.
-  - split; intros.
-    + admit.
-    + admit.
-  - split;intros.
-    + admit.
-    + admit.*)
-Admitted.
-
-Lemma soundness_pa_ind_new_2 : forall A v,
-finterp v
-  (fsubst 0 Tzero A /\
-   Fforall
-     (A ==> fsubst 0 (Tsucc # 0) (flift 1 A 1)) ==>
-   Fforall A).
-Proof.
-  simpl. intros A v H. induction n.
-  - destruct H. assert (aux_1 := finterp_2).
-    rewrite <- (aux_1 Tzero A [] v). assumption.
-  - destruct H. assert (H1 := H0 n IHn).
-    rewrite <- aux_finterp_1. assumption.
-Qed.
-
-
-(*
-Lemma finterp_1 : forall A v0 v1 v2,
-  finterp (v0 ++ v1 ++ v2) (flift (length v1) A (length v0)) <->
-  finterp (v0 ++ v2) A.
-*)
-      (*
-Lemma tinterp_1 : forall t v0 v1 v2,
-  tinterp (v0++v1++v2) (tlift (length v1) t (length v0)) =
-  tinterp (v0++v2) t.
-*)
-(*
-Lemma tinterp_2 : forall t' t v1 v2,
-  tinterp (v1 ++ v2) (tsubst (length v1) t' t) =
-  tinterp (v1 ++ (tinterp v2 t') :: v2) t.
-*)
-
-
-
-(*apply soundness_pa_ind_aux_1. assumption.*)
-
-
-    (* forall n, finterp (n::v) A  -> finterp (n+1::v) A *)
-    
-
-(*
-Lemma finterp_2 : forall t' A v1 v2,
-  finterp (v1 ++ v2) (fsubst (length v1) t' A) <->
-  finterp (v1 ++ (tinterp v2 t') :: v2) A.
-*)
-    
-(*
-forall A : formula,
-cformula 1 A ->
-forall v : valuation,
-finterp v (fsubst 0 Tzero A) /\                   ## A[0/x0][v0/x1,v0/x2,...] 
-(forall n : nat,
- finterp (n :: v) A ->                
- finterp (n :: v)
-   (fsubst 0 (Tsucc # 0) (flift 1 A 1)))          ## forall n, A[n/x0,v0/x1,v1/x2,...]-> A[(x0+1)/x0] [n/x0, v0/x1,v1/x2,...]
-   ->
-forall n : nat, finterp (n :: v) A                ## forall n, A[n/x0,v0/x1,v1/x2,...]
+(*qq pour demontrer :   
+            finterp n::v (fsubst 0 (Tsucc #0) (flift A 1) = finterp (S n::v) A
+     on definit la fonction suivante :
 *) 
+Fixpoint Tn n := 
+  match n with
+  | 0 => Tzero
+  | S n' => Tsucc (Tn n')
+  end.
+(*qq pour tout n, Tn n est un un terme clos *)
+Lemma cterm_Tn_n : forall n, cterm 0 (Tn n).
+Proof.
+    induction n.
+    auto. simpl. auto.
+Qed.
 
+Lemma tlift_0_t_eq_t: forall t n, tlift 0 t n = t.
+Proof.
+    induction t.
+    - unfold tlift. simpl. intro n0. destruct (n0 <=? n); auto.
+    - auto.
+    - simpl. intro n. f_equal. auto.
+    - simpl. intro n. rewrite (IHt1 n),(IHt2 n). reflexivity.
+    - simpl. intro n. rewrite (IHt1 n),(IHt2 n). reflexivity.
+Qed.
+
+Lemma flift_0_A_eq_A: forall A n, flift 0 A n = A.
+Proof.
+  induction A.
+  - simpl. intro n. repeat rewrite tlift_0_t_eq_t. reflexivity.
+  - auto.
+  - simpl. intro n. repeat rewrite IHA1,IHA2. reflexivity.
+  - simpl. intro n. repeat rewrite IHA1,IHA2. reflexivity.
+  - simpl. intro n. repeat rewrite IHA1,IHA2. reflexivity.
+  - simpl. intro n. rewrite IHA. reflexivity.
+  - simpl. intro n. rewrite IHA. reflexivity.
+Qed. 
+Lemma finterp_apres_une_substitution : forall n A v, finterp (n::v) A <-> finterp v (fsubst 0 (Tn n) A).
+Proof.
+    intros n A v.
+    assert (H0 :=finterp_2).
+    assert (H1 := H0 (Tn n) A [] v).
+    simpl in H1.
+    assert (forall v n, tinterp v (Tn n) = n) as H2.
+    - induction n0; simpl; auto.
+    - rewrite <- (H2 v n) at 1. destruct H1; split; assumption.
+Qed.
 
 Lemma soundness_axioms : forall A, PeanoAx A -> forall v, finterp v A.
-Proof.
-  intros A H.
+Proof. 
+  intros A H.  
   induction H; simpl; auto. (* induction sur (PeanoAx A) *)
-  apply finterp_3.  (* Question: comment peut- on avoir idee de poser ce lemma *) 
+  apply finterp_3. revert H.  (* Question: comment peut- on avoir idee de poser ce lemma *)  
+  assert (cformula (S n) A ->
+forall v : valuation,
+finterp v
+  (fsubst 0 Tzero A /\
+   Fforall (A ==> fsubst 0 (Tsucc # 0) (flift 1 A 1)) ==> 
+   Fforall A)) as soundness_pa_ind_new_2.
+  
+  simpl.
+  - intros H1 v H2 n0.  
+    destruct H2 as (H3,H4). induction n0.
+  + assert (aux_1 := finterp_2).
+    rewrite <- (aux_1 Tzero A [] v). simpl in *. assumption.
+  + assert (H5 := H4 n0 IHn0).
+    assert (H6 := finterp_apres_une_substitution).
+    assert (H7 := H6 n0 (fsubst 0 (Tsucc # 0) (flift 1 A 1)) v).
+    destruct H7 as (H8,H9).
+    assert (H10 := H8 H5).
 
-  intros.
-  admit.
-admit. admit. admit. admit. admit. admit. admit. admit. admit. admit. admit. admit. admit.
+    assert (H_f_subst_subst := fsubst_4).
+    assert (H11 := H_f_subst_subst (flift 1 A 1) 0 (Tsucc # 0) 0 (Tn n0)).
+    simpl in H11.
+    assert ( finterp v
+        (fsubst 0 (Tsucc (tlift 0 (Tn n0) 0))
+        (fsubst 1 (Tn n0) (flift 1 A 1)))) as H12.
+    ++ f_equal. rewrite <- H11. assumption.
+    ++ assert (finterp v
+        (fsubst 0 (Tsucc (tlift 0 (Tn n0) 0))
+           (fsubst 1 (Tn n0) (flift 1 A 1))) <-> finterp (S n0 :: v) A).
+    +++ assert (tlift 0 (Tn n0) 0 = (Tn n0)) as H13. 
+       ++++ (* monter  tlift 0 (Tn n0) 0 = Tn n0 *)
+           apply cterm_2. 
+           (* Monter  cterm 0 (Tn n0)*)
+           apply cterm_Tn_n.
+       ++++ rewrite H13.
+            assert (fsubst 1 (Tn n0) (flift 1 A 1) = A) as H14.
+            assert (H15 := fsubst_1). rewrite H15;auto. apply flift_0_A_eq_A.
+            rewrite H14. 
+            assert (Tsucc (Tn n0) = Tn (S n0)) as H16;auto.
+            rewrite H16. rewrite finterp_apres_une_substitution. reflexivity.
+    +++ apply H. assumption.
+    - assumption.
+Qed.
 
-Print PeanoAx.
-
-Theorem soundness : forall A, Thm A -> forall v, finterp v A.
+Theorem soundness : forall A, Thm A -> forall v, finterp v A. 
 Proof.
   intros A Hyp v. unfold Thm in Hyp. destruct Hyp as (axiomes,Hyp).
   destruct Hyp. 
