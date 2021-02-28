@@ -213,7 +213,7 @@ Lemma flift_2 : forall A n n' k k', k' <= k ->
   flift n' (flift n A k) k' = flift n (flift n' A k') (n' + k).
 
 
-(* Formula substitution: replace variable x by (tlift x t' 0) in A *)
+(* Formula substitution  fsubst x t' A : replace variable x by (tlift x t' 0) in A *)
 
 Fixpoint fsubst x t' A :=
   match A with
@@ -225,7 +225,7 @@ Fixpoint fsubst x t' A :=
     | Fexists B => Fexists (fsubst (S x) t' B)
     | Fforall B => Fforall (fsubst (S x) t' B)
   end.
-
+fsubst_1 A 1 (Tn n0) 0 1
 Lemma fsubst_1 : forall A x t' n k, k <= x -> x <= k + n ->
   fsubst x t' (flift (S n) A k) = flift n A k.
 Proof.

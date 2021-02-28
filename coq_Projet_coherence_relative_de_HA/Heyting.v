@@ -11,7 +11,6 @@
 Require Import List Arith Omega.
 Import ListNotations.
 (* Tactics *)
-
 (* First, tell the "auto" tactic to use the "omega" solver. *)
 
 Hint Extern 8 (_ = _ :> nat) => omega.
@@ -56,20 +55,12 @@ Fixpoint tlift n t k :=
     | Tmult u v => Tmult (tlift n u k) (tlift n v k)
   end.
 
-
-(* qq:  si k <= k' et n + k >= k' alors +n to all var >= k et puis +n' to 
-  all var  k'
-        est egal a    + (n' + n) to all var >= k.
-*)
 Lemma tlift_1 : forall t n n' k k', k <= k' -> k' <= k + n ->
   tlift n' (tlift n t k) k' = tlift (n' + n) t k.
 Proof.
-  induction t; intros; simpl; f_equal; repeat break; auto.
+    induction t; intros; simpl; f_equal; repeat break; auto.
 Qed.
 
-(* + n to all var >= k et puis +n' to all var >= k' 
-   =   + n' to all var >= k'  et puis +n to all var >= n'+k (i.e. tous les 
-      variabl qui sont initialement >= k') *)
 Lemma tlift_2 : forall t n n' k k', k' <= k ->
   tlift n' (tlift n t k) k' = tlift n (tlift n' t k') (n' + k).
 Proof.
@@ -94,20 +85,16 @@ Fixpoint tsubst x t' t :=
     | Tmult u v => Tmult (tsubst x t' u) (tsubst x t' v)
   end.
 
-(* qq :  +(n+1) to all var >= k (there's no x anymore)  and then  subs 
-        var x by t'    =    *)
 Lemma tsubst_1 : forall t x t' n k, k <= x -> x <= k + n ->
   tsubst x t' (tlift (S n) t k) = tlift n t k.
 Proof.
-  induction t; intros; simpl; f_equal; auto.
-  repeat (break; simpl; auto).
+  induction t; intros; simpl; f_equal; auto; repeat (break; simpl; auto).
 Qed.
 
 Lemma tsubst_2 : forall t x t' n k, k <= x ->
   tlift n (tsubst x t' t) k = tsubst (n + x) t' (tlift n t k).
 Proof.
-  induction t; intros; simpl; f_equal; auto.
-  repeat (break; simpl; auto).
+  induction t; intros; simpl; f_equal; auto; repeat (break; simpl; auto).
 Qed.
 
 Hint Resolve tsubst_1 tsubst_2.
@@ -116,8 +103,7 @@ Lemma tsubst_3 : forall t x t' n k,
   tlift n (tsubst x t' t) (x + k) =
   tsubst x (tlift n t' k) (tlift n t (x + S k)).
 Proof.
-  induction t; intros; simpl; f_equal; auto.
-  repeat (break; simpl; auto).
+  induction t; intros; simpl; f_equal; auto; repeat (break; simpl; auto).
   symmetry. auto.
 Qed.
 
@@ -127,7 +113,7 @@ Lemma tsubst_4 : forall t x t' y u',
 Proof.
   induction t; intros; simpl; try (f_equal; auto; fail).
   repeat (break; simpl; auto);
-   symmetry; rewrite <- ?plus_n_Sm; auto.
+  symmetry; rewrite <- ?plus_n_Sm; auto.
 Qed.
 
 (* Terms where all variables are < n *)
@@ -149,7 +135,8 @@ Qed.
 
 Lemma cterm_2 : forall n t, cterm n t -> forall k, tlift k t n = t.
 Proof.
-  (* QQ: soient n, t, si (cterm n t) alors toute variable de t est < n, donc l'augmenter les variables
+  (* QQ: soient n, t, si (cterm n t) alors toute variable de t est < n, 
+    donc l'augmenter les variables
       >= n de t ne change rien. *) 
   intros n. intros t H.
   induction H ; simpl; intuition. 
@@ -161,8 +148,9 @@ Qed.
 
 Lemma cterm_3 : forall n t, cterm n t -> forall t' j, n <= j -> tsubst j t' t = t.
 Proof.
-  (* QQ: soient n, t, si (cterm n t) alors toute variable de t est < n, 
-     donc substitue la viariable j >= n de t par t' ne change rien. *) 
+  (* QQ: soient n, t, si (cterm n t) alors toute variable de t est 
+     de numéro < n, donc substitue la viariable j >= n de t par t'
+     ne change rien. *) 
   intros n t H.
   induction H; simpl; intuition.
   - break; intuition.
@@ -177,9 +165,11 @@ Qed.
 Lemma cterm_4 : forall n t, cterm (S n) t ->
   forall t', cterm 0 t' -> cterm n (tsubst n t' t).
 Proof.
-  (* QQ: soient n, t, supposons (cterm n t) i.e. toute variable de t est < S n, 
-         soit t', supposons (cterm 0 t') i.e. toute variable de t' est < 0, c-a-d terme constant
-         alors en substituant toute variable n par t', on obtien un terme de degree < n*)
+  (* QQ: soient n, t, supposons (cterm n t) i.e. toute variable de t est 
+         de numéro < S n, 
+         soit t', supposons (cterm 0 t') i.e. toute variable de t' est < 0,
+         c-a-d terme constant alors en substituant toute variable n par t',
+         on obtien un terme de degree < n*)
   intros n t H. 
   induction H; simpl; intuition.
   break; intuition.
@@ -309,70 +299,96 @@ Qed.
 Lemma cformula_2 : forall n A, cformula n A -> forall k, flift k A n = A.
 Proof.
   intros n A H.
-  elim H; simpl; auto; intros.
-  - rewrite (cterm_2 n0 u); repeat (try (reflexivity || assumption || rewrite H1|| rewrite H3)).
-    rewrite (cterm_2 n0 v); repeat (try (reflexivity || assumption || rewrite H1|| rewrite H3)).
-  - rewrite H1,H3. reflexivity.
-  - rewrite H1,H3. reflexivity.
-  - rewrite H1,H3. reflexivity.
-  - rewrite H1. reflexivity.
-  - rewrite H1. reflexivity.
+  elim H; simpl; auto; intros. 
+  - (* cformula n (Fequal u v) *)
+    rewrite (cterm_2 n0 u); 
+    repeat (try (reflexivity || assumption || rewrite H1|| rewrite H3));
+    rewrite (cterm_2 n0 v); 
+    repeat (try (reflexivity || assumption || rewrite H1|| rewrite H3)).
+  - (* cformula n (Fand B C) *)
+    rewrite H1,H3; reflexivity.
+  - (* cformula n (For B C) *)
+    rewrite H1,H3; reflexivity.
+  - (* cformula n (Fimplies B C) *) 
+    rewrite H1,H3; reflexivity.
+  - (* cformula n (Fexists B) *)
+    rewrite H1; reflexivity.
+  - (* cformula n (Fforall B) *)
+    rewrite H1; reflexivity.
 Qed.
 
+(*qq:  si toute variable d'une formule est de dedgré < n
+       alors substituer la variable j, avec j >= n, par une terme 
+       quelconque, ne modifie pas cette formule *)
 Lemma cformula_3 : forall n A, cformula n A ->
   forall t' j, n <= j -> fsubst j t' A = A.
-Proof.
-  intros n A H.
-  elim H; simpl; intuition.
-  - rewrite (cterm_3 n0 u). rewrite (cterm_3 n0 v).
-    + reflexivity. + assumption. + assumption. + assumption. + assumption. 
-  - repeat (try (reflexivity || assumption || rewrite H1|| rewrite H3)).
-  - repeat (try (reflexivity || assumption || rewrite H1|| rewrite H3)).
-  - repeat (try (reflexivity || assumption || rewrite H1|| rewrite H3)).
-  - repeat (try (reflexivity || assumption || rewrite H1|| rewrite H3)). auto.
-  - repeat (try (reflexivity || assumption || rewrite H1|| rewrite H3)). apply le_n_S. assumption.
+Proof. 
+  intros n A H. 
+  (* induction sur la structure de la proposition H *)
+  elim H; simpl; intros.
+  - (* cformula n (Fequal u v) *)
+    rewrite (cterm_3 n0 u); try assumption;
+    rewrite (cterm_3 n0 v); try (assumption||reflexivity).
+  - (* cformula n False *)
+    reflexivity.
+  - (* cformula n (Fand B C) *)
+    repeat (try (reflexivity || assumption || rewrite H1|| rewrite H3)).
+  - (* cformula n (For B C) *)
+    repeat (try (reflexivity || assumption || rewrite H1|| rewrite H3)).
+  - (* cformula n (Fimplies B C) *)
+    repeat (try (reflexivity || assumption || rewrite H1|| rewrite H3)).
+  - (* cformula n (Fexists B) *)
+    repeat (try (reflexivity || assumption || rewrite H1|| rewrite H3));
+    auto.
+  - (* cformula n (Fforall B) *)
+    repeat (try (reflexivity || assumption || rewrite H1|| rewrite H3)); 
+    apply le_n_S; assumption.
 Qed.
 
 
-
+(*qq:  si le numéro de toute variable d'une formule est inférieure 
+      ou égale à n, alors en substituant la variable de numéro n par
+      un terme clos, on obtient une formule dont le numéro de toute 
+      variable est inférieure ou égale à (n-1).  *)
 Lemma cformula_4 : forall n A, cformula (S n) A ->
-  forall t', cterm 0 t' -> cformula n (fsubst n t' A).
+  forall t', cterm 0 t' -> cformula n (fsubst n t' A).  
 Proof.
-  intros n A; 
+  intros n A;  
   revert n.
-  - (* induction sur la structure de A *)
-    induction A; 
-    simpl;
-    intros n H t' H1.
-    + (* A = Fequal t t0 *)
-      apply cformula_equal; apply cterm_4; try inversion H;assumption.
-    + (* A = Ffalse *)
-      constructor.
-    + (* A = Fand A1 A2 *)
-      inversion H; 
-      apply cformula_and;
-      try (apply IHA1||apply IHA2);
-      assumption.
-    + (* A = For A1 A2 *)
-      inversion H; 
-      apply cformula_or; 
-      try (apply IHA1 || apply IHA2); 
-      assumption.
-    + (* A = Fimplies A1 A2 *)
-      apply cformula_implies; 
-      try (apply IHA1 || apply IHA2); 
-      inversion H; 
-      assumption.
-    + (* A = Fexists A1 *)
-      apply cformula_exists.
-      inversion H;
-      apply IHA;
-      assumption.
-    + (* forall *)
-      apply cformula_forall;
-      inversion H;
-      apply IHA;
-      assumption.
+  (* induction sur la structure de A *)
+  induction A; 
+  simpl;
+  intros n H_cformula_Sn t' H_cterm_0.
+  - (* A = Fequal t t0 *)
+    apply cformula_equal; apply cterm_4; 
+    try inversion H_cformula_Sn;assumption.
+  - (* A = Ffalse *)
+    constructor.
+  - (* A = Fand A1 A2 *)
+    inversion H_cformula_Sn; 
+    apply cformula_and;
+    try (apply IHA1||apply IHA2);
+    assumption.
+  - (* A = For A1 A2 *)
+    inversion H_cformula_Sn; 
+    apply cformula_or; 
+    try (apply IHA1 || apply IHA2); 
+    assumption.
+  - (* A = Fimplies A1 A2 *)
+    apply cformula_implies; 
+    try (apply IHA1 || apply IHA2); 
+    inversion H_cformula_Sn; 
+    assumption.
+  - (* A = Fexists A1 *)
+    apply cformula_exists.
+    inversion H_cformula_Sn;
+    apply IHA;
+    assumption.
+  - (* forall *)
+    apply cformula_forall;
+    inversion H_cformula_Sn;
+    apply IHA;
+    assumption.
 Qed.
 
 Reserved Notation "A ==> B" (at level 86, right associativity).
@@ -475,16 +491,9 @@ Qed.
 Lemma nFforall_1 : forall n x t A,
   fsubst x t (nFforall n A) = nFforall n (fsubst (n + x) t A).
 Proof.
-  induction n.
-  - simpl. 
-    intros x t A.
-    reflexivity.
-  - simpl. 
-    intros x t A.
-    f_equal.
-    Search "add_succ".
-    pattern (S (n+x)). rewrite <- Nat.add_succ_r.
-    exact (IHn (S x) t A).
+  induction n; simpl; intros x t A.
+  - reflexivity.
+  - f_equal; pattern (S (n+x)); rewrite <- Nat.add_succ_r; apply IHn. 
 Qed.
 
 (* Peano axioms *)
@@ -519,17 +528,19 @@ Inductive PeanoAx : formula -> Prop :=
 Definition Thm T :=
   exists axioms, (forall A, In A axioms -> PeanoAx A) /\ (axioms:-T). 
 
-Lemma HA_n_Sn_auxilaire_PeanoAx_forall_n_not_eq_n_sn : PeanoAx (nFforall (S 0) (
-      fsubst 0 Tzero (~ #0 = Tsucc # 0) /\
-      Fforall ((~ #0 = Tsucc # 0) ==> fsubst 0 (Tsucc #0) (flift 1 (~ #0 = Tsucc # 0) 1)) ==> Fforall (~ #0 = Tsucc # 0)
-    )).
+Lemma HA_n_Sn_auxiliaire_PeanoAx_forall_n_not_eq_n_sn : 
+      PeanoAx (
+              nFforall (S 0) (
+                 fsubst 0 Tzero (~ #0 = Tsucc # 0) /\
+                 Fforall ((~ #0 = Tsucc # 0) 
+                     ==> fsubst 0 (Tsucc #0) (flift 1 (~ #0 = Tsucc # 0) 1)) 
+                 ==> Fforall (~ #0 = Tsucc # 0)
+                             )
+              ).
 Proof.
-  apply pa_ind. unfold Fnot. 
-  apply cformula_implies.
-  - apply cformula_equal.
-    + constructor. auto.
-    + constructor. constructor. auto.
-  - constructor.
+  apply pa_ind; unfold Fnot; 
+  apply cformula_implies ;
+  repeat try (apply cformula_equal || constructor || auto).
 Qed. 
 
 
@@ -537,54 +548,58 @@ Qed.
 Lemma HA_n_Sn :  Thm (Fforall (Fnot (Fequal #0 (Tsucc #0)) )).
 Proof.
   unfold Thm.
-  pose (axiome_1_0 := fsubst 0 Tzero (~ #0 = Tsucc # 0) ).
-  pose (axiome_1_n := Fforall ((~ #0 = Tsucc # 0) ==> fsubst 0 (Tsucc #0) (flift 1 (~ #0 = Tsucc # 0) 1))).    
-  pose (axiome_1 := (nFforall (S 0) ( axiome_1_0 /\ axiome_1_n ==> Fforall (~ #0 = Tsucc # 0)))).
-  pose (axiome_2_inj := (nFforall 2 (Tsucc #1 = Tsucc #0 ==> #1 = #0))).  
-  pose (axiome_3_discr := nFforall 1 (~ Tzero = Tsucc #0)).
+  pose (axiome_ind_init := fsubst 0 Tzero (~ #0 = Tsucc # 0) ).
+  pose (axiome_ind_next := Fforall ((~ #0 = Tsucc # 0) ==> fsubst 0 (Tsucc #0) (flift 1 (~ #0 = Tsucc # 0) 1))).    
+  pose (axiome_ind := (nFforall (S 0) ( axiome_ind_init /\ axiome_ind_next ==> Fforall (~ #0 = Tsucc # 0)))).
+  pose (axiome_inj := (nFforall 2 (Tsucc #1 = Tsucc #0 ==> #1 = #0))).  
+  pose (axiome_discr := nFforall 1 (~ Tzero = Tsucc #0)).
   pose (axiomes :=   [
-                axiome_1; axiome_2_inj; axiome_3_discr
+                axiome_ind; axiome_inj; axiome_discr
                      ]).
-  exists axiomes. 
+  exists axiomes.  
   split. 
-  - intros A H_AInAxiomes. unfold In in H_AInAxiomes; simpl. destruct H_AInAxiomes. 
-    + (* PeanoAx axiome_1*) 
-      assert (PeanoAx (nFforall (S 0) (
-      fsubst 0 Tzero (~ #0 = Tsucc # 0) /\
-      Fforall ((~ #0 = Tsucc # 0) ==> fsubst 0 (Tsucc #0) (flift 1 (~ #0 = Tsucc # 0) 1)) ==> Fforall (~ #0 = Tsucc # 0)
-    ))) as H1. 
-      exact HA_n_Sn_auxilaire_PeanoAx_forall_n_not_eq_n_sn. 
-      rewrite <-H. unfold axiome_1. simpl in *. exact H1.
-    + (* disjunction intro *)
-      destruct H. 
-      ++ (* PeanoAx axiome_2_inj*) 
-         rewrite <- H. unfold axiome_2_inj. 
-         constructor.
-      ++ (* disjunction intro *) 
-         destruct H.
-         +++ (* PeanoAx axiome_3_discr*) 
-             rewrite <- H.
-             unfold axiome_3_discr.
-             constructor.
-         +++ (* False -> forall A:formula,PeanoAx A *)
-             auto.
-  - simpl in *. apply (Rimpl_e axiomes (axiome_1_0 /\ axiome_1_n) (Fforall (~ #0 = Tsucc # 0))). 
-    + apply (Rforall_e _ (axiome_1_0 /\ axiome_1_n ==> Fforall (~ # 0 = Tsucc # 0)) #0). 
-      apply Rax. unfold In;simpl;auto.
+  (* montrer que chaque formule dans [axiome_ind; axiome_inj; axiome_discr]
+     est un PeanoAx. *)
+  - intros A H_AInAxiomes.  
+    destruct H_AInAxiomes as [HA|H_AInAxiomes]. (* traiter par formule *) 
+    + (* Montrer que "axiome_ind" est dans PeanoAx *) 
+      assert (HA_n_Sn_auxiliaire_PeanoAx_forall_n_not_eq_n_sn := 
+                        HA_n_Sn_auxiliaire_PeanoAx_forall_n_not_eq_n_sn ). 
+      (* ajout de lemme auxiliaire dans la contexte *)          
+      rewrite <- HA; unfold axiome_ind; simpl in *; 
+      exact HA_n_Sn_auxiliaire_PeanoAx_forall_n_not_eq_n_sn.
+    + (* Montrer que chaque formule dans [axiome_inj; axiome_discr]
+     est un PeanoAx. *)
+      destruct H_AInAxiomes as [HA|H_AInAxiomes]. 
+      ++ (* montrer que axiome_inj est un PeanoAx*)  
+         rewrite <- HA; unfold axiome_inj; constructor.
+      ++ (* Montrer que chaque formule dans [axiome_discr]
+     est un PeanoAx. *) 
+         destruct H_AInAxiomes as [HA|H_AInAxiomes].
+         +++ (* montrer que axiome_discr est un PeanoAX*) 
+             rewrite <- HA; unfold axiome_discr; constructor.
+         +++ (* montrer que toute formule dans la list [] est un PeanoAx *)
+             destruct H_AInAxiomes; auto.
+  - (* deduction de la formule avec les axiomes posés et les "rule" *)
+    apply (Rimpl_e axiomes (axiome_ind_init /\ axiome_ind_next) 
+                           (Fforall (~ #0 = Tsucc # 0))           ). 
+    + apply (Rforall_e _ (axiome_ind_init /\ axiome_ind_next 
+                          ==> Fforall (~ # 0 = Tsucc # 0))
+                          #0                                      ). 
+      apply Rax; unfold In; simpl; auto.
     + apply Rand_i.  
-      ++ apply (Rforall_e _ (Tzero = Tsucc #0 ==> Ffalse) Tzero). apply Rax. 
-         unfold In; simpl;auto.
-      ++ apply (Rforall_i). simpl.
-         apply (Rimpl_i).
-         apply (Rimpl_i).
+      ++ apply (Rforall_e _ (Tzero = Tsucc #0 ==> Ffalse) Tzero). 
+         apply Rax; unfold In; simpl; auto.
+      ++ apply (Rforall_i); simpl; apply (Rimpl_i); apply (Rimpl_i).
          apply (Rimpl_e _ (# 0 = Tsucc # 0) Ffalse).
-         +++ apply Rax. simpl. right. left. reflexivity.
+         +++ apply Rax; simpl; right; left; reflexivity.
          +++ apply (Rimpl_e _ (Tsucc # 0 = Tsucc (Tsucc # 0)) _).
              ++++ apply (Rforall_e _ ((Tsucc # 1 = Tsucc #0) ==> # 1 = # 0) (Tsucc #0)).  (* forall elim *)
                   apply (Rforall_e _ (Fforall (Tsucc # 1 = Tsucc # 0 ==> # 1 = # 0)) #0).  (* forall elim *)
-                  apply Rax. simpl. auto.
-             ++++ apply Rax. simpl. auto.
+                  apply Rax; simpl; auto.
+             ++++ apply Rax; simpl; auto.
 Qed.
+
 
 Definition valuation := list nat.
  
@@ -598,42 +613,38 @@ Fixpoint tinterp (v:valuation) t :=
   end.
 
 
-Lemma tinterp_1_aux_arith : forall m n:nat, m <= n -> exists k:nat, m + k = n.
+Lemma tinterp_1_aux_arith : forall m n:nat,
+                                        m <= n -> exists k:nat, m + k = n.
 Proof. 
-  intros m n .
-  intro H. elim H.
-  - exists 0;auto.
-  - intros. destruct H1. exists (S x). auto.
+  intros m n H; elim H.
+  - exists 0; auto.
+  - intros m0 H_m_le_m0 H_exist.  destruct H_exist. exists (S x). auto.
 Qed.
+
 Lemma tinterp_1 : forall t v0 v1 v2,
   tinterp (v0++v1++v2) (tlift (length v1) t (length v0)) =
   tinterp (v0++v2) t.
 Proof.
-  induction t; simpl; intuition.
+  induction t; simpl; intuition. (*induction sur la structure de t*)
   break; simpl; intuition. 
-  case H; simpl; auto.
-  - (*rewrite app_assoc. *) (* Theorem app_assoc (l m n:list A) : l ++ m ++ n = (l ++ m) ++ n.*)
-    rewrite Nat.add_comm.
-    rewrite app_nth2_plus.
-    rewrite app_nth2.
-    rewrite app_nth2.
-    assert (length v1 - length v1 = length v0 - length v0). auto.
-    rewrite H0. 
-    reflexivity.
+   case H; simpl; auto.
+  - rewrite Nat.add_comm, app_nth2_plus, app_nth2, app_nth2.
+    assert (length v1 - length v1 = length v0 - length v0); auto.
+    rewrite H0; reflexivity. apply Nat.le_refl.
     apply Nat.le_refl.
-    apply Nat.le_refl.
-  - assert (forall m n:nat, m <= n -> exists k:nat, m + k = n). exact tinterp_1_aux_arith.
-    intros. assert (exists k:nat, length v0 + k = S m). apply H0. apply (Nat.le_trans (length v0) m (S m));auto.
-    destruct H2.
-    rewrite <- H2. rewrite Nat.add_assoc. 
-    pattern (length v1 + length v0). rewrite Nat.add_comm.
-    repeat rewrite app_nth2; simpl; auto. 
-    f_equal; auto.
+  - assert (forall m n:nat, m <= n -> exists k:nat, m + k = n).
+    exact tinterp_1_aux_arith.
+    intros; assert (exists k:nat, length v0 + k = S m).
+    apply H0. apply (Nat.le_trans (length v0) m (S m));auto.
+    destruct H2; rewrite <- H2; rewrite Nat.add_assoc. 
+    pattern (length v1 + length v0); rewrite Nat.add_comm.
+    repeat rewrite app_nth2;f_equal; auto.
   - repeat rewrite app_nth1;auto.
 Qed.
 
 Lemma tinterp_2_aux_nth {A:Type}: forall n:nat, forall l:list A, forall d k:A, n >= 1 -> nth (Nat.pred n) l d = nth n (k::l) d.
 Proof.
+  (* induction sur la structure de t et puis celle de n *)
   induction l; simpl; auto; induction n; simpl; auto.
 Qed.
 
@@ -660,24 +671,22 @@ Lemma tinterp_2 : forall t' t v1 v2,
 (* QQ:  replacing variable (length v1) by (tlift (length v1) t' 0) in t
         equals to no replacement, incert (tinterp v2 t') between v1 and v2*)     
 Proof.
-  induction t; simpl; intuition; intros.
+  induction t; simpl; intuition; intros. (* induction sur t *)
   break; simpl;intuition.
   - rewrite H. assert (nth n (v1 ++ tinterp v2 t' :: v2) 0 = tinterp v2 t').
-     + rewrite <- H. rewrite tinterp_2_aux_nth_length. reflexivity.
-     + rewrite <- H. rewrite tinterp_2_aux_nth_length.  
-       pattern v1 at 1. rewrite <- app_nil_l. rewrite <- app_assoc. 
-       rewrite <- (aux_nil nat []).
-       erewrite (tinterp_1 t' [] v1 v2). rewrite app_nil_l. reflexivity. reflexivity.
-      (*Lemma tinterp_1 : forall t v0 v1 v2,
-         tinterp (v0++v1++v2) (tlift (length v1) t (length v0)) =
-          tinterp (v0++v2) t.*)
-  - rewrite app_nth2;auto. rewrite app_nth2;auto.
+     + rewrite <- H, tinterp_2_aux_nth_length. reflexivity.
+     + rewrite <- H, tinterp_2_aux_nth_length.  
+       pattern v1 at 1; 
+       rewrite <- app_nil_l, <- app_assoc, <- (aux_nil nat []).
+       erewrite (tinterp_1 t' [] v1 v2), app_nil_l; reflexivity.
+       reflexivity.
+  - rewrite app_nth2; auto. rewrite app_nth2; auto.
     rewrite tinterp_2_aux_plus_pred. rewrite (tinterp_2_aux_nth (n - (length v1)) v2 0 (tinterp v2 t')) .
     + auto. + auto. + assumption.
   - repeat rewrite app_nth1;auto.
 Qed.
- (* Interpretation of formulas *)
 
+ (* Interpretation of formulas *)
 Fixpoint finterp v A :=
   match A with
     | Fequal t t' => tinterp v t = tinterp v t'
@@ -692,31 +701,34 @@ Fixpoint finterp v A :=
 Lemma finterp_1 : forall A v0 v1 v2,
   finterp (v0 ++ v1 ++ v2) (flift (length v1) A (length v0)) <->
   finterp (v0 ++ v2) A.
-Proof.
+Proof. 
   induction A; split; simpl; auto; intros. 
-  - repeat rewrite tinterp_1 in H. assumption.
-    (* Lemma tinterp_1 : forall t v0 v1 v2,
-       tinterp (v0++v1++v2) (tlift (length v1) t (length v0)) =
-       tinterp (v0++v2) t.  *)
-  - repeat rewrite tinterp_1. assumption.
-  - split;auto.
-    + destruct (IHA1 v0 v1 v2). destruct H. apply H0. assumption.
-    + destruct (IHA2 v0 v1 v2). destruct H. apply H0. assumption.   
-  - destruct (IHA1 v0 v1 v2); destruct (IHA2 v0 v1 v2); destruct H; split; auto.
- (*   + apply H1. assumption.
-    + apply H3. assumption.   *)
-  - destruct (IHA1 v0 v1 v2); destruct (IHA2 v0 v1 v2);destruct H; auto. 
- (*   + left. apply H0. assumption.
-    + right. apply H2. assumption.   *)
-  - destruct H; destruct (IHA1 v0 v1 v2); destruct (IHA2 v0 v1 v2); auto.
-    (*+ left. apply H1. assumption.
-      + right. apply H3. assumption.*)
-  - destruct (IHA1 v0 v1 v2); destruct (IHA2 v0 v1 v2); auto.
-  - destruct (IHA1 v0 v1 v2); destruct (IHA2 v0 v1 v2); auto.
-  - destruct H. exists x. destruct (IHA (x::v0) v1 v2). apply H0. assumption.
-  - destruct H. exists x. destruct (IHA (x::v0) v1 v2). apply H1. assumption.
-  - destruct (IHA (n::v0) v1 v2). apply H0; simpl. exact (H n).
-  - destruct (IHA (n::v0) v1 v2). simpl in H1. apply H1. exact (H n).
+  - (* t = t0 *)
+    repeat rewrite tinterp_1 in H; assumption.
+  - (* t = t0 *)
+    repeat rewrite tinterp_1; assumption.
+  - (* A1 /\ A2 *)
+    split. 
+    + destruct (IHA1 v0 v1 v2); destruct H; apply H0; assumption.
+    + destruct (IHA2 v0 v1 v2); destruct H; apply H0; assumption.   
+  - (* A1 /\ A2 *)
+    destruct (IHA1 v0 v1 v2); destruct (IHA2 v0 v1 v2); destruct H; split; auto.
+  - (* A1 \/ A2 *) 
+    destruct (IHA1 v0 v1 v2); destruct (IHA2 v0 v1 v2);destruct H; auto. 
+  - (* A1 \/ A2 *)
+    destruct H; destruct (IHA1 v0 v1 v2); destruct (IHA2 v0 v1 v2); auto.
+  - (* A1 -> A2 *)
+    destruct (IHA1 v0 v1 v2); destruct (IHA2 v0 v1 v2); auto.
+  - (* A1 -> A2 *)
+    destruct (IHA1 v0 v1 v2); destruct (IHA2 v0 v1 v2); auto.
+  - (* exists A *) 
+    destruct H; exists x; destruct (IHA (x::v0) v1 v2); apply H0; assumption.
+  - (* exists A *) 
+    destruct H; exists x; destruct (IHA (x::v0) v1 v2); apply H1; assumption.
+  - (* forall A *)
+    destruct (IHA (n::v0) v1 v2); apply H0; simpl; exact (H n).
+  - (* forall A *) 
+    destruct (IHA (n::v0) v1 v2); simpl in H1; apply H1; exact (H n).
 Qed.
 
  
@@ -724,33 +736,30 @@ Lemma finterp_2 : forall t' A v1 v2,
   finterp (v1 ++ v2) (fsubst (length v1) t' A) <->
   finterp (v1 ++ (tinterp v2 t') :: v2) A.
 Proof.
-  induction A; simpl; intuition; intros.
-  - repeat rewrite <- tinterp_2. assumption.
-  (*
-  Lemma tinterp_2 : forall t' t v1 v2,
-    tinterp (v1 ++ v2) (tsubst (length v1) t' t) =
-    tinterp (v1 ++ (tinterp v2 t') :: v2) t.
-  *)
-  - repeat rewrite tinterp_2. assumption.
-  - destruct (IHA1 v1 v2). apply H. assumption.
-  - destruct (IHA2 v1 v2). apply H. assumption.
-  - destruct (IHA1 v1 v2). apply H2. assumption.
-  - destruct (IHA2 v1 v2). apply H2. assumption.
-  - left. destruct (IHA1 v1 v2). apply H. assumption. 
-  - right. destruct (IHA2 v1 v2). apply H. assumption.
-  - left. destruct (IHA1 v1 v2). apply H1. assumption.
-  - right. destruct (IHA2 v1 v2). apply H1. assumption.
-  - apply IHA2. apply H. apply IHA1. assumption.
-  - apply IHA2. apply H. apply IHA1. assumption.
-  - destruct H. exists x. apply (IHA (x::v1) v2). assumption.
-  - destruct H. exists x. apply (IHA (x::v1) v2). assumption.
-  - apply (IHA (n::v1) v2). eapply H.
-  - apply (IHA (n::v1) v2). eapply H.
+  (* induction sur la structure de A *)
+  induction A; simpl; intuition; intros. 
+  - repeat rewrite <- tinterp_2; assumption.
+  - repeat rewrite tinterp_2; assumption.
+  - destruct (IHA1 v1 v2); apply H; assumption.
+  - destruct (IHA2 v1 v2); apply H; assumption.
+  - destruct (IHA1 v1 v2); apply H2; assumption.
+  - destruct (IHA2 v1 v2); apply H2; assumption.
+  - left; destruct (IHA1 v1 v2); apply H; assumption. 
+  - right; destruct (IHA2 v1 v2); apply H; assumption.
+  - left; destruct (IHA1 v1 v2); apply H1; assumption.
+  - right; destruct (IHA2 v1 v2); apply H1; assumption.
+  - apply IHA2; apply H; apply IHA1; assumption.
+  - apply IHA2; apply H; apply IHA1; assumption.
+  - destruct H; exists x; apply (IHA (x::v1) v2); assumption.
+  - destruct H; exists x; apply (IHA (x::v1) v2); assumption.
+  - apply (IHA (n::v1) v2); eapply H.
+  - apply (IHA (n::v1) v2); eapply H.
 Qed.
 
 Lemma finterp_3 : forall n A,
   (forall v, finterp v A) -> (forall v, finterp v (nFforall n A)).
 Proof.
+  (* induction sur n*)
   induction n; simpl; auto.
 Qed.
 
@@ -758,17 +767,6 @@ Qed.
 (* Interpretation of contexts *)
 
 Definition cinterp v Γ := forall A, In A Γ -> finterp v A.
-
-(* Soundess of deduction rules *)
-(*Lemma finterp_0 : forall A v0 v1,
-  finterp (v0 ++ v1 ++ v2) (flift (length v1) A (length v0)) <->
-  finterp (v0 ++ v2) A.
-
-
-Lemma finterp_0 : forall A v0 v1,
-  finterp (v0 ++ v1 ++ v2) (flift (length v1) A (length v0)) <->
-  finterp (v0 ++ v2) A.
-*)
 
 Lemma clift_1 : forall Γ A, In A Γ -> In (flift 1 A 0) (clift 1 Γ 0).
 Proof.
@@ -783,26 +781,33 @@ Qed.
 Lemma soundness_rules_aux_1emma_1 :
   forall A Γ, In A (clift 1 Γ 0) -> exists B, In B Γ /\ flift 1 B 0 = A.
 Proof.
-  induction Γ.
-  - intros H. destruct H.
-  - intros H_A. 
-    destruct H_A.
-    + exists a. split;auto.
-    unfold In. auto.
-    + simpl. assert (H_exists := IHΓ H).
-      destruct H_exists as (x, Hyp).
-      exists x. split.
-      ++ right. apply Hyp.
+  induction Γ. (* induction sur la structure de Γ *)
+  - (* [] *)
+    intros H; destruct H.
+  - (* a::Γ' *)
+    intros H_A; destruct H_A.
+    + (* cas A = A *)
+      exists a. split;auto; unfold In; auto.
+    + (* cas A in Γ' *)
+      simpl; assert (H_exists := IHΓ H); destruct H_exists as (x, Hyp);
+      exists x; split.
+      ++ right; apply Hyp.
       ++ apply Hyp.
 Qed.
 
+
+(* Lemme auxilaire:
+       une formule A est vraie sous une valuation v
+       ssi 
+       la formule obtenue en ajoutant une variable #0 qui n'a pas d'occurrence 
+       dans une formule A est vraie  *)
 Lemma soundness_rules_aux_3 : forall A n v,
       finterp v A <-> finterp (n::v) (flift 1 A 0).
 Proof.
   split; assert (H := finterp_1 A [] [n] v); simpl in H; apply H.
 Qed.  
 
-
+(* Lemme auxiliaire *)
 Lemma soundness_rules_aux_2 : forall Γ v A, cinterp v (A::Γ) -> 
   (finterp v A /\ cinterp v Γ).
 Proof.
@@ -819,6 +824,8 @@ Proof.
     + unfold cinterp in H. unfold cinterp. simpl in *.
       auto.
 Qed.
+
+(* Lemme auxiliare*)
 Lemma soundness_rules_aux_1 : forall Γ n v,
       cinterp v Γ <-> cinterp (n::v) (clift 1 Γ 0).
 Proof.
@@ -843,31 +850,28 @@ Proof.
     apply clift_1. assumption.
 Qed.
 
-
-
 Lemma soundness_rules : forall Γ A, 
       Γ:-A -> (forall v, cinterp v Γ -> finterp v A).
-Proof.
+Proof. 
   intros Γ0 A0 H. 
-  induction H. 
-  - auto.
-  - intros. 
-    assert ( finterp v Ffalse ). exact (IHrule v H0).
-    destruct H1.
-  - intros. split; try (apply IHrule1 || apply IHrule2);auto.
-  - intros. 
-    assert ( finterp v (B /\ C)). exact (IHrule v H0).
+  induction H. (* induction sur la dernière règle de la déduction *)
+  - (* Rax *)
+    auto.
+  - (* Rfalse_e *)
+    intros; assert ( finterp v Ffalse ); try (exact (IHrule v H0) || destruct H1).
+  - (* Rand_i *)
+    intros; split; try (apply IHrule1 || apply IHrule2);auto.
+  - (* Rand_e1 *)
+    intros; assert ( finterp v (B /\ C)). exact (IHrule v H0).
     destruct H1; assumption.
-  - intros. 
-    assert ( finterp v (B /\ C)). exact (IHrule v H0).
+  - (* Rand_e2 *) intros; assert ( finterp v (B /\ C)). exact (IHrule v H0).
     destruct H1; assumption.
-  - intros. simpl. left.
-    apply IHrule; assumption.
-  - intros. simpl. right.
-    apply IHrule; assumption.
-  - intros. 
-    assert ( finterp v (B \/ C)). exact (IHrule1 v H2).
-    destruct H3.
+  - (* Ror_i1 *)
+    intros; simpl; left; apply IHrule; assumption.
+  - (* Ror_i2 *) 
+    intros; simpl; right; apply IHrule; assumption.
+  - (* Ror_e *)
+    intros; assert ( finterp v (B \/ C)). exact (IHrule1 v H2). destruct H3.
     + apply IHrule2; unfold cinterp; intros A0 H4;
       destruct H4.
       ++ rewrite <- H4; assumption.
@@ -876,18 +880,18 @@ Proof.
       destruct H4.
       ++ rewrite <- H4; assumption.
       ++ auto.
-  - intros.
-    simpl. intros H_B. apply IHrule.
-    unfold cinterp.
-    intros A0 H_A0.
+  - (* Rimpl_i *)
+    intros; simpl; intros H_B; apply IHrule; unfold cinterp; intros A0 H_A0.
     destruct H_A0.
     + rewrite <- H1; assumption.
     + auto.
-  - intros. 
-    assert ( finterp v (B ==> C))  as H_B_implies_C . exact (IHrule1 v H1).
-    assert ( finterp v B ) as H_B. exact (IHrule2 v H1).
+  - (* Rimpl_e *)
+    intros;
+    assert (H_B_implies_C := IHrule1 v H1);
+    assert (H_B := IHrule2 v H1);
     auto.
-  - intros. simpl. intros n. apply IHrule.
+  - (* Rforall_i *) 
+    intros. simpl. intros n. apply IHrule.
     unfold cinterp in *.
     intros A H_A.
     assert (lemma_aux_1 := soundness_rules_aux_1emma_1 A Γ H_A).
@@ -896,13 +900,15 @@ Proof.
     rewrite <- H_B_A.
     apply (finterp_1 A0 [] [n] v).
     simpl. assumption.
-  - intros. simpl in IHrule.
+  - (* Rforall_e *) 
+    intros. simpl in IHrule.
     assert (Lemma_2 := IHrule v H0).
     assert (Lemma_1 := finterp_2 t B [] v).
     simpl in Lemma_1.
     rewrite Lemma_1.
     apply Lemma_2.
-  - intros v H_cinterp.
+  - (* Rexists_i *)
+     intros v H_cinterp.
     assert (H_finterp_nv := IHrule v H_cinterp).
     simpl.
     assert (Lemma_1 := finterp_2 t B [] v). 
@@ -910,7 +916,8 @@ Proof.
     destruct Lemma_1.
     assert (H2 := H0 H_finterp_nv).
     exists (tinterp v t). assumption.
-  - intros.
+  - (* Rexists_e *)
+    intros.
     assert (H_exists_n_interp_nv_B := IHrule1 v H1); simpl in H_exists_n_interp_nv_B.
     destruct H_exists_n_interp_nv_B as (n,interp_nv_B).
     assert (cinterp (n::v) (clift 1 Γ 0)) as H2. 
@@ -926,359 +933,119 @@ Proof.
     exact H3.
 Qed.
 
-
-
-
-
-Lemma soundness_pa_refl : forall v, finterp v (nFforall 1 (#0 = #0)).
-Proof.
-  intros v.
-  simpl. auto.
-Qed.
-
-Lemma soundness_pa_compat_plus_r : forall v, finterp v (nFforall 3 (#1 = #0 ==> #2 + #1 = #2 + #0)).
-Proof.
-  intros v .
-  simpl. auto.
-Qed.
-
-(* 
-Lemma nFforall_1 : forall n x t A,
-  fsubst x t (nFforall n A) = nFforall n (fsubst (n + x) t A).*)
-(*
-
-
-
-Fixpoint tsubst x t' t :=
-  match t with
-    | Tvar i =>
-      match x ?= i with
-        | Eq => tlift x t' 0
-        | Lt => Tvar (pred i)
-        | Gt => Tvar i
-      end
-    | Tzero => Tzero
-    | Tsucc u => Tsucc (tsubst x t' u)
-    | Tplus u v => Tplus (tsubst x t' u) (tsubst x t' v)
-    | Tmult u v => Tmult (tsubst x t' u) (tsubst x t' v)
-  end.
-
-(* qq :  +(n+1) to all var >= k (there's no x anymore)  and then  subs 
-        var x by t'    =    *)
-Lemma tsubst_1 : forall t x t' n k, k <= x -> x <= k + n ->
-  tsubst x t' (tlift (S n) t k) = tlift n t k.
-
-Lemma tsubst_2 : forall t x t' n k, k <= x ->
-  tlift n (tsubst x t' t) k = tsubst (n + x) t' (tlift n t k).
-
-Hint Resolve tsubst_1 tsubst_2.
-
-Lemma tsubst_3 : forall t x t' n k,
-  tlift n (tsubst x t' t) (x + k) =
-  tsubst x (tlift n t' k) (tlift n t (x + S k)).
-
-Lemma tsubst_4 : forall t x t' y u',
-  tsubst (x + y) u' (tsubst x t' t) =
-  tsubst x (tsubst y u' t') (tsubst (x + S y) u' t).
-
-(* Formula substitution: replace variable x by (tlift x t' 0) in A *)
-
-Fixpoint fsubst x t' A :=
-  match A with
-    | Fequal u v => Fequal (tsubst x t' u) (tsubst x t' v)
-    | Ffalse => Ffalse
-    | Fand B C => Fand (fsubst x t' B) (fsubst x t' C)
-    | For B C => For (fsubst x t' B) (fsubst x t' C)
-    | Fimplies B C => Fimplies (fsubst x t' B) (fsubst x t' C)
-    | Fexists B => Fexists (fsubst (S x) t' B)
-    | Fforall B => Fforall (fsubst (S x) t' B)
-  end.
-*)
-(*
-Lemma fsubst_1 : forall A x t' n k, k <= x -> x <= k + n ->
-  fsubst x t' (flift (S n) A k) = flift n A k.
-Proof.
-  induction A; intros; simpl; f_equal; auto.
-Qed.
-
-Lemma fsubst_2 : forall A x t' n k, k <= x ->
-  flift n (fsubst x t' A) k = fsubst (n + x) t' (flift n A k).
-
-Lemma fsubst_3 : forall A x t' n k,
-  flift n (fsubst x t' A) (x + k) =
-  fsubst x (tlift n t' k) (flift n A (x + S k)).
-
-Lemma fsubst_4 : forall A x t' y u',
-  fsubst (x + y) u' (fsubst x t' A) =
-  fsubst x (tsubst y u' t') (fsubst (x + S y) u' A).
-
-
-(* Formula lifting: add n to all variables of t which are >= k *)
-
-Fixpoint flift n A k :=
-  match A with
-    | Fequal u v => Fequal (tlift n u k) (tlift n v k)
-    | Ffalse => Ffalse
-    | Fand B C => Fand (flift n B k) (flift n C k)
-    | For B C => For (flift n B k) (flift n C k)
-    | Fimplies B C => Fimplies (flift n B k) (flift n C k)
-    | Fexists B => Fexists (flift n B (S k))
-    | Fforall B => Fforall (flift n B (S k))
-  end.
-
-Lemma flift_1 : forall A n n' k k', k <= k' -> k' <= k + n ->
-  flift n' (flift n A k) k' = flift (n' + n) A k.
-
-
-Lemma flift_2 : forall A n n' k k', k' <= k ->
-  flift n' (flift n A k) k' = flift n (flift n' A k') (n' + k).
-
-*)
-
-Lemma soundness_pa_ind_aux_1_aux_1 : forall v t, tinterp v (tsubst 0 Tzero t) = tinterp (0 :: v) t.
-Proof.
-  intros v t.
-  induction t; simpl; auto.
-  induction n;simpl;auto.
-Qed.
-
-(*
-Lemma soundness_pa_ind_aux_1 : forall v A, finterp v (fsubst 0 Tzero A) <-> finterp (0 :: v) A.
-Proof.    
-  intros v A. revert v. induction A; split; intros H0; simpl in *.
-  - assert (H1 := soundness_pa_ind_aux_1_aux_1). simpl. repeat rewrite <- H1. assumption. 
-  - assert (H1 := soundness_pa_ind_aux_1_aux_1). simpl. repeat rewrite -> H1. assumption. 
-  - auto.
-  - auto.
-  - split. 
-    + destruct H0. apply IHA1. assumption.
-    + destruct H0. apply IHA2. assumption.
-  - split. 
-    + destruct H0. apply IHA1. assumption.
-    + destruct H0. apply IHA2. assumption.
-  - destruct H0.
-    + left. apply IHA1. assumption.
-    + right. apply IHA2. assumption.
-  - destruct H0.
-    +  left. apply IHA1. assumption.
-    +  right. apply IHA2. assumption.
-  - intro H1. apply IHA2. apply H0. apply IHA1. assumption.
-  - intro H1. apply IHA2. apply H0. apply IHA1. assumption.
-  - destruct H0 as (n,H0). exists n. 
-    apply (finterp_2 Tzero A [n] v). simpl. assumption.
-  - destruct H0 as (n,H0). exists n.
-    apply (finterp_2 Tzero A [n] v). simpl. assumption.
-  - intro n. apply (finterp_2 Tzero A [n] v). simpl. easy.
-  - intro n. apply (finterp_2 Tzero A [n] v). simpl. easy.
-Qed.
-*)
-
-Lemma soundness_pa_ind_aux_1 : forall v A, (forall n : nat, finterp (n :: v) A -> 
-                                          finterp (n :: v) (fsubst 0 (Tsucc # 0) (flift 1 A 1))) <->
-                          (forall n : nat, finterp (n :: v) A -> 
-                                          finterp ((n+1) :: v) A).
-Admitted.
-
-
-Lemma soundness_pa_ind : forall n A, cformula (S n) A ->
-    forall v, finterp 
-                      v
-                      
-                      (nFforall n (
-                                    fsubst 0 Tzero A /\
-                                    Fforall (A ==> fsubst 0 (Tsucc #0) (flift 1 A 1))
-                                    ==> Fforall A
-                                  )
-                      ).
-Proof.  
-  induction n.  
-  - simpl. intros A H_cformul v (H_0,H_Sn) n. 
-    (* finterp (0::v) A *)
-    assert (H_0_equal := finterp_2 Tzero A [] v). simpl in H_0_equal.
-    assert (H_Sn_equal := (forall n : nat, finterp (n :: v) A -> 
-                                          finterp (n :: v) (fsubst 0 (Tsucc # 0) (flift 1 A 1))) <->
-                          (forall n : nat, finterp (n :: v) A -> 
-                                          finterp ((n+1) :: v) A)).
-Admitted.
-
-(*
-Lemma soundness_aux_interp_1 : forall t n v, tinterp (S (nth 0 v 0) :: v) t = tinterp (S n :: v) t.
-Proof.
-  induction t; simpl; auto.
-  induction n; simpl; auto. 
-  Print nth.
-
-
-*)
-
-Lemma aux_interp_1 : forall t n v, tinterp (n :: v) (tsubst 0 (Tsucc # 0) (tlift 1 t 1)) = tinterp (S n :: v) t.
+(* Lemme auxiliaire *)
+Lemma aux_interp_1 : forall t n v,
+  tinterp (n :: v) (tsubst 0 (Tsucc # 0) (tlift 1 t 1)) = tinterp (S n :: v) t.
 Proof. 
+  (* induction sur t et puis sur n *)
   induction t; simpl; auto.
   induction n; simpl;auto.
 Qed.
 
 
-Lemma aux_finterp_1 : forall A n v, finterp (n :: v) (fsubst 0 (Tsucc # 0) (flift 1 A 1)) <-> finterp (S n :: v) A.
-Proof.
-  
-
-
-
-  (*induction A; induction n; simpl; auto.
-  - intros. split.
-    + intros. assert (H1 := aux_interp_1).
-      rewrite <- H1. rewrite <- H1. assumption.
-    + intros. assert (H1 := aux_interp_1).
-      rewrite H1. rewrite H1. assumption.
-  - intros. assert (H1 := aux_interp_1). 
-    split.
-    + intros. rewrite <- (H1 t (S n)). rewrite <- (H1 t0 (S n)). assumption.
-    + intros. rewrite (H1 t (S n)). rewrite (H1 t0 (S n)). assumption.
-  - intros. split;auto.
-  - split;intros.
-    + rewrite <- (IHA1 0). rewrite <- (IHA2 0). assumption.
-    + rewrite (IHA1 0). rewrite (IHA2 0). assumption.
-  - split; intros.
-    + rewrite <- (IHA1 (S n)). rewrite <- (IHA2 (S n)). assumption.
-    + rewrite (IHA1 (S n)). rewrite (IHA2 (S n)). assumption.
-  - split; intros.
-    + destruct H.
-      ++  left. rewrite <- IHA1. assumption.
-      ++  right. rewrite <- IHA2. assumption.
-    + destruct H.
-      ++  left. rewrite IHA1. assumption.
-      ++  right. rewrite IHA2. assumption.
-  - split; intros; destruct H.
-    +  left. rewrite <- IHA1. assumption.
-    +  right. rewrite <- IHA2. assumption.
-    +  left. rewrite IHA1. assumption.
-    +  right. rewrite IHA2. assumption.
-  - split; intros.
-    + rewrite <- IHA2. apply H. rewrite IHA1. assumption.
-    + apply IHA2. apply H. rewrite <- IHA1. assumption.
-  - split;intros. 
-    + rewrite <- IHA2. apply H. rewrite IHA1. assumption.
-    + apply IHA2. apply H. rewrite <- IHA1. assumption.
-  - split;intros. 
-    + destruct H. exists x. 
-
-(*
-Lemma fsubst_1 : forall A x t' n k, k <= x -> x <= k + n ->
-  fsubst x t' (flift (S n) A k) = flift n A k.
-Proof.
-  induction A; intros; simpl; f_equal; auto.
-Qed.
-
-Lemma fsubst_2 : forall A x t' n k, k <= x ->
-  flift n (fsubst x t' A) k = fsubst (n + x) t' (flift n A k).
-
-Lemma fsubst_3 : forall A x t' n k,
-  flift n (fsubst x t' A) (x + k) =
-  fsubst x (tlift n t' k) (flift n A (x + S k)).
-
-Lemma fsubst_4 : forall A x t' y u',
-  fsubst (x + y) u' (fsubst x t' A) =
-  fsubst x (tsubst y u' t') (fsubst (x + S y) u' A).
-
-Lemma finterp_1 : forall A v0 v1 v2,
-  finterp (v0 ++ v1 ++ v2) (flift (length v1) A (length v0)) <->
-  finterp (v0 ++ v2) A.
-
- 
-Lemma finterp_2 : forall t' A v1 v2,
-  finterp (v1 ++ v2) (fsubst (length v1) t' A) <->
-  finterp (v1 ++ (tinterp v2 t') :: v2) A.
-
-Lemma finterp_3 : forall n A,
-  (forall v, finterp v A) -> (forall v, finterp v (nFforall n A)).
-*)
-
-    + destruct H. exists x. admit.
-  - split;intros.
-    + destruct H. exists x. admit.
-    + destruct H. exists x. admit.
-  - split; intros.
-    + admit.
-    + admit.
-  - split;intros.
-    + admit.
-    + admit.*)
-Admitted.
-
-Lemma soundness_pa_ind_new_2 : forall A v,
-finterp v
-  (fsubst 0 Tzero A /\
-   Fforall
-     (A ==> fsubst 0 (Tsucc # 0) (flift 1 A 1)) ==>
-   Fforall A).
-Proof.
-  simpl. intros A v H. induction n.
-  - destruct H. assert (aux_1 := finterp_2).
-    rewrite <- (aux_1 Tzero A [] v). assumption.
-  - destruct H. assert (H1 := H0 n IHn).
-    rewrite <- aux_finterp_1. assumption.
-Qed.
-
-
-(*
-Lemma finterp_1 : forall A v0 v1 v2,
-  finterp (v0 ++ v1 ++ v2) (flift (length v1) A (length v0)) <->
-  finterp (v0 ++ v2) A.
-*)
-      (*
-Lemma tinterp_1 : forall t v0 v1 v2,
-  tinterp (v0++v1++v2) (tlift (length v1) t (length v0)) =
-  tinterp (v0++v2) t.
-*)
-(*
-Lemma tinterp_2 : forall t' t v1 v2,
-  tinterp (v1 ++ v2) (tsubst (length v1) t' t) =
-  tinterp (v1 ++ (tinterp v2 t') :: v2) t.
-*)
-
-
-
-(*apply soundness_pa_ind_aux_1. assumption.*)
-
-
-    (* forall n, finterp (n::v) A  -> finterp (n+1::v) A *)
-    
-
-(*
-Lemma finterp_2 : forall t' A v1 v2,
-  finterp (v1 ++ v2) (fsubst (length v1) t' A) <->
-  finterp (v1 ++ (tinterp v2 t') :: v2) A.
-*)
-    
-(*
-forall A : formula,
-cformula 1 A ->
-forall v : valuation,
-finterp v (fsubst 0 Tzero A) /\                   ## A[0/x0][v0/x1,v0/x2,...] 
-(forall n : nat,
- finterp (n :: v) A ->                
- finterp (n :: v)
-   (fsubst 0 (Tsucc # 0) (flift 1 A 1)))          ## forall n, A[n/x0,v0/x1,v1/x2,...]-> A[(x0+1)/x0] [n/x0, v0/x1,v1/x2,...]
-   ->
-forall n : nat, finterp (n :: v) A                ## forall n, A[n/x0,v0/x1,v1/x2,...]
+(*qq pour demontrer :   
+            finterp n::v (fsubst 0 (Tsucc #0) (flift A 1) = finterp (S n::v) A
+     on definit la fonction suivante :
 *) 
+Fixpoint Tn n := 
+  match n with
+  | 0 => Tzero
+  | S n' => Tsucc (Tn n')
+  end.
+(*qq pour tout n, Tn n est un un terme clos *)
+Lemma cterm_Tn_n : forall n, cterm 0 (Tn n).
+Proof.
+    induction n.
+    auto. simpl. auto.
+Qed.
 
+(* Lemma auxiliaire *)
+Lemma tlift_0_t_eq_t: forall t n, tlift 0 t n = t.
+Proof.
+    induction t.
+    - unfold tlift. simpl. intro n0. destruct (n0 <=? n); auto.
+    - auto.
+    - simpl. intro n. f_equal. auto.
+    - simpl. intro n. rewrite (IHt1 n),(IHt2 n). reflexivity.
+    - simpl. intro n. rewrite (IHt1 n),(IHt2 n). reflexivity.
+Qed.
+
+(* Lemma auxiliaire *)
+Lemma flift_0_A_eq_A: forall A n, flift 0 A n = A.
+Proof.
+  induction A.
+  - simpl. intro n. repeat rewrite tlift_0_t_eq_t. reflexivity.
+  - auto.
+  - simpl. intro n. repeat rewrite IHA1,IHA2. reflexivity.
+  - simpl. intro n. repeat rewrite IHA1,IHA2. reflexivity.
+  - simpl. intro n. repeat rewrite IHA1,IHA2. reflexivity.
+  - simpl. intro n. rewrite IHA. reflexivity.
+  - simpl. intro n. rewrite IHA. reflexivity.
+Qed. 
+
+(* Lemma auxiliaire *)
+Lemma finterp_apres_une_substitution : 
+  forall n A v, 
+    finterp (n::v) A <-> finterp v (fsubst 0 (Tn n) A).
+Proof.
+    intros n A v.
+    assert (H0 :=finterp_2).
+    assert (H1 := H0 (Tn n) A [] v).
+    simpl in H1.
+    assert (forall v n, tinterp v (Tn n) = n) as H2.
+    - induction n0; simpl; auto.
+    - rewrite <- (H2 v n) at 1. destruct H1; split; assumption.
+Qed.
 
 Lemma soundness_axioms : forall A, PeanoAx A -> forall v, finterp v A.
-Proof.
-  intros A H.
+Proof. 
+  intros A H.  
   induction H; simpl; auto. (* induction sur (PeanoAx A) *)
-  apply finterp_3.  (* Question: comment peut- on avoir idee de poser ce lemma *) 
+  apply finterp_3; revert H; simpl.
+  intros H1 v H2.  
+  destruct H2 as (H3,H4). 
+  (* montrer que:    forall n0 : nat, finterp (n0 :: v) A *)
+  induction n0. (* par induction sur n0 *)
+  + (* ind_init:  finterp (0 :: v) A *)
+    assert (aux_1 := finterp_2). rewrite <- (aux_1 Tzero A [] v).
+    simpl in *. assumption.
+  + (* ind_next:  montrer que:
+              finterp (n0 :: v) A  ==> finterp (S n0 :: v) *)
+    assert (H5 := H4 n0 IHn0).
+    assert (H6 := finterp_apres_une_substitution).
+    assert (H7 := H6 n0 (fsubst 0 (Tsucc # 0) (flift 1 A 1)) v).
+    destruct H7 as (H8,H9).
+    assert (H10 := H8 H5).
 
-  intros.
-  admit.
-admit. admit. admit. admit. admit. admit. admit. admit. admit. admit. admit. admit. admit.
+    assert (H_f_subst_subst := fsubst_4).
+    assert (H11 := H_f_subst_subst (flift 1 A 1) 0 (Tsucc # 0) 0 (Tn n0)).
+    simpl in H11.
+    assert ( finterp v
+        (fsubst 0 (Tsucc (tlift 0 (Tn n0) 0))
+        (fsubst 1 (Tn n0) (flift 1 A 1)))) as H12.
+    ++ f_equal. rewrite <- H11. assumption.
+    ++ assert (finterp v
+        (fsubst 0 (Tsucc (tlift 0 (Tn n0) 0))
+           (fsubst 1 (Tn n0) (flift 1 A 1))) <-> finterp (S n0 :: v) A).
+    +++ assert (tlift 0 (Tn n0) 0 = (Tn n0)) as H13. 
+       ++++ (* monter  tlift 0 (Tn n0) 0 = Tn n0 *)
+           apply cterm_2. 
+           (* Monter  cterm 0 (Tn n0)*)
+           apply cterm_Tn_n.
+       ++++ rewrite H13.
+            assert (fsubst 1 (Tn n0) (flift 1 A 1) = A) as H14.
+            assert (H15 := fsubst_1). rewrite H15;auto. apply flift_0_A_eq_A.
+            rewrite H14. 
+            assert (Tsucc (Tn n0) = Tn (S n0)) as H16;auto.
+            rewrite H16. rewrite finterp_apres_une_substitution. reflexivity.
+    +++ apply H. assumption. 
+Qed.
 
-Print PeanoAx.
-
-Theorem soundness : forall A, Thm A -> forall v, finterp v A.
-Proof.
-  intros A Hyp v. unfold Thm in Hyp. destruct Hyp as (axiomes,Hyp).
+Theorem soundness : forall A, Thm A -> forall v, finterp v A. 
+Proof. 
+  intros A Hyp v. 
+  unfold Thm in Hyp. (* par def de Thm*)
+  destruct Hyp as (axiomes,Hyp).
   destruct Hyp. 
   apply (soundness_rules axiomes).
   - assumption.
@@ -1291,13 +1058,10 @@ Qed.
 
 Theorem coherence : ~Thm Ffalse.
 Proof.
-  intro H.     (*supposons (Thm Ffalse), on a alors une preuve de False dans LI*)
-  change (finterp [] Ffalse).  (* parce que, par exemple, on peut demontrer (finterp [] Ffalse) *)
+  intro H.     
+      (*supposons (Thm Ffalse), on a alors une preuve de False dans LI*)
+  change (finterp [] Ffalse).  
+      (* parce que, par exemple, on peut demontrer (finterp [] Ffalse) *)
   apply soundness.
   assumption.
 Qed.
-
-  
-
-
-

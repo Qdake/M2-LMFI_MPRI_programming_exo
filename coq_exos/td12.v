@@ -89,14 +89,34 @@ Compute inv_col target C.
 
 
 Definition move (b1 b2 : board) : Prop :=
-  exists i:pos, inv_row b1 i = b2 \/
-                inv_col b1 i = b2.
+  (exists i:pos, inv_row b1 i = b2) \/
+  (exists j:pos, inv_col b1 j = b2).
 
-Definition symmetric_binary_relation {X:Type} (R:X->X->Prop)
- : Prop := forall x y:X, R x y -> R y x.
 
-Lemma move_symmetric : symmetric_binary_relation move.
-Admitted.
+Lemma move_symmetric b1 b2 : move b1 b2 -> move b2 b1. 
+Proof.
+  intros H.
+  unfold move in *.
+  destruct H. 
+  Admitted.
+
+(* " |- C " C is the shape of te conclusion *)
+
+Ltac break_all :=
+  match goal with
+  | c:color |- _ => destruct c; break_all
+  | t:triple _ |- _ => destruct t; break_all
+  | b:board |- _ => destruct b; break_all
+  | p: pos |- _ => destruct p; break_all
+  | _ => idtac
+  end.
+
+Lemma inv_row_involutive b p : inv_row (inv_row b p) p = b.
+Proof.
+  break_all. 
+  Admitted.
+
+
 
 Inductive moves : board -> board -> Prop :=
 | moves_refl : forall b : board, moves b b
@@ -109,12 +129,24 @@ Definition reflexive {X:Type} (R:X->X->Prop)
 Definition transitive {X:Type} (R:X->X->Prop)
  : Prop := forall x y z : X, R x y -> R y z -> R x z.
 
+Definition Involutive {X:Type} (f:X->X) := 
+  forall x, f (f x) = x.
+
+Lemma triple_map_involutive {X} (f:X->X) :
+  Involutive f -> Involutive (triple_map f).
+Admitted.
+
+Lemma triple_map_select_involutive {X} (f:X->X) p:
+  Involutive f -> Involutive (triple_map_select f p).
+Admitted.
+
+Lemma inv_col_involutive b p : inv_col (inv_col b p) p = b.
+Admitted.
+
 Lemma moves_reflexive : reflexive moves.
 Admitted.
 
 
-Lemma moves_symmetric : symmetric_binary_relation moves.
-Admitted.
 Lemma moves_transitive : transitive moves.
 Admitted.
 
@@ -133,14 +165,37 @@ match c with
 | Wh => b
 end.
 
-Definition force_white (b:board) : board :=
-  let b := inv_col_if_Bl b A (board_proj b A A) in
-    let b := inv_col_if_Bl b B (board_proj b A B) in
-      let b := inv_col_if_Bl b C (board_proj b A C) in
-        let b := inv_row_if_Bl b B (board_proj b B A) in
-          let b := inv_row_if_Bl b C (board_proj b C A) in
-            b.
-    
+(* prof*)
+Definition force_col b p :=
+  match board_proj b A p with
+  | Wh => b
+  | Bl => inv_col b p
+  end.
+
+Definition force_row b p :=
+  match board_proj b p A with
+  | Wh => b
+  | Bl => inv_row b p
+  end.
+Definition force_white b :=
+  force_col (force_col (force_row (force_row (force_row b A) B) C) B) C.
+ 
+Lemma force_row_moves b p : moves b (force_row b p).
+Proof.
+  unfold force_row.
+  destruct (board_proj b p A).
+  Admitted.
+
+Lemma force_col_moves b p : moves b (force_col b p).
+Proof.
+Admitted.
+
+Lemma forc_white_moves b : moves b (force_white b).
+Proof. 
+  unfold force_white.
+  Admitted.
+
+
 
 
 
@@ -205,9 +260,7 @@ end.
 
 End Triple.
 
-Inductive board : Type := 
-| tableau : triple color -> triple color -> triple color -> board.
-
+Definition board : Type := triple (triple color)
 Definition white_board : board := 
 tableau (triple_x Wh) (triple_x Wh) (triple_x Wh).
 *)
