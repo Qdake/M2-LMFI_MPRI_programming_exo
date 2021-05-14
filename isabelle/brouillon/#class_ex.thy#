@@ -1,0 +1,132 @@
+theory class_ex
+  imports Main
+begin
+
+class semigroup =
+  fixes "dot" :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl "\<otimes>" 70)
+  assumes "assoc" : "(x \<otimes> y) \<otimes> z = x \<otimes> (y \<otimes> z)"
+
+instantiation int :: semigroup
+begin
+  definition "dot_int_def" : "x \<otimes> y = x + (y::int)"
+  instance proof
+    fix "x" "y" "z" :: int 
+    have "(x + y) + z = x + (y + z)" by simp
+    then show "(x \<otimes> y) \<otimes> z = x \<otimes> (y \<otimes> z)"
+      unfolding dot_int_def .
+  qed
+end
+
+instantiation nat :: semigroup
+begin
+
+print_context
+
+(* ! "dot_nat" est fixe *)
+primrec dot_nat where
+ "(0::nat) \<otimes> n = n" 
+|"Suc m \<otimes> n = Suc (m \<otimes> n)"
+
+instance proof
+  fix "x" "y" "z" :: nat
+ 
+    show "(x \<otimes> y) \<otimes> z = x \<otimes> (y \<otimes> z)"
+      by (induction x) auto
+  qed
+end
+
+instantiation prod :: (semigroup, semigroup) semigroup
+begin
+print_context
+definition "dot_prod_def" : "p1 \<otimes> p2 = (fst p1 \<otimes> fst p2, snd p1 \<otimes> snd p2)"
+instance proof
+  fix "p1" "p2" "p3" :: "'a::semigroup \<times> 'b::semigroup"
+  show "p1 \<otimes> p2 \<otimes> p3 = p1 \<otimes> (p2 \<otimes> p3)" 
+    unfolding dot_prod_def by (simp add : assoc)
+qed
+end
+
+(* monoid as extension of semigroup *)
+class monoidl = semigroup + 
+  fixes "neutral" :: "'a" 
+  assumes "neutl" : "neutral \<otimes> x = x"
+
+instantiation nat and int :: monoidl
+begin
+definition "neutral_nat_def" : "neutral= (0 :: nat)"
+definition "neutral_int_def" : "neutral = (0 :: int)"
+instance proof
+  fix "n" :: "nat" 
+  show "neutral \<otimes> n = n" 
+    unfolding neutral_nat_def by simp
+next
+  fix "n" :: "int"
+  show "neutral \<otimes> n = n"
+    unfolding neutral_int_def dot_int_def by simp
+qed
+end
+
+instantiation prod :: (monoidl, monoidl) monoidl
+begin
+definition "neutral_prod_def" : "neutral = (neutral, neutral)"
+instance proof
+  fix "x" :: "('a :: monoidl) \<times> ('b :: monoidl)"
+  show "neutral \<otimes> x = x"
+    unfolding neutral_prod_def dot_prod_def by (simp add : neutl)
+qed
+end
+
+class monoid = monoidl + 
+  assumes "neutr" : "x \<otimes> neutral = x"
+
+instantiation nat and int :: monoid
+begin
+instance proof
+  fix "x" :: "nat"
+  show "x \<otimes> neutral = x"
+    unfolding neutral_nat_def by (induct x) auto
+next
+  fix "x" :: "int"
+  show "x \<otimes> neutral = x"
+    unfolding neutral_int_def dot_int_def by simp
+qed
+end
+
+instantiation prod :: (monoid, monoid) monoid
+begin
+print_context
+instance proof
+  fix "p" :: "('a :: monoid) \<times> ('b::monoid)"
+  show "p \<otimes> neutral = p"
+    unfolding neutral_prod_def dot_prod_def by (simp add : neutr)
+qed
+end
+
+class group = monoidl + 
+  fixes "inverse" :: "'a \<Rightarrow> 'a" 
+  assumes invl : "inverse x \<otimes> x = neutral"
+
+instantiation int :: group
+begin
+definition "inverse_int_def" : "inverse x = -(x::int)"
+instance proof
+  fix "x" :: "int"
+  have "-x + x = 0" by simp
+  then show "inverse x \<otimes> x = neutral"
+    unfolding inverse_int_def neutral_int_def dot_int_def by simp
+qed
+end
+
+lemma (in group) "left_cancel" : "x \<otimes> y = x \<otimes> z \<longleftrightarrow> y = z"
+proof
+  assume "x \<otimes> y = x \<otimes> z"
+  then have "inverse x \<otimes> (x \<otimes> y) = inverse x \<otimes> (x \<otimes> z)" by simp (* ? ? ?*)
+  then have "(inverse x \<otimes> x) \<otimes> y = (inverse x \<otimes> x) \<otimes> z" by (simp add : assoc)
+  then have "neutral \<otimes> y = neutral \<otimes> z" by (simp add : invl)
+  then show "y = z" by (simp add : neutl)
+next
+  assume "y = z"
+  then show "x \<otimes> y = x \<otimes> z" by simp  
+qed
+
+end

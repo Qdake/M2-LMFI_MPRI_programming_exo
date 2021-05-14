@@ -1,30 +1,38 @@
 theory Chapter3
 imports "HOL-IMP.BExp"
         "HOL-IMP.ASM"
-        "Short_Theory"
 begin
 
-text{*
+(*
 \section*{Chapter 3}
 
 \exercise
 To show that @{const asimp_const} really folds all subexpressions of the form
 @{term "Plus (N i) (N j)"}, define a function
-*}
+*)
 
 fun optimal :: "aexp \<Rightarrow> bool" where
-(* your definition/proof here *)
-
-text{*
+  "optimal (N _) = True"
+| "optimal (V _) = True"
+| "optimal (Plus (N _) (N _)) = False"
+| "optimal (Plus a1 a2) = (case ((optimal a1),(optimal a2)) of
+      (False,_) \<Rightarrow> False
+      |(_,False) \<Rightarrow> False
+      |_ \<Rightarrow> True)"
+(*
 that checks that its argument does not contain a subexpression of the form
 @{term "Plus (N i) (N j)"}. Then prove that the result of @{const asimp_const}
 is optimal:
-*}
+*)
 
 lemma "optimal (asimp_const a)"
-(* your definition/proof here *)
+  apply(induction a rule:asimp_const.induct)
+  apply(auto)
+  apply(simp split:aexp.split)
+  apply(auto)
+  done
 
-text{*
+(*
 This proof needs the same @{text "split:"} directive as the correctness proof of
 @{const asimp_const}. This increases the chance of nontermination
 of the simplifier. Therefore @{const optimal} should be defined purely by
@@ -42,54 +50,58 @@ Below we follow a particular solution strategy but there are many others.
 
 First, define a function @{text sumN} that returns the sum of all
 constants in an expression and a function @{text zeroN} that replaces all
-constants in an expression by zeroes (they will be optimized away later):
-*}
+constants in an expression by zeroes (they will be optimized away later):*)
 
 fun sumN :: "aexp \<Rightarrow> int" where
-(* your definition/proof here *)
+  "sumN (N n) = n"
+| "sumN (V x) = 0"
+| "sumN (Plus a1 a2) = (+) (sumN a1) (sumN a2)"
 
 fun zeroN :: "aexp \<Rightarrow> aexp" where
-(* your definition/proof here *)
+  "zeroN (N n) = N 0"
+| "zeroN (V x) = V x"
+| "zeroN (Plus a1 a2) = Plus (zeroN a1) (zeroN a2)"
 
-text {*
+(*
 Next, define a function @{text sepN} that produces an arithmetic expression
 that adds the results of @{const sumN} and @{const zeroN}. Prove that
 @{text sepN} preserves the value of an expression.
-*}
+*)
 
 definition sepN :: "aexp \<Rightarrow> aexp" where
-(* your definition/proof here *)
+  "sepN a = Plus (N (sumN a)) (zeroN a)"
 
 lemma aval_sepN: "aval (sepN t) s = aval t s"
-(* your definition/proof here *)
+  apply(induction t)
+  apply(auto simp add:sepN_def)
+  done
 
-text {*
+(*
 Finally, define a function @{text full_asimp} that uses @{const asimp}
 to eliminate the zeroes left over by @{const sepN}.
 Prove that it preserves the value of an arithmetic expression.
-*}
+*)
 
 definition full_asimp :: "aexp \<Rightarrow> aexp" where
-(* your definition/proof here *)
+  "full_asimp a = asimp (sepN a)"
 
 lemma aval_full_asimp: "aval (full_asimp t) s = aval t s"
-(* your definition/proof here *)
+  apply(induction t)
+  apply(auto simp add:full_asimp_def sepN_def)
+  done
 
 
-
-text{*
-\endexercise
-
-
-\exercise\label{exe:subst}
+ (*
 Substitution is the process of replacing a variable
 by an expression in an expression. Define a substitution function
-*}
+*)
 
 fun subst :: "vname \<Rightarrow> aexp \<Rightarrow> aexp \<Rightarrow> aexp" where
-(* your definition/proof here *)
+  "subst x a (V y) = (if x = y then a else V y)"
+| "subst _ _ (N n) = N n"
+| "subst x a1 (Plus a2 a3) = Plus (subst x a1 a2) (subst x a1 a3)"
 
-text{*
+(*
 such that @{term "subst x a e"} is the result of replacing
 every occurrence of variable @{text x} by @{text a} in @{text e}.
 For example:
@@ -97,35 +109,60 @@ For example:
 
 Prove the so-called \concept{substitution lemma} that says that we can either
 substitute first and evaluate afterwards or evaluate with an updated state:
-*}
+*)
 
 lemma subst_lemma: "aval (subst x a e) s = aval e (s(x := aval a s))"
-(* your definition/proof here *)
+  apply(induction e)
+    apply(auto)
+  done
 
-text {*
+(*
 As a consequence prove that we can substitute equal expressions by equal expressions
 and obtain the same result under evaluation:
-*}
+*)
+
 lemma "aval a1 s = aval a2 s
   \<Longrightarrow> aval (subst x a1 e) s = aval (subst x a2 e) s"
-(* your definition/proof here *)
+  apply(induction e)
+    apply(auto)
+  done
 
-text{*
-\endexercise
-
-\exercise
+(*
 Take a copy of theory @{short_theory "AExp"} and modify it as follows.
 Extend type @{typ aexp} with a binary constructor @{text Times} that
 represents multiplication. Modify the definition of the functions @{const aval}
 and @{const asimp} accordingly. You can remove @{const asimp_const}.
 Function @{const asimp} should eliminate 0 and 1 from multiplications
 as well as evaluate constant subterms. Update all proofs concerned.
-*}
+*)
 
-text{*
-\endexercise
+datatype myaexp = N int | V vname | Plus myaexp myaexp | Times myaexp myaexp
 
-\exercise
+fun myaval :: "myaexp \<Rightarrow> state \<Rightarrow> val" where
+  "myaval (N n) _ = n"
+| "myaval (V x) s = s x"
+| "myaval (Plus a1 a2) s = (+) (myaval a1 s) (myaval a2 s)"
+| "myaval (Times a1 a2) s = (*) (myaval a1 s) (myaval a2 s)"
+
+fun myplus :: "myaexp \<Rightarrow> myaexp \<Rightarrow> myaexp" where
+  "myplus (N n1) (N n2) = N (n1 + n2)"
+| "myplus (N n) a = (if n = 0 then a else (Plus (N n) a))"
+| "myplus a (N n) = (if n = 0 then a else (Plus a (N n)))"
+| "myplus a1 a2 = Plus a1 a2"
+
+fun mytimes :: "myaexp \<Rightarrow> myaexp \<Rightarrow> myaexp" where
+  "mytimes (N n1) (N n2) = N (n1 * n2)"
+| "mytimes (N n) a = (if n = 0 then N 0 else if n = 1 then a else (Times (N n) a))"
+| "mytimes a (N n) = (if n = 0 then N 0 else if n = 1 then a else (Times a (N n)))"
+| "mytimes a1 a2 = Times a1 a2"
+
+fun myasimp :: "myaexp \<Rightarrow> myaexp" where
+  "myasimp (N x) = (N x)"
+| "myasimp (V x) = (V x)"
+| "myasimp (Plus a1 a2) = myplus (myasimp a1) (myasimp a2)"
+| "myasimp (Times a1 a2) = mytimes (myasimp a1) (myasimp a2)"
+
+(*
 Define a datatype @{text aexp2} of extended arithmetic expressions that has,
 in addition to the constructors of @{typ aexp}, a constructor for
 modelling a C-like post-increment operation $x{++}$, where $x$ must be a
@@ -137,18 +174,16 @@ Extend @{text aexp2} and @{text aval2} with a division operation. Model partiali
 division by changing the return type of @{text aval2} to
 @{typ "(val \<times> state) option"}. In case of division by 0 let @{text aval2}
 return @{const None}. Division on @{typ int} is the infix @{text div}.
-*}
+*)
 
-text{*
-\endexercise
+(*
 
-\exercise
 The following type adds a @{text LET} construct to arithmetic expressions:
-*}
+*)
 
 datatype lexp = Nl int | Vl vname | Plusl lexp lexp | LET vname lexp lexp
 
-text{* The @{const LET} constructor introduces a local variable:
+(* The @{const LET} constructor introduces a local variable:
 the value of @{term "LET x e\<^sub>1 e\<^sub>2"} is the value of @{text e\<^sub>2}
 in the state where @{text x} is bound to the value of @{text e\<^sub>1} in the original state.
 Define a function @{const lval} @{text"::"} @{typ "lexp \<Rightarrow> state \<Rightarrow> int"}
@@ -164,36 +199,38 @@ Prove that @{const inline} is correct w.r.t.\ evaluation.
 
 \exercise
 Show that equality and less-or-equal tests on @{text aexp} are definable
-*}
+*)
 
 definition Le :: "aexp \<Rightarrow> aexp \<Rightarrow> bexp" where
-(* your definition/proof here *)
+  "Le a1 a2 = Not (Less a2 a1)"
 
 definition Eq :: "aexp \<Rightarrow> aexp \<Rightarrow> bexp" where
-(* your definition/proof here *)
+  "Eq a1 a2 = And (Le a1 a2) (Le a2 a1)" 
 
-text{*
+(*
 and prove that they do what they are supposed to:
-*}
+*)
 
 lemma bval_Le: "bval (Le a1 a2) s = (aval a1 s \<le> aval a2 s)"
-(* your definition/proof here *)
+  apply(simp add : Le_def)
+  apply(auto)
+  done
 
 lemma bval_Eq: "bval (Eq a1 a2) s = (aval a1 s = aval a2 s)"
-(* your definition/proof here *)
+  apply(simp add : Eq_def Le_def)
+  apply(auto)
+  done
 
-text{*
-\endexercise
-
-\exercise
-Consider an alternative type of boolean expressions featuring a conditional: *}
+(*
+Consider an alternative type of boolean expressions featuring a conditional: 
+*)
 
 datatype ifexp = Bc2 bool | If ifexp ifexp ifexp | Less2 aexp aexp
-
+(*
 text {*  First define an evaluation function analogously to @{const bval}: *}
 
 fun ifval :: "ifexp \<Rightarrow> state \<Rightarrow> bool" where
-(* your definition/proof here *)
+
 
 text{* Then define two translation functions *}
 
@@ -301,12 +338,11 @@ lemma "pbval (dnf_of_nnf b) s = pbval b s"
 
 lemma "is_nnf b \<Longrightarrow> is_dnf (dnf_of_nnf b)"
 (* your definition/proof here *)
-
-text{*
-\endexercise
+*)
 
 
-\exercise\label{exe:stack-underflow}
+(*
+exe:stack-underflow
 A \concept{stack underflow} occurs when executing an @{text ADD}
 instruction on a stack of size less than 2. In our semantics
 a term @{term "exec1 ADD s stk"} where @{prop "length stk < 2"}
@@ -317,33 +353,38 @@ and normal execution by @{text Some}, i.e., the execution functions
 have return type @{typ "stack option"}. Modify all theorems and proofs
 accordingly.
 Hint: you may find @{text"split: option.split"} useful in your proofs.
-*}
+*)
 
-text{*
+
+
+
+(*
 \endexercise
 
 \exercise\label{exe:register-machine}
 This exercise is about a register machine
 and compiler for @{typ aexp}. The machine instructions are
-*}
+*)
 type_synonym reg = nat
 datatype instr = LDI val reg | LD vname reg | ADD reg reg
 
-text {*
+(*
 where type @{text reg} is a synonym for @{typ nat}.
 Instruction @{term "LDI i r"} loads @{text i} into register @{text r},
 @{term "LD x r"} loads the value of @{text x} into register @{text r},
-and @{term[names_short] "ADD r\<^sub>1 r\<^sub>2"} adds register @{text r\<^sub>2} to register @{text r\<^sub>1}.
+and @{term[names_short] "ADD r\<^sub>1 r\<^sub>2"} adds   register @{text r\<^sub>2} to register @{text r\<^sub>1}.
 
 Define the execution of an instruction given a state and a register state;
-the result is the new register state: *}
+the result is the new register state: *)
 
 type_synonym rstate = "reg \<Rightarrow> val"
 
-fun exec1 :: "instr \<Rightarrow> state \<Rightarrow> rstate \<Rightarrow> rstate" where
-(* your definition/proof here *)
+fun exec_mr_1 :: "instr \<Rightarrow> state \<Rightarrow> rstate \<Rightarrow> rstate" where
+  "exec_mr_1 (LDI i r) s rs = rs(r:=i)"
+| "exec_mr_1 (LD v r) s rs = rs(r:=s v)"
+| "exec_mr_1 (ADD r1 r2) s rs = rs(r1 := (+) (rs r1) (rs r2))"
 
-text{*
+(*
 Define the execution @{const[source] exec} of a list of instructions as for the stack machine.
 
 The compiler takes an arithmetic expression @{text a} and a register @{text r}
@@ -351,28 +392,35 @@ and produces a list of instructions whose execution places the value of @{text a
 into @{text r}. The registers @{text "> r"} should be used in a stack-like fashion
 for intermediate results, the ones @{text "< r"} should be left alone.
 Define the compiler and prove it correct:
-*}
+*)
 
-theorem "exec (comp a r) s rs r = aval a s"
-(* your definition/proof here *)
+fun comp_mr :: "aexp \<Rightarrow> reg \<Rightarrow> rstate \<Rightarrow> instr list" where
+  "comp_mr (aexp.N n) r rs = [LDI n r]"
+| "comp_mr (aexp.V x) r rs = [LD x r]"
+| "comp_mr (aexp.Plus e1 e2) r rs = (comp_mr e1 r rs) @ (comp_mr e2 (r+1) rs) @ [ADD r (r + 1)]" 
 
-text{*
-\endexercise
+fun exec_mr :: "instr list \<Rightarrow> state \<Rightarrow> rstate \<Rightarrow> rstate" where
+  "exec_mr [] _ rs = rs"
+| "exec_mr (i#is) s rs = exec_mr is s (exec_mr_1 i s rs)"
 
-\exercise\label{exe:accumulator}
+(*theorem "exec_mr (comp_mr a r) s rs r = aval a s"
+  *)
+
+
+(*
 This exercise is a variation of the previous one
 with a different instruction set:
-*}
+*)
 
 datatype instr0 = LDI0 val | LD0 vname | MV0 reg | ADD0 reg
 
-text{*
+(*
 All instructions refer implicitly to register 0 as a source or target:
 @{const LDI0} and @{const LD0} load a value into register 0, @{term "MV0 r"}
 copies the value in register 0 into register @{text r}, and @{term "ADD0 r"}
 adds the value in register @{text r} to the value in register 0;
 @{term "MV0 0"} and @{term "ADD0 0"} are legal. Define the execution functions
-*}
+*)
 
 fun exec01 :: "instr0 \<Rightarrow> state \<Rightarrow> rstate \<Rightarrow> rstate" where
 (* your definition/proof here *)

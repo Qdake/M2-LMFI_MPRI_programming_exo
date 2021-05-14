@@ -1,2 +1,1 @@
-(* your definition/proof here *)
 
