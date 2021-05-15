@@ -27,10 +27,36 @@ is optimal:
 
 lemma "optimal (asimp_const a)"
   apply(induction a rule:asimp_const.induct)
-  apply(auto)
-  apply(simp split:aexp.split)
-  apply(auto)
+  apply(auto split:aexp.split)
   done
+(*
+fun asimp_const :: "aexp \<Rightarrow> aexp" where
+"asimp_const (N n) = N n" |
+"asimp_const (V x) = V x" |
+"asimp_const (Plus a\<^sub>1 a\<^sub>2) =
+  (case (asimp_const a\<^sub>1, asimp_const a\<^sub>2) of
+    (N n\<^sub>1, N n\<^sub>2) \<Rightarrow> N(n\<^sub>1+n\<^sub>2) |
+    (b\<^sub>1,b\<^sub>2) \<Rightarrow> Plus b\<^sub>1 b\<^sub>2)"
+*)
+
+lemma "optimal (asimp_const a)" (is "?P a")
+proof (induction a rule:asimp_const.induct)
+  fix n
+  let ?a = "N n"
+  show "?P ?a" by simp
+next 
+  fix x 
+  let ?a = "V x"
+  show "?P ?a" by simp
+next 
+  fix a1 a2
+  assume ind1: "optimal (asimp_const a1)" "optimal (asimp_const a2)"
+  let ?a = "Plus a1 a2"
+  show "?P ?a" 
+    using ind1 by (auto split : aexp.split)
+qed
+
+
 
 (*
 This proof needs the same @{text "split:"} directive as the correctness proof of
@@ -73,8 +99,35 @@ definition sepN :: "aexp \<Rightarrow> aexp" where
 
 lemma aval_sepN: "aval (sepN t) s = aval t s"
   apply(induction t)
-  apply(auto simp add:sepN_def)
+  apply(auto simp add : sepN_def)
   done
+
+lemma aval_sepN_isar: "aval (sepN t) s = aval t s" (is "?P t s")
+proof (induction t arbitrary : s)
+  fix x s
+  let ?t = "N x" 
+  have "aval (sepN ?t) s = (aval (Plus (N (sumN ?t)) (zeroN ?t)) s)" by (auto simp add : sepN_def)
+  also have "(aval (Plus (N (sumN ?t)) (zeroN ?t)) s) = (aval ?t s)" by simp
+  finally show "?P ?t s" by simp
+next
+  fix x s
+  let ?t = "V x"
+  show "?P ?t s" by (simp add : sepN_def)
+next
+  fix t1 t2 s
+  assume IH : "\<And>s. aval (sepN t1) s = aval t1 s" "\<And>s. aval (sepN t2) s = aval t2 s"
+  let ?t = "Plus t1 t2"
+  have "aval (sepN (Plus t1 t2)) s = aval (Plus (N (sumN ?t)) (zeroN ?t)) s" using sepN_def by simp
+  also have "... = (+) (aval (N (sumN ?t)) s) (aval (zeroN ?t) s)" by simp
+  also have "... = (+) ((+) (aval (N (sumN t1)) s) (aval (N (sumN t2)) s))
+                       ((+) (aval (zeroN t1) s) (aval (zeroN t2) s))" by simp
+  also have "... = (+) ((+) (aval (N (sumN t1)) s) (aval (zeroN t1) s))
+                       ((+) (aval (N (sumN t2)) s) (aval (zeroN t2) s))" by simp
+  also have "... = (+) (aval (sepN t1) s)
+                       (aval (sepN t2) s)" using sepN_def by simp
+  also have "... = aval ?t s" using IH by simp
+  finally show "?P ?t s" using sepN_def by auto
+qed
 
 (*
 Finally, define a function @{text full_asimp} that uses @{const asimp}
@@ -90,7 +143,24 @@ lemma aval_full_asimp: "aval (full_asimp t) s = aval t s"
   apply(auto simp add:full_asimp_def sepN_def)
   done
 
-
+lemma aval_full_asimp_isar : "aval (full_asimp t) s = aval t s" (is "?P t s")
+proof (induction t)
+  fix x 
+  let ?t = "N x"
+  show "?P ?t s" by (simp add : full_asimp_def sepN_def)
+next
+  fix x
+  let ?t = "V x"
+  show "?P ?t s" by (simp add : full_asimp_def sepN_def)
+next
+  fix t1 t2
+  assume ind : "aval (full_asimp t1) s = aval t1 s" "aval (full_asimp t2) s = aval t2 s"
+  let ?t = "Plus t1 t2"
+  have "aval (full_asimp ?t) s = aval (asimp (sepN ?t)) s" by (simp add : full_asimp_def)
+  also have "... = aval (asimp (Plus (N (sumN ?t)) (zeroN ?t))) s" by (simp add : sepN_def)
+  finally show "?P ?t s" using ind full_asimp_def sepN_def by simp
+qed
+  
  (*
 Substitution is the process of replacing a variable
 by an expression in an expression. Define a substitution function
@@ -115,6 +185,27 @@ lemma subst_lemma: "aval (subst x a e) s = aval e (s(x := aval a s))"
   apply(induction e)
     apply(auto)
   done
+lemma subst_lemma_isar : "aval (subst x a e) s = aval e (s (x := aval a s))" (is "?P e")
+proof (induction e)
+  fix n 
+  let ?e = "N n"
+  show "?P ?e" by auto 
+next
+  fix v
+  let ?e = "V v"
+  show "?P ?e" by auto
+next
+  fix e1 e2
+  assume ind : "aval (subst x a e1) s = aval e1 (s(x := aval a s))"
+               "aval (subst x a e2) s = aval e2 (s(x := aval a s))"
+  let ?e ="Plus e1 e2"
+  have "aval (subst x a ?e) s = aval (Plus (subst x a e1) (subst x a e2)) s" by simp
+  also have "... = (aval (subst x a e1) s) + (aval (subst x a e2) s)" by simp
+  also have "... = (aval e1 (s(x := aval a s))) + (aval e2 (s(x := aval a s)))" using ind by simp
+  also have "... = aval (Plus e1 e2) (s (x := aval a s))" by simp
+  (* finally show "?P ?e" by simp   *) (* qqq : pourquoi pas *) 
+  finally show "aval (subst x a ?e) s = aval ?e (s (x := aval a s))" by simp
+qed
 
 (*
 As a consequence prove that we can substitute equal expressions by equal expressions
@@ -127,6 +218,33 @@ lemma "aval a1 s = aval a2 s
     apply(auto)
   done
 
+lemma "aval a1 s = aval a2 s
+  \<Longrightarrow> aval (subst x a1 e) s = aval (subst x a2 e) s"
+proof-
+  fix a1 a2 s
+  assume H : "aval a1 s = aval a2 s"
+  show "aval (subst x a1 e) s = aval (subst x a2 e) s" (is "?P e")
+  proof (induction e)
+    fix n
+    let ?e = "N n"
+    show "?P ?e" by simp
+  next
+    fix v
+    let ?e = "V v"
+(*    have "aval (subst x a1 ?e) s = aval (if x = v then a1 else V v) s" (is "?Q = ?R")
+      by simp
+    also have "... = (if x = v then aval a1 s else aval (V v) s)" by simp
+    finally show "?P ?e" using \<open>aval a1 s = aval a2 s\<close> by simp  *)
+    show "?P ?e" using \<open>aval a1 s = aval a2 s\<close> by simp
+  next
+    fix e1 e2
+    assume id : "aval (subst x a1 e1) s = aval (subst x a2 e1) s"
+                "aval (subst x a1 e2) s = aval (subst x a2 e2) s"
+    let ?e = "Plus e1 e2"
+    show "?P ?e" using H id by simp
+  qed
+qed
+    
 (*
 Take a copy of theory @{short_theory "AExp"} and modify it as follows.
 Extend type @{typ aexp} with a binary constructor @{text Times} that
