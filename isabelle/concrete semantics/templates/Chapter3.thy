@@ -305,16 +305,36 @@ datatype lexp = Nl int | Vl vname | Plusl lexp lexp | LET vname lexp lexp
 the value of @{term "LET x e\<^sub>1 e\<^sub>2"} is the value of @{text e\<^sub>2}
 in the state where @{text x} is bound to the value of @{text e\<^sub>1} in the original state.
 Define a function @{const lval} @{text"::"} @{typ "lexp \<Rightarrow> state \<Rightarrow> int"}
-that evaluates @{typ lexp} expressions. Remember @{term"s(x := i)"}.
+that evaluates @{typ lexp} expressions. Remember @{term"s(x := i)"}.*)
 
+fun lval :: "lexp \<Rightarrow> state \<Rightarrow> int" where
+  "lval (Nl n) _ = n"
+| "lval (Vl v) s = s v"
+| "lval (Plusl e1 e2) s = (+) (lval e1 s) (lval e2 s)"
+| "lval (LET x e1 e2) s = lval e2 (s (x := lval e1 s))"
+
+(*
 Define a conversion @{const inline} @{text"::"} @{typ "lexp \<Rightarrow> aexp"}.
 The expression \mbox{@{term "LET x e\<^sub>1 e\<^sub>2"}} is inlined by substituting
 the converted form of @{text e\<^sub>1} for @{text x} in the converted form of @{text e\<^sub>2}.
 See Exercise~\ref{exe:subst} for more on substitution.
 Prove that @{const inline} is correct w.r.t.\ evaluation.
 \endexercise
+*)
 
+fun inline :: "lexp \<Rightarrow> aexp" where
+  "inline (Nl n) = (aexp.N n)"
+| "inline (Vl v) = (aexp.V v)"
+| "inline (Plusl e1 e2) = aexp.Plus (inline e1) (inline e2)"
+| "inline (LET x e1 e2) = subst x (inline e1) (inline e2)"
 
+(*
+lemma "lval e s = aval (inline e) s"
+  apply(induction e rule:lexp.induct)
+  apply(auto split:aexp.split lexp.split)
+*)
+
+(*
 \exercise
 Show that equality and less-or-equal tests on @{text aexp} are definable
 *)
@@ -334,37 +354,90 @@ lemma bval_Le: "bval (Le a1 a2) s = (aval a1 s \<le> aval a2 s)"
   apply(auto)
   done
 
+lemma bval_Le_isar : "bval (Le a1 a2) s = (aval a1 s \<le> aval a2 s)"
+proof-
+  fix a1 a2 s
+  have "bval (Le a1 a2) s = bval (Not (Less a2 a1)) s" by (simp add : Le_def)
+  also have "... = (\<not> bval (Less a2 a1) s)" by simp
+  also have "... = (\<not> (aval a2 s) < (aval a1 s))" by simp
+  also have "... = ((aval a1 s) \<le> (aval a2 s))" by auto
+  finally show "bval (Le a1 a2) s = (aval a1 s \<le> aval a2 s)" by simp
+qed
+
 lemma bval_Eq: "bval (Eq a1 a2) s = (aval a1 s = aval a2 s)"
   apply(simp add : Eq_def Le_def)
   apply(auto)
   done
 
+lemma bval_Eq_isar: "bval (Eq a1 a2) s = (aval a1 s = aval a2 s)"
+  unfolding Eq_def Le_def
+proof
+  fix a1 a2 s
+  assume "bval (And (bexp.Not (Less a2 a1)) (bexp.Not (Less a1 a2))) s"
+  then show "aval a1 s = aval a2 s" by simp
+next
+  fix a1 a2 s
+  assume "aval a1 s = aval a2 s"
+  then show "bval (And (bexp.Not (Less a2 a1)) (bexp.Not (Less a1 a2))) s" by simp
+qed
+  
 (*
 Consider an alternative type of boolean expressions featuring a conditional: 
 *)
 
 datatype ifexp = Bc2 bool | If ifexp ifexp ifexp | Less2 aexp aexp
-(*
-text {*  First define an evaluation function analogously to @{const bval}: *}
+
+(* First define an evaluation function analogously to @{const bval}: *)
 
 fun ifval :: "ifexp \<Rightarrow> state \<Rightarrow> bool" where
-
+  "ifval (Bc2 b) s = b"
+| "ifval (If ife1 ife2 ife3) s = (if (ifval ife1 s) then (ifval ife2 s) else (ifval ife3 s))"
+| "ifval (Less2 ae1 ae2) s = ((aval ae1 s) < (aval ae2 s))"
 
 text{* Then define two translation functions *}
 
 fun b2ifexp :: "bexp \<Rightarrow> ifexp" where
-(* your definition/proof here *)
+  "b2ifexp (Bc v) = (Bc2 v)"
+| "b2ifexp (Not b) = (If (b2ifexp b) (Bc2 False) (Bc2 True))"
+| "b2ifexp (And b1 b2) = (If (b2ifexp b1) (If (b2ifexp b2) (Bc2 True) (Bc2 False)) (Bc2 False))"
+| "b2ifexp (Less a1 a2) = (Less2 a1 a2)"
 
 fun if2bexp :: "ifexp \<Rightarrow> bexp" where
-(* your definition/proof here *)
+  "if2bexp (Bc2 b) = (Bc b)"
+| "if2bexp (If e1 e2 e3) = (Not (And (Not (And (if2bexp e1) (if2bexp e2)))
+                                     (Not (And (Not (if2bexp e1)) (if2bexp e3)))
+                                 ))"
+| "if2bexp (Less2 a1 a2) = (Less a1 a2)"
 
 text{* and prove their correctness: *}
 
 lemma "bval (if2bexp exp) s = ifval exp s"
-(* your definition/proof here *)
+  by induction auto
+
+lemma "bval (if2bexp exp) s = ifval exp s" (is "?P ?exp")
+proof (induction)
+  fix x
+  let ?exp = "Bc2 x"
+  show "bval (if2bexp ?exp) s = ifval ?exp s" by auto
+next
+  fix a1 a2
+  let ?exp = "Less2 a1 a2"
+  show "bval (if2bexp ?exp) s = ifval ?exp s" by auto
+next
+  fix e1 e2 e3
+  assume ind : "bval (if2bexp e1) s = ifval e1 s"
+               "bval (if2bexp e2) s = ifval e2 s"
+               "bval (if2bexp e3) s = ifval e3 s"
+  let ?exp = "If e1 e2 e3"
+  have "bval (if2bexp (ifexp.If e1 e2 e3)) s = 
+           bval (Not (And (Not (And (if2bexp e1) (if2bexp e2)))
+                     (Not (And (Not (if2bexp e1)) (if2bexp e3)))
+                 )) s" by simp
+  then show "bval (if2bexp ?exp) s = ifval ?exp s" using ind by auto
+qed
 
 lemma "ifval (b2ifexp exp) s = bval exp s"
-(* your definition/proof here *)
+  by (induction exp) auto
 
 text{*
 \endexercise
@@ -392,31 +465,121 @@ text {* Define a function that checks whether a boolean exression is in NNF
 to @{const VAR}s: *}
 
 fun is_nnf :: "pbexp \<Rightarrow> bool" where
-(* your definition/proof here *)
+  "is_nnf (AND b1 b2) = ((is_nnf b1) \<and> (is_nnf b2))"
+| "is_nnf (OR b1 b2) = ((is_nnf b1) \<and> (is_nnf b2))"
+| "is_nnf (NOT (VAR _)) = True"
+| "is_nnf (NOT _) = False"
+| "is_nnf (VAR _) = True"
 
-text{*
+(*
 Now define a function that converts a @{text bexp} into NNF by pushing
 @{const NOT} inwards as much as possible:
-*}
+*)
+
 
 fun nnf :: "pbexp \<Rightarrow> pbexp" where
-(* your definition/proof here *)
+  "nnf (VAR x) = (VAR x)"
+| "nnf (AND e1 e2) = (AND (nnf e1) (nnf e2))"
+| "nnf (OR e1 e2) = (OR (nnf e1) (nnf e2))"
+| "nnf (NOT (NOT e)) = (nnf e)"
+| "nnf (NOT (VAR x)) = (NOT (VAR x))"
+| "nnf (NOT (AND e1 e2)) = (OR (nnf (NOT e1)) (nnf (NOT e2)))"
+| "nnf (NOT (OR e1 e2)) = (AND (nnf (NOT e1)) (nnf (NOT e2)))"
 
-text{*
+(*
 Prove that @{const nnf} does what it is supposed to do:
-*}
+*)
 
 lemma pbval_nnf: "pbval (nnf b) s = pbval b s"
-(* your definition/proof here *)
+  apply(induction b rule : nnf.induct)
+        apply(auto)
+  done
+
+lemma pbval_nnf_isar : "pbval (nnf b) s = pbval b s" (is "?P b")
+proof (induction b rule : nnf.induct)
+  fix x
+  let ?b = "VAR x"
+  show "?P ?b" by simp
+next
+  fix e1 e2
+  assume ind : "pbval (nnf e1) s = pbval e1 s"
+                "pbval (nnf e2) s = pbval e2 s"
+  let ?b = "AND e1 e2"
+  show "?P ?b" using ind by simp
+
+next 
+  fix e1 e2
+  assume ind : "pbval (nnf e1) s = pbval e1 s"
+                "pbval (nnf e2) s = pbval e2 s"
+  show "?P (OR e1 e2)" using ind by simp
+next 
+  fix e
+  assume ind : "pbval (nnf e) s = pbval e s"
+  show "?P (NOT (NOT e))" using ind by simp
+next 
+  fix x 
+  show "?P (NOT (VAR x))"  by simp
+next
+  fix e1 e2
+  assume ind : "pbval (nnf (NOT e1)) s = pbval (NOT e1) s"
+         "pbval (nnf (NOT e2)) s = pbval (NOT e2) s"
+  show "?P (NOT (AND e1 e2))" using ind by simp
+next 
+  fix e1 e2
+  assume ind : "pbval (nnf (NOT e1)) s = pbval (NOT e1) s" 
+               "pbval (nnf (NOT e2)) s = pbval (NOT e2) s"
+  show "?P (NOT (OR e1 e2))" using ind by simp
+qed
 
 lemma is_nnf_nnf: "is_nnf (nnf b)"
-(* your definition/proof here *)
+  apply (induction b rule:nnf.induct)
+  apply(auto)
+  done
 
-text{*
+lemma is_nnf_nnf_isar: "is_nnf (nnf b)" (is "?P b")
+proof (induction b rule : nnf.induct)
+  (* 1*)
+  fix x
+  let ?b = "VAR x"
+  show "?P ?b" by simp 
+next
+  (* 2 *)
+  fix e1 e2
+  assume ind : "is_nnf (nnf e1)" "is_nnf (nnf e2)"
+  let ?b = "AND e1 e2"
+  show "?P ?b" using ind by simp
+next
+  (* 3 *)
+  fix e1 e2
+  assume ind : "is_nnf (nnf e1)" "is_nnf (nnf e2)"
+  let ?b = "OR e1 e2"
+  show "?P ?b" using ind by simp
+next
+  (* 4*)
+  fix e 
+  assume ind : "is_nnf (nnf e)"
+  let ?b = "NOT (NOT e)"
+  show "?P ?b" using ind by simp
+next 
+  (* 5 *)
+  fix x 
+  let ?b ="NOT (VAR x)"
+  show "?P ?b" by simp
+next 
+  (* 6 *)
+  fix e1 e2 
+  show "\<lbrakk>is_nnf (nnf (NOT e1)); is_nnf (nnf (NOT e2))\<rbrakk> \<Longrightarrow> is_nnf (nnf (NOT (AND e1 e2)))" by simp
+next 
+  (* 7 *)
+  fix e1 e2 
+  show "\<lbrakk>is_nnf (nnf (NOT e1)); is_nnf (nnf (NOT e2))\<rbrakk> \<Longrightarrow> is_nnf (nnf (NOT (OR e1 e2)))" by simp
+qed
+
+(*
 An expression is in DNF (disjunctive normal form) if it is in NNF
 and if no @{const OR} occurs below an @{const AND}. Define a corresponding
 test:
-*}
+*)
 
 fun is_dnf :: "pbexp \<Rightarrow> bool" where
 (* your definition/proof here *)
