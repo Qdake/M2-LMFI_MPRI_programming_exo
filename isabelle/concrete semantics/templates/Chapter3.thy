@@ -619,7 +619,7 @@ lemma "pbval (dnf_of_nnf b) s = pbval b s"
 
 lemma "is_nnf b \<Longrightarrow> is_dnf (dnf_of_nnf b)"
 (* your definition/proof here *)
-*)
+
 
 
 (*
@@ -661,32 +661,103 @@ the result is the new register state: *)
 type_synonym rstate = "reg \<Rightarrow> val"
 
 fun exec_mr_1 :: "instr \<Rightarrow> state \<Rightarrow> rstate \<Rightarrow> rstate" where
-  "exec_mr_1 (LDI i r) s rs = rs(r:=i)"
+  "exec_mr_1 (LDI i r) _ rs = rs(r:=i)"
 | "exec_mr_1 (LD v r) s rs = rs(r:=s v)"
-| "exec_mr_1 (ADD r1 r2) s rs = rs(r1 := (+) (rs r1) (rs r2))"
+| "exec_mr_1 (ADD r1 r2) _ rs = rs(r1 := (rs r1) + (rs r2))"
 
 (*
 Define the execution @{const[source] exec} of a list of instructions as for the stack machine.
-
-The compiler takes an arithmetic expression @{text a} and a register @{text r}
+*)
+(*The compiler takes an arithmetic expression @{text a} and a register @{text r}
 and produces a list of instructions whose execution places the value of @{text a}
 into @{text r}. The registers @{text "> r"} should be used in a stack-like fashion
 for intermediate results, the ones @{text "< r"} should be left alone.
 Define the compiler and prove it correct:
 *)
 
-fun comp_mr :: "aexp \<Rightarrow> reg \<Rightarrow> rstate \<Rightarrow> instr list" where
-  "comp_mr (aexp.N n) r rs = [LDI n r]"
-| "comp_mr (aexp.V x) r rs = [LD x r]"
-| "comp_mr (aexp.Plus e1 e2) r rs = (comp_mr e1 r rs) @ (comp_mr e2 (r+1) rs) @ [ADD r (r + 1)]" 
+fun comp_mr :: "aexp \<Rightarrow> reg \<Rightarrow> instr list" where
+  "comp_mr (aexp.N n) r = [LDI n r]"
+| "comp_mr (aexp.V x) r = [LD x r]"
+| "comp_mr (aexp.Plus e1 e2) r = (comp_mr e1 r) @ (comp_mr e2 (r+1)) @ [ADD r (r + 1)]" 
 
 fun exec_mr :: "instr list \<Rightarrow> state \<Rightarrow> rstate \<Rightarrow> rstate" where
   "exec_mr [] _ rs = rs"
 | "exec_mr (i#is) s rs = exec_mr is s (exec_mr_1 i s rs)"
 
-(*theorem "exec_mr (comp_mr a r) s rs r = aval a s"
-  *)
+lemma frame_exec1_LDI :"r' < r \<Longrightarrow> (exec_mr_1 (LDI n r) s rs) r' = rs r'"
+  by simp
 
+lemma frame_exec1_LD :"r' < r \<Longrightarrow> (exec_mr_1 (LD v r) s rs) r' = rs r'"
+  by simp
+
+lemma frame_exec1_ADD :"r' < r1 \<Longrightarrow> (exec_mr_1 (ADD r1 r2) s rs) r' = rs r'"
+  by simp
+
+lemma correct_aux : "exec_mr (is1 @ is2) s rs r =
+        exec_mr is2 s (exec_mr is1 s rs) r"
+  apply(induction is1 arbitrary:s rs r)
+  apply(auto)
+  done
+
+lemma frame_exec : "r' < r \<Longrightarrow> exec_mr (comp_mr a r) s rs r' = rs r'"
+  using correct_aux by (induction a arbitrary : r r' s rs) auto
+
+lemma  "r' < r \<Longrightarrow> exec_mr (comp_mr a r) s rs r' = rs r'"
+proof (induction a arbitrary:r r' s rs)
+  case (N x)
+  then show ?case by auto
+next
+  case (V x)
+then show ?case by auto
+next
+  case ind : (Plus a1 a2)
+  have " exec_mr (comp_mr a1 r) s rs r' = rs r'" using ind.IH ind.prems by auto
+  also have " exec_mr (comp_mr a2 r) s rs r' = rs r'" using ind.IH ind.prems by auto
+  finally show "exec_mr (comp_mr (aexp.Plus a1 a2) r) s rs r' = rs r'" 
+    using correct_aux ind.IH ind.prems by auto
+qed
+
+theorem correct : "exec_mr (comp_mr a r) s rs r = aval a s"
+  using frame_exec correct_aux by (induction a arbitrary : r s rs) auto
+
+theorem correct_isar : "exec_mr (comp_mr a r) s rs r = aval a s"
+proof (induction a arbitrary : r s rs)
+  fix x r s rs
+  show "exec_mr (comp_mr (aexp.N x) r) s rs r = aval (aexp.N x) s" by simp
+next
+  fix x r s rs
+  show "exec_mr (comp_mr (aexp.V x) r) s rs r = aval (aexp.V x) s" by simp
+next
+  fix a1 a2 r s rs
+
+  let ?l1 = "comp_mr a1 r"
+  let ?l2 = "comp_mr a2 (r+1)"
+  let ?l3 = "[ADD r (r+1)]"
+  let ?rs' = "exec_mr (comp_mr a1 r) s rs"
+  let ?rs'' = "exec_mr (comp_mr a2 (r+1)) s ?rs' "
+
+  assume ind : "\<And>r s rs. (exec_mr (comp_mr a1 r) s rs) r = aval a1 s" 
+               "\<And>r s rs. (exec_mr (comp_mr a2 r) s rs) r = aval a2 s"
+
+  have "?rs' r = ?rs'' r" using frame_exec by simp
+  have "?rs'' (r+1) = aval a2 s" using ind by simp
+
+  have "exec_mr (comp_mr (aexp.Plus a1 a2) r) s rs r = 
+    exec_mr (?l1 @ ?l2 @ ?l3) s rs r"
+    by simp
+  also have "... = exec_mr (?l2 @ ?l3) s ?rs' r"
+    using correct_aux by simp
+  also have "... = exec_mr ?l3 s ?rs'' r" 
+    using correct_aux by simp
+  also have "... = (?rs'' r) + (?rs'' (r+1))"
+    by simp
+  also have "... = (aval a1 s) +(?rs'' (r+1))" 
+    using \<open>?rs' r = ?rs'' r\<close> ind by simp
+  also have "... = (aval a1 s) +(aval a2 s)" 
+    using ind by simp  
+  also have "... = aval (aexp.Plus a1 a2) s" by simp    
+  finally show "exec_mr (comp_mr (aexp.Plus a1 a2) r) s rs r = aval (aexp.Plus a1 a2) s" using ind by auto
+qed
 
 (*
 This exercise is a variation of the previous one
@@ -703,8 +774,15 @@ adds the value in register @{text r} to the value in register 0;
 @{term "MV0 0"} and @{term "ADD0 0"} are legal. Define the execution functions
 *)
 
-fun exec01 :: "instr0 \<Rightarrow> state \<Rightarrow> rstate \<Rightarrow> rstate" where
-(* your definition/proof here *)
+fun exec0_1 :: "instr0 \<Rightarrow> state \<Rightarrow> rstate \<Rightarrow> rstate" where
+  "exec0_1 (LDI0 n) _ rs = rs (0 := n)"
+| "exec0_1 (LD0 x) s rs = rs (0 := s x)"
+| "exec0_1 (MV0 r) _ rs = rs (r := rs 0)"
+| "exec0_1 (ADD0 r) _ rs = rs (0 := rs 0 + rs r)"
+
+fun exec0 :: "instr0 list \<Rightarrow> state \<Rightarrow> rstate \<Rightarrow> rstate" where
+  "exec0 [] _ rs = rs"
+| "exec0 (i#is) s rs = exec0 is s (exec0_1 i s rs)"
 
 text{*
 and @{const exec0} for instruction lists.
@@ -716,12 +794,81 @@ for intermediate results, the ones @{text "\<le> r"} should be left alone
 (with the exception of 0). Define the compiler and prove it correct:
 *}
 
-theorem "exec0 (comp0 a r) s rs 0 = aval a s"
-(* your definition/proof here *)
+fun comp0 :: "aexp \<Rightarrow> reg \<Rightarrow> instr0 list" where
+  "comp0 (aexp.N n) _ = [LDI0 n]"
+| "comp0 (aexp.V x) _ = [LD0 x]"
+| "comp0 (aexp.Plus a1 a2) r = (comp0 a1 (r+1)) @ [MV0 r] @ (comp0 a2 (r+1)) @ [ADD0 r]" 
 
-text{*
-\endexercise
-*}
+(*datatype instr0 = LDI0 val | LD0 vname | MV0 reg | ADD0 reg *)
+(*datatype aexp = N int | V vname | Plus aexp aexp*)
 
+lemma correct_exec0_aux : "exec0 (is1 @ is2) s rs r =
+        exec0 is2 s (exec0 is1 s rs) r"
+  apply(induction is1 arbitrary:s rs r)
+  apply(auto)
+  done
+(*fun exec0_1 :: "instr0 \<Rightarrow> state \<Rightarrow> rstate \<Rightarrow> rstate" where
+  "exec0_1 (LDI0 n) _ rs = rs (0 := n)"
+| "exec0_1 (LD0 x) s rs = rs (0 := s x)"
+| "exec0_1 (MV0 r) _ rs = rs (r := rs 0)"
+| "exec0_1 (ADD0 r) _ rs = rs (0 := rs 0 + rs r)"*)
+
+lemma frame_exec0_LDI : "r \<noteq> 0 \<Longrightarrow> (exec0_1 (LDI0 n) s rs) r = rs r"
+  by simp 
+
+lemma frame_exec0_LD : "r \<noteq> 0 \<Longrightarrow> (exec0_1 (LD0 x) s rs) r = rs r"
+  by simp
+
+lemma frame_exec0_MV0 : "r' \<noteq> r \<Longrightarrow> (exec0_1 (MV0 r) s rs) r' = rs r'"
+  by simp
+
+lemma frame_exec0_ADD :"r' \<noteq> 0 \<Longrightarrow> (exec0_1 (ADD0 r) s rs) r' = rs r'"
+  by simp
+
+lemma frame_exec0 : "0 < r' \<Longrightarrow> r' \<le> r \<Longrightarrow> exec_0 (comp0 a (r+1)) s rs r' = rs r'"
+  apply(induction a arbitrary : r' r s rs)
+  apply(auto)
+
+
+proof (induction a arbitrary : r s rs)
+  fix x r s rs
+  show "exec_0 (comp0 (aexp.N x) (r + 1)) s rs r = rs r" by auto
+ 
+
+theorem correct_exec0 : "exec0 (comp0 a r) s rs 0 = aval a s"
+proof (induction a arbitrary : r s rs)
+  case (N n)
+  show ?case by simp
+next
+  case (V x) 
+  show ?case by simp
+next  
+  fix a1 a2 r s rs
+  assume ind : "\<And>r s rs. exec0 (comp0 a1 r) s rs 0 = aval a1 s"
+         "\<And>r s rs. exec0 (comp0 a2 r) s rs 0 = aval a2 s"
+  let ?rs' = "exec0 (comp0 a1 (r+1)) s rs"
+  let ?rs'' = "?rs' (r := ?rs' 0)"
+  let ?rs''' = "exec0 (comp0 a2 (r+1)) s ?rs''"
+  have "exec0 (comp0 (aexp.Plus a1 a2) r) s rs 0 = 
+        exec0 ((comp0 a1 (r+1)) @ [MV0 r] @ (comp0 a2 (r+1)) @ [ADD0 r]) s rs 0" 
+    by simp 
+  also have "... = exec0 ([MV0 r] @ (comp0 a2 (r+1)) @ [ADD0 r]) s ?rs' 0"
+    using correct_exec0_aux by simp
+  also have "... = exec0 ((comp0 a2 (r+1)) @ [ADD0 r]) s ?rs'' 0" 
+    using correct_exec0_aux by simp
+  also have "... = exec0 ([ADD0 r]) s ?rs''' 0"
+    using correct_exec0_aux by simp
+  also have "... = (?rs''' (0 := ?rs''' r + ?rs''' 0)) 0"
+    using correct_exec0_aux by simp
+  also have "... = ?rs''' r + ?rs''' 0" by simp
+  also have "... = ?rs''' r +  aval a2 s" using ind by simp
+  also have "?rs''' = 
+    exec0 (comp0 a2 (r+1)) s ((exec0 (comp0 a1 (r+1)) s rs) (r := (exec0 (comp0 a1 (r+1)) s rs) 0))"
+    by simp
+  also have "... = 
+    exec0 (comp0 a2 (r+1)) s ((exec0 (comp0 a1 (r+1)) s rs) (r := aval a1 s rs))" 
+    using ind by simp
+  finally show "exec0 (comp0 (aexp.Plus a1 a2) r) s rs 0 = aval (aexp.Plus a1 a2) s"
+      using ind by auto
 end
 
